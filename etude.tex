@@ -1,0 +1,183 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie « Étude documentaire » (6 diapositives) -- à importer avec \include{etude}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%  Les sources sont citées dans chaque diapositive par des liens cliquables (nom de domaine),
+%  sans passer par sources.bib. Pages consultées le 5 octobre 2026.
+%  Niveaux : les chiffres du modèle financier (69 € TTC, 22 000 kits, etc.) sont des hypothèses.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Étude documentaire}
+\providecommand{\etl}[2]{\href{#1}{#2}}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Que mettre en avant, et auprès de qui~?}
+  \begin{columns}[T]
+    \begin{column}{0.37\textwidth}
+      \begin{puces}
+        \item \textbf{Payé une fois}~: 69\,€ contre 319\,€ puis 15 à 20\,€ par mois (Garmin inReach Mini 2).
+        \item \textbf{Marche en cas de panne}~: la 4G couvre 99,2 à 99,6\,\% de la population, « zone blanche » seul est faible.
+        \item \textbf{Prêt à l'emploi, légal, en français} (869,4--869,65\,MHz, 27\,dBm, 10\,\%).
+        \item \textbf{Jamais « balise de détresse »}~: texte seul, 1 à 3\,km en ville.
+      \end{puces}
+    \end{column}
+    \begin{column}{0.61\textwidth}
+      \scriptsize\renewcommand{\arraystretch}{1.05}
+      \begin{tabularx}{\linewidth}{@{}p{2.2cm}Xc@{}}
+        \rowcolor{insarose}\textcolor{insarouge}{\bfseries Segment} & \textcolor{insarouge}{\bfseries Taille, raison d'achat} & \textcolor{insarouge}{\bfseries Rang}\\
+        Radioamateurs, ADRASEC & 15\,836 indicatifs~; FNRASEC ≈ 1\,600 bénévoles, agrément sécurité civile. Prescripteurs. & 1\\
+        Communes & ≈ 10\,800 avec plan communal de sauvegarde~; achat sous 40\,000\,€ HT sans concurrence ≈ 695 kits. & 1\\
+        Randonneurs & 27 millions~; 22\,000 kits = 0,08\,\%. & 2\\
+        Chasseurs & 963\,571 (2023), âge médian 55 ans. Liaison de battue (hypothèse). & 2\\
+        Préparation & Guide « Tous responsables » (21/11/2025), kit de 72\,h. & 3\\
+        Makers du mesh & Déjà équipés~: 312 nœuds visibles sur le moniteur Gaulix. & 3\\
+      \end{tabularx}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pointcle}\centering\footnotesize
+    Vendre de la densité, pas des objets~: lots de 4 à 10 kits, d'abord là où existe une ADRASEC ou un club.
+  \end{pointcle}
+  \srcnote{Sources~: \etl{https://www.tibison.com/produit/accessoires/garmin-inreach-mini-2/}{tibison.com}, \etl{https://www.arcep.fr/uploads/tx_gspublication/Arcep-RA2026-tome2-Panorama-connectivite-mobile-France_normeA.pdf}{arcep.fr}, \etl{https://meshtastic.org/docs/configuration/radio/lora/}{meshtastic.org}, \etl{https://www.ref66.fr/2026/01/25/les-radioamateurs-en-france-en-2025-etat-des-lieux-selon-lobservatoire-de-lanfr/}{ref66.fr}, \etl{https://fr.wikipedia.org/wiki/Chasse_en_France}{fr.wikipedia.org}, \etl{https://www.maire-info.com/sa\%C2\%A9curita\%C2\%A9-civile/le-gouvernement-veut-rendre-obligatoire-le-plan-communal-de-sauvegarde-dans-toutes-les-communes-article-31060}{maire-info.com}, \etl{https://donnees-publiques.fr/guides/seuils-marches-publics-2026/}{donnees-publiques.fr}, \etl{https://www.ffrandonnee.fr/s-informer/actualites/avec-27-millions-de-pratiquants-la-randonnee-est-le-sport-le-plus-pratique-en-france}{ffrandonnee.fr}, \etl{https://www.generation-nt.com/actualites/guide-tous-responsables-gouvernement-crise-kit-survie-resilience-2066493}{generation-nt.com}, \etl{https://map.gaulix.fr/stats}{map.gaulix.fr}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Où se situe \nomproduit{} face à l'offre existante~?}
+  \centering\scriptsize\renewcommand{\arraystretch}{1.1}
+  \begin{tabularx}{\linewidth}{@{}p{3.0cm}p{2.0cm}p{2.7cm}p{1.6cm}X@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Offre} & \textcolor{insarouge}{\bfseries Prix TTC} & \textcolor{insarouge}{\bfseries Abonnement} & \textcolor{insarouge}{\bfseries Secours} & \textcolor{insarouge}{\bfseries Réseau utilisé}\\
+    \rowcolor{insabeige}\textbf{\nomproduit} & 69\,€ & non & non & voisins~; prêt à l'emploi\\
+    Carte nue Heltec V3 & 18 à 30\,€ & non & non & voisins~; à régler soi-même\\
+    SenseCAP T1000-E & ≈ 58,80\,€ & non & non & voisins\\
+    WisMesh Pocket V2 & 99\,€ & non & non & voisins~; pré-flashé\\
+    Garmin inReach Mini 2 & 319 à 350\,€ & 15 à 20\,€ par mois & oui, 24\,h/24 & satellites\\
+    SOS satellite du smartphone & iPhone 14 ou plus & Apple~: gratuit 2 ans~; Orange~: 5\,€/mois & Apple~: oui & satellites\\
+  \end{tabularx}
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.05cm,valign=top]
+        \raggedright\gros{≈ 1\,219\,€}\\[1pt]{\footnotesize sur 5 ans pour un inReach.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.05cm,valign=top]
+        \raggedright\gros{4 kits = 276\,€}\\[1pt]{\footnotesize moins qu'un inReach seul.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.05cm,valign=top]
+        \raggedright\gros{Pixel 9 et 10}\\[1pt]{\footnotesize seuls éligibles au SMS Orange.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Sources~: \etl{https://www.tibison.com/produit/accessoires/garmin-inreach-mini-2/}{tibison.com}, \etl{https://www.tech-connect.info/meshtastic-meshcore-communiquer-sans-internet-le-guide-complet-2026/}{tech-connect.info}, \etl{https://www.passion-radio.fr/mesh-lora/114993369-3198.html}{passion-radio.fr}, \etl{https://hexaspot.com/products/wismesh-pocket-v2-ready-to-use-meshtastic-device}{hexaspot.com}, \etl{https://support.apple.com/fr-afri/101573}{support.apple.com}, \etl{https://newsroom.orange.com/orange-devient-le-1er-operateur-europeen-a-proposer-une-offre-de-sms-par-satellite-en-sappuyant-sur-la-technologie-direct-to-device/}{newsroom.orange.com}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Acheter, produire~: à quel coût~?}
+  \begin{columns}[T]
+    \begin{column}{0.53\textwidth}
+      \footnotesize\renewcommand{\arraystretch}{1.05}
+      \begin{tabularx}{\linewidth}{@{}Xr@{}}
+        \rowcolor{insarose}\textcolor{insarouge}{\bfseries Par kit (année 3)} & \textcolor{insarouge}{\bfseries €}\\
+        Carte Heltec V3 + antenne (acheter)  & 17,00\\
+        Batterie Li-Po (acheter)             & 4,50\\
+        Câble, emballage, carte (acheter)    & 2,80\\
+        Boîtier (produire~: 3D, puis injection) & 2,50\\
+        Assemblage, flash, test (produire)   & 3,50\\
+        \rowcolor{insabeige}\textbf{Matériel} & \textbf{30,30}\\
+        Vente 4,00 + kit solidaire 3,03      & 37,33\\
+        \rowcolor{insabeige}\textbf{Marge par kit (65\,\% du HT en coût)} & \textbf{20,17}\\
+      \end{tabularx}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{encadre}{Une fois, et obligations}
+        \begin{puces}
+          \item Tests CE/RED~: 4 à 11\,k€, 3 à 6 mois.
+          \item Moule d'injection~: 5 à 50\,k€~; stock ≈ 100\,k€.
+          \item Éco-contributions DEEE~: ≈ 0,5 à 2,5\,€ par kit (hypothèse).
+          \item Besoin total ≈ 450\,k€~; Bourse French Tech~: 30\,k€ au plus.
+        \end{puces}
+      \end{encadre}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pointcle}\centering\footnotesize
+    Logiciel à développer~: aucun (Meshtastic, GPL-3.0). On produit assemblage, configuration, support, conformité~: là sont les 20\,€.
+  \end{pointcle}
+  \srcnote{Sources~: \etl{https://heltec.org/project/wifi-lora-32-v3/}{heltec.org}, \etl{https://rf-market.fr/meshtastic/1441-batterie-lipo-37v-1200mah-jst-125mm-2-broches.html}{rf-market.fr}, \etl{https://www.prototypage3d.com/impression-3d-vs-injection-moulee/}{prototypage3d.com}, \etl{https://codium.fr/en/news/ce-certification-electronics/}{codium.fr}, \etl{https://packdeclare.com/fr/blog/filiere-deee-ecologic-2026}{packdeclare.com}, \etl{https://pro.ecosystem.eco/profil/producteur/obligations-producteur}{pro.ecosystem.eco}, \etl{https://compass-financement.com/obtenir-bourse-french-tech/}{compass-financement.com}, \etl{https://github.com/meshtastic/firmware}{github.com/meshtastic}. Chiffres du kit~: hypothèses du modèle financier.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Freins propres au projet}
+  \footnotesize\renewcommand{\arraystretch}{1.0}
+  \begin{tabularx}{\linewidth}{@{}p{2.9cm}X@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Frein} & \textcolor{insarouge}{\bfseries Éléments sourcés}\\
+    F1 Effet de réseau~: « personne n'en a » & Une balise marche seule, pas un nœud. Moniteur Gaulix~: 312 nœuds visibles, 76 actifs. Portée 1 à 3\,km en ville, 3 sauts par défaut (7 au plus).\\
+    F2 Le smartphone fait déjà « SOS » & iPhone 14 ou plus~: gratuit 2 ans (France, 12/2022)~; SMS satellite Orange (Pixel 9 et 10, 5\,€ par mois, 12/2025)~; Starlink Mobile pas encore en France.\\
+    F3 Aucun secours, mais responsabilité & Directive 2024/2853 (9/12/2026)~: logiciel = produit, clauses d'exclusion inopposables~; exception du libre limitée au non commercial.\\
+    F4 Conformité d'un vendeur visible & RED~: déclaration en français, amende jusqu'à 7\,500\,€~; cybersécurité RED depuis le 1/8/2025~; CRA~: notification depuis le 11/9/2026~; ANSSI pour les envois dans l'UE~; V4 à 28\,dBm pour 500\,mW permis.\\
+    F5 Marque et logiciel & « Meshtastic » est une marque, interdite dans le nom du produit~; \emph{grant} révocable~; GPL-3.0~; MeshCore (MIT) en concurrent.\\
+    F6 Matériel, batterie & Fournisseur unique (V3 vers V4)~; rapport UN38.3~; Colissimo~: route en Europe, 4 batteries par colis.\\
+    F7 Pas de revenu récurrent & Point mort ≈ 21\,300 kits par an~; −127\,k€ à 15\,000 kits~; les makers achètent la carte à 18\,€.\\
+  \end{tabularx}
+  \srcnote{Sources~: \etl{https://map.gaulix.fr/stats}{map.gaulix.fr}, \etl{https://meshtastic.org/docs/configuration/radio/lora/}{meshtastic.org}, \etl{https://www.apple.com/fr/newsroom/2022/12/emergency-sos-via-satellite-available-in-france-germany-ireland-and-the-uk/}{apple.com}, \etl{https://newsroom.orange.com/orange-devient-le-1er-operateur-europeen-a-proposer-une-offre-de-sms-par-satellite-en-sappuyant-sur-la-technologie-direct-to-device/}{newsroom.orange.com}, \etl{https://www.spacexfrance.com/starlink-mobile-en-france-votre-smartphone-bientot-connecte-aux-satellites/}{spacexfrance.com}, \etl{https://forge-agency.fr/blog/responsabilite-produits-defectueux-logiciel-2026-pme-guide-pratique}{forge-agency.fr}, \etl{https://www.anfr.fr/fileadmin/medias/brochures-plaquettes/ANFR-brochure-directive-RED.pdf}{anfr.fr}, \etl{https://www.nemko.com/blog/cybersecurity-in-europe-en-18031-is-now-a-harmonized-standard}{nemko.com}, \etl{https://digital-strategy.ec.europa.eu/en/policies/cra-reporting}{digital-strategy.ec.europa.eu}, \etl{https://cyber.gouv.fr/controle-relatif-un-moyen-de-cryptologie}{cyber.gouv.fr}, \etl{https://heltec.org/project/wifi-lora-32-v4/}{heltec.org}, \etl{https://meshtastic.org/docs/legal/licensing-and-trademark/}{meshtastic.org}, \etl{https://en.wikipedia.org/wiki/MeshCore}{en.wikipedia.org}, \etl{https://6-napse.com/actualites/un38-3-certification-transport-batteries-lithium/}{6-napse.com}, \etl{https://www.colissimo.entreprise.laposte.fr/en/practical-advice/right-packaging/almost-perfect-parcel-web-series/lithium-batteries}{colissimo.entreprise.laposte.fr}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Opportunités que le reste du marché n'a pas}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=2.3cm,valign=top]
+        \raggedright\gros{Zéro licence}\\[1pt]{\footnotesize Firmware libre, plus de 100 cartes~: R\&D mutualisée (≈ 11\,€ par kit pour 4 développeurs).}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=2.3cm,valign=top]
+        \raggedright\gros{Acheteur public}\\[1pt]{\footnotesize Plan communal de sauvegarde pour toutes les communes en 2029 (projet)~; marchés sous 40\,000\,€ HT sans concurrence.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=2.3cm,valign=top]
+        \raggedright\gros{Bénévoles}\\[1pt]{\footnotesize FNRASEC ≈ 1\,600 membres, agrément de sécurité civile~; canal d'urgence Gaulix (Fr\_EMCOM).}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=2.3cm,valign=top]
+        \raggedright\gros{Conformité}\\[1pt]{\footnotesize Petits colis hors UE~: +3\,€ depuis le 1/7/2026 (≈ +17\,\% sur une carte), frais de gestion dès le 1/11.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=2.3cm,valign=top]
+        \raggedright\gros{Fenêtre 2028}\\[1pt]{\footnotesize Starlink Mobile absent de France, SMS Orange réservé à deux Pixel~; Telekom~: début 2028, hors France.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=2.3cm,valign=top]
+        \raggedright\gros{Relocaliser}\\[1pt]{\footnotesize Origine France Garantie~: 50 à 100\,\% du coût en France. Nous estimons 40 à 45\,\% en phase 3 (hypothèse).}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Sources~: \etl{https://github.com/meshtastic/firmware}{github.com/meshtastic}, \etl{https://www.tech-connect.info/meshtastic-meshcore-communiquer-sans-internet-le-guide-complet-2026/}{tech-connect.info}, \etl{https://donnees-publiques.fr/guides/seuils-marches-publics-2026/}{donnees-publiques.fr}, \etl{https://www.la-resilience.fr/2025/10/meshtastic-vs-gaulix-4-4/}{la-resilience.fr}, \etl{https://www.economie.gouv.fr/particuliers/mes-droits-conso/bien-consommer/tout-savoir-sur-la-taxe-sur-les-petits-colis}{economie.gouv.fr}, \etl{https://www.spacexfrance.com/starlink-mobile-en-france-votre-smartphone-bientot-connecte-aux-satellites/}{spacexfrance.com}, \etl{https://www.entreprises.cci-paris-idf.fr/fiches-pratiques/vous-fabriquez-en-france-demandez-le-label-origine-france-garantie}{entreprises.cci-paris-idf.fr}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Solutions aux freins}
+  \footnotesize\renewcommand{\arraystretch}{1.0}
+  \begin{tabularx}{\linewidth}{@{}p{1.1cm}X@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Frein} & \textcolor{insarouge}{\bfseries Solution}\\
+    F1, F7 & \textbf{Vendre de la densité}~: lots de 4 (276\,€) et de 10~; démarrer où existe une ADRASEC ou un club~; revenus hors matériel (installation, formation, accessoires).\\
+    F2 & \textbf{Complément, pas remplaçant}~: tout smartphone (application Android officielle), sans opérateur, en groupe privé~; aucune promesse de secours.\\
+    F3 & \textbf{Prévention}~: test à 100\,\%, protection de la batterie, notice « ne remplace ni le 112 ni une balise », assurance responsabilité produit avant la première vente.\\
+    F4 & \textbf{Conformité dès l'année 1} (25\,k€)~: laboratoire en pré-conformité, rapports de Heltec, EN 18031, procédure de vulnérabilités~; vendre d'abord en France~; brider à 27\,dBm.\\
+    F5 & \textbf{« \nomproduit, compatible Meshtastic »} avec les logos M-Powered~; demander un \emph{grant}~; publier nos modifications~; matériel ouvert à MeshCore.\\
+    F6 & \textbf{Double source V3/V4}, stock tampon ≈ 3\,300 kits, fret en lots, UN38.3 exigé, route en Europe, 4 kits par colis.\\
+  \end{tabularx}
+  \vspace{0.1cm}
+  \begin{pointcle}\centering\footnotesize
+    À valider~: devis de laboratoire, entretiens (ADRASEC, 5 mairies, 5 clubs), déclaration CE de Heltec, éco-contribution, prix de la batterie.
+  \end{pointcle}
+  \srcnote{Sources~: voir les diapositives précédentes~; \etl{https://github.com/meshtastic/Meshtastic-Android}{github.com/meshtastic}, \etl{https://meshtastic.org/docs/legal/trademark-grants/}{meshtastic.org}, \etl{https://innovel.fr/actualites/certification-red-da-en-18031/}{innovel.fr}. Les chiffres du modèle sont des hypothèses.}
+\end{frame}
