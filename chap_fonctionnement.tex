@@ -1,0 +1,195 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie 2 -- Fonctionnement : vue d'ensemble, partie physique, partie logicielle,
+%  trajet d'un message (4 diapositives)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fonctionnement}
+
+%---------------------------------------------------------------------------
+% Diapositive 6 : vue d'ensemble (physique + logiciel)
+%---------------------------------------------------------------------------
+\begin{frame}{Vue d'ensemble~: de ton téléphone à ton contact}
+  \centering
+  \begin{tikzpicture}[font=\footnotesize]
+    \tikzset{
+      bt/.style   = {{Stealth[length=2mm]}-{Stealth[length=2mm]},thick,insagris,dashed},
+      lora/.style = {{Stealth[length=2mm]}-{Stealth[length=2mm]},thick,insarouge,decorate,
+                     decoration={snake,amplitude=1.3pt,segment length=7pt,pre length=1.6mm,post length=1.6mm}},
+      legende/.style = {font=\scriptsize,text=insagris,align=center,text width=1.9cm}}
+    \pic[insagris,scale=1.4]   at (0,0.6)     {icone tel};
+    \pic[insarouge,scale=1.4]  at (2.85,0.6)  {icone antenne};
+    \pic[insaorange,scale=1.4] at (5.7,0.6)   {icone antenne};
+    \pic[insarouge,scale=1.4]  at (8.55,0.6)  {icone antenne};
+    \pic[insagris,scale=1.4]   at (11.4,0.6)  {icone tel};
+    \draw[bt]   (0.5,0.6) -- node[etiqf,above=2pt] {Bluetooth} node[below=2pt,font=\tiny,text=insagris] {quelques mètres} (2.3,0.6);
+    \draw[lora] (3.35,0.6) -- node[etiqf,above=3pt] {LoRa} node[below=3pt,font=\tiny,text=insagris] {plusieurs km} (5.2,0.6);
+    \draw[lora] (6.2,0.6) -- node[etiqf,above=3pt] {LoRa} node[below=3pt,font=\tiny,text=insagris] {plusieurs km} (8.05,0.6);
+    \draw[bt]   (9.05,0.6) -- node[etiqf,above=2pt] {Bluetooth} node[below=2pt,font=\tiny,text=insagris] {quelques mètres} (10.9,0.6);
+    \node[pcli] at (0,-0.4)     {Toi};
+    \node[pfoc] at (2.85,-0.4)  {Ton kit};
+    \node[psvc] at (5.7,-0.4)   {Un voisin};
+    \node[pfoc] at (8.55,-0.4)  {Kit du contact};
+    \node[pcli] at (11.4,-0.4)  {Ton contact};
+    \node[legende] at (0,-1.1)     {application mobile};
+    \node[legende] at (2.85,-1.1)  {carte Heltec V3 + antenne};
+    \node[legende] at (5.7,-1.1)   {relaie ton message};
+    \node[legende] at (8.55,-1.1)  {reçoit et déchiffre};
+    \node[legende] at (11.4,-1.1)  {application mobile};
+  \end{tikzpicture}
+
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{encadre}{Partie physique~: ce que tu tiens en main}
+        \begin{puces}
+          \item Carte Heltec V3~: radio LoRa, Bluetooth, écran
+          \item Antenne 868 MHz, batterie Li-Po (recharge USB-C)
+          \item Boîtier de protection
+        \end{puces}
+      \end{encadre}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{encadre}{Partie logicielle~: ce qui la fait vivre}
+        \begin{puces}
+          \item Firmware libre Meshtastic (GPL-3.0)~: maillage, chiffrement
+          \item Application mobile gratuite~: messages, carte, positions
+          \item Réglages préchargés, guides en français
+        \end{puces}
+      \end{encadre}
+    \end{column}
+  \end{columns}
+  \srcnote{Sources~: \cite{heltec_v3,meshtastic_overview,meshtastic_android}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 7 : partie physique (schéma-bloc de la carte + contenu du kit)
+%---------------------------------------------------------------------------
+\begin{frame}{Partie physique~: une carte de 5\,cm sur 2,5\,cm}
+  \begin{columns}[T]
+    \begin{column}{0.64\textwidth}
+      \centering
+      \begin{tikzpicture}[font=\scriptsize]
+        \tikzset{lien/.style={{Stealth[length=1.8mm]}-{Stealth[length=1.8mm]},thick,insagris}}
+        \node[svc,minimum width=2.5cm,minimum height=1.75cm,fill=insarose,line width=1.1pt] (mcu) at (0,0)
+          {{\bfseries ESP32-S3}\\processeur 2 c\oe urs\\Bluetooth 5 LE, Wi-Fi\\8 Mo de flash};
+        \node[svc,minimum width=1.9cm,minimum height=1.15cm] (lora) at (-3.15,0)
+          {{\bfseries SX1262}\\radio LoRa\\863--928 MHz};
+        \node[svcgris,minimum width=1.9cm,minimum height=1.15cm] (oled) at (3.15,0)
+          {{\bfseries Écran OLED}\\0,96~pouce\\128$\times$64 points};
+        \node[svcgris,minimum width=2.1cm,minimum height=0.95cm] (usb) at (-1.3,-2.0)
+          {{\bfseries Port USB-C}\\charge, mises à jour};
+        \node[svcgris,minimum width=2.1cm,minimum height=0.95cm] (bat) at (1.3,-2.0)
+          {{\bfseries Batterie Li-Po}\\3,7\,V, puce de charge};
+        \draw[lien] (lora) -- (mcu);
+        \draw[lien] (mcu) -- (oled);
+        \draw[lien] (usb.north) -- (usb.north |- mcu.south);
+        \draw[lien] (bat.north) -- (bat.north |- mcu.south);
+        % antenne : le signal radio sort par la puce SX1262
+        \draw[thick,insagris] (lora.north) -- ++(0,0.45);
+        \pic[insarouge,scale=1.2] at ([yshift=0.95cm]lora.north) {icone tour};
+        \node[anchor=west,align=left,font=\scriptsize\bfseries,text=insarouge]
+          at ([xshift=0.45cm,yshift=0.95cm]lora.north) {Antenne\\868 MHz};
+        % téléphone : liaison Bluetooth
+        \pic[insagris,scale=1.2] at (2.65,1.85) {icone tel};
+        \node[anchor=west,font=\scriptsize\bfseries,text=insagris] at (2.98,1.85) {Téléphone};
+        \draw[lien,dashed] ([xshift=0.8cm]mcu.north) -- (2.35,1.5)
+          node[pos=0.45,etiqf,left=1pt] {Bluetooth};
+        % portée annoncée par la communauté (fourchettes indicatives)
+        \node[anchor=north,align=center,text width=1.75cm,font=\tiny,text=insagris]
+          at ([yshift=-0.15cm]lora.south) {portée\\0,5 à 2\,km en ville\\5 à 15\,km en campagne};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \begin{encadre}{Dans la boîte}
+        \begin{puces}
+          \item Carte Heltec V3 préconfigurée
+          \item Antenne 868 MHz, batterie Li-Po
+          \item Boîtier imprimé en 3D (fichiers libres)
+          \item Câble USB-C, guide de démarrage
+        \end{puces}
+      \end{encadre}
+      \vspace{0.12cm}
+      \begin{pointcle}\centering\footnotesize
+        Composants standards du commerce, assemblage simple~: aucune pièce propriétaire.
+      \end{pointcle}
+    \end{column}
+  \end{columns}
+  \srcnote{Sources~: \cite{heltec_v3,heltec_docs,techconnect}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 8 : partie logicielle (socle libre + notre contribution)
+%---------------------------------------------------------------------------
+\begin{frame}{Partie logicielle~: du code libre et vérifiable}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \begin{tikzpicture}[font=\scriptsize]
+        \tikzset{couche/.style={minimum width=5.2cm,minimum height=0.8cm}}
+        \node[psvc,couche]  (app) at (0,0.6)    {Application Meshtastic};
+        \node[psvc,couche]  (fw)  at (0,-1.0)   {Firmware Meshtastic (GPL-3.0)};
+        \node[pfoc,couche]  (cfg) at (0,-1.9)   {Réglages \nomproduit{} préchargés};
+        \node[pgris,couche] (hw)  at (0,-2.8)   {Carte Heltec WiFi LoRa 32 V3};
+        \draw[{Stealth[length=2mm]}-{Stealth[length=2mm]},thick,insagris,dashed] (app.south) -- (fw.north)
+          node[midway,right=3pt,font=\scriptsize,text=insagris] {Bluetooth};
+        \draw[decorate,decoration={brace,amplitude=4pt},insagris,thick] (-2.95,1.0) -- (-2.95,0.2)
+          node[midway,left=5pt,rotate=90,anchor=south,font=\scriptsize\bfseries,text=insagris] {téléphone};
+        \draw[decorate,decoration={brace,amplitude=4pt},insagris,thick] (-2.95,-0.6) -- (-2.95,-3.2)
+          node[midway,left=5pt,rotate=90,anchor=south,font=\scriptsize\bfseries,text=insagris] {kit};
+        \node[font=\tiny,text=insagris,anchor=north west] at (-2.6,-3.35)
+          {\textcolor{insaorange}{$\blacksquare$} existant, libre\quad\textcolor{insarouge}{$\blacksquare$} notre apport\quad\textcolor{insagris}{$\blacksquare$} matériel};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{encadre}{Ce que nous ajoutons}
+        \begin{numeros}
+          \item \textbf{Prêt à l'emploi}~: réglages Europe et canal privé à clé aléatoire (les clés par défaut sont publiques).
+          \item \textbf{Prise en main simple}~: invitation d'un proche par QR code, guides en français.
+          \item \textbf{Mises à jour testées} avant diffusion.
+          \item \textbf{Contributions en amont}~: correctifs, traductions, documentation reversés au projet libre.
+        \end{numeros}
+      \end{encadre}
+    \end{column}
+  \end{columns}
+  \vspace{-0.15cm}
+  \begin{pointcle}\centering\footnotesize
+    Aucun compte, aucun serveur central~: un code ouvert que chacun peut vérifier.
+  \end{pointcle}
+  \srcnote{Sources~: \cite{meshtastic_fw,meshtastic_android,meshtastic_crypto,meshtastic_channels,meshtastic_qr}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 9 : trajet d'un message + limites assumées
+%---------------------------------------------------------------------------
+\begin{frame}{Trajet d'un message~: aucun opérateur sur la route}
+  \centering
+  \begin{tikzpicture}[font=\footnotesize]
+    \node[acteur] (a0) at (0,0)    {Ton\\téléphone};
+    \node[acteur,fill=insarouge!25] (a1) at (2.8,0)  {Ton\\kit};
+    \node[acteur,fill=insapeche,draw=insaorange] (a2) at (5.6,0)  {Kit d'un\\voisin};
+    \node[acteur,fill=insarouge!25] (a3) at (8.4,0)  {Kit du\\contact};
+    \node[acteur] (a4) at (11.2,0) {Son\\téléphone};
+    \foreach \i in {0,...,4} {\draw[vie] (a\i.south) -- ++(0,-3.1);}
+    \seqmsg{0}{2.8}{-0.95}{1}{Bluetooth}
+    \seqmsg{2.8}{5.6}{-1.5}{2}{LoRa, chiffré}
+    \seqmsg{5.6}{8.4}{-2.05}{3}{Retransmis}
+    \seqmsg{8.4}{11.2}{-2.6}{4}{Bluetooth}
+    \seqrep{8.4}{2.8}{-3.15}{5}{accusé de réception, par le maillage}
+  \end{tikzpicture}
+
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.245\textwidth}
+      \begin{carte}\centering\gros{239 kilooctets}\\[1pt]{\scriptsize par message~: du texte seulement}\end{carte} %239 octets
+    \end{column}
+    \begin{column}{0.245\textwidth}
+      \begin{carte}\centering\gros{≈ 1 Mbit/s}\\[1pt]{\scriptsize débit du mode LongFast, portée maximale}\end{carte} % 1ko
+    \end{column}
+    \begin{column}{0.245\textwidth}
+      \begin{carte}\centering\gros{10\,\%}\\[1pt]{\scriptsize du temps d'émission au plus, en Europe}\end{carte}
+    \end{column}
+    \begin{column}{0.245\textwidth}
+      \begin{carte}\centering\gros{3 relais}\\[1pt]{\scriptsize par défaut (50 au maximum)}\end{carte} % 7 au max
+    \end{column}
+  \end{columns}
+  \srcnote{Limites assumées. Sources~: \cite{meshtastic_overview,meshtastic_regions,meshtastic_lora,meshtastic_algo}}
+\end{frame}

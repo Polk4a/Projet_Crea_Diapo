@@ -1,0 +1,72 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie 6 -- Produire en France : la technologie est simple, la relocalisation possible par étapes
+%  (1 diapositive)
+%  Estimations à confirmer par devis : carte française = 22 € (composants 14,5 + circuit 1,5 +
+%  assemblage 6), soit un coût de kit de 35,30 € (phase 2) puis 35,80 € (phase 3).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Produire en France}
+
+% cellule « fabriqué en France » (coche rouge) et cellule « importé » (rond gris) : \cellok{x}{y}{texte}
+\newcommand{\cellok}[3]{\pic[insarouge,scale=1.0] at ({#1-1.0},#2) {icone coche};
+                        \node[anchor=west,font=\scriptsize] at ({#1-0.76},#2) {#3};}
+\newcommand{\cellimp}[3]{\draw[insagris,thick] ({#1-1.0},#2) circle (0.13);
+                         \node[anchor=west,font=\scriptsize,text=insagris] at ({#1-0.76},#2) {#3};}
+
+%---------------------------------------------------------------------------
+% Diapositive 17 : trois phases de relocalisation
+%---------------------------------------------------------------------------
+\begin{frame}{Technologie simple~: produisons en France}
+  \centering
+  \begin{tikzpicture}[font=\footnotesize]
+    % en-têtes : trois phases, avec le prix public visé
+    \node[pastille,draw=insarouge,fill=insarose,text=black,minimum width=2.8cm,minimum height=0.9cm] at (5.2,0)
+      {An 1\\{\scriptsize\mdseries assemblé en France}\\{\scriptsize\color{insarouge}69\,€}};
+    \node[pastille,draw=insarouge,fill=insarose,text=black,minimum width=2.8cm,minimum height=0.9cm] at (8.2,0)
+      {Ans 2 et 3\\{\scriptsize\mdseries carte conçue ici}\\{\scriptsize\color{insarouge}75\,€}};
+    \node[pastille,draw=insarouge,fill=insarose,text=black,minimum width=2.8cm,minimum height=0.9cm] at (11.2,0)
+      {An 4 et après\\{\scriptsize\mdseries quasi tout ici}\\{\scriptsize\color{insarouge}79\,€}};
+    % bandes de lecture
+    \fill[insabeige] (0,-1.29) rectangle (12.7,-0.81);
+    \fill[insabeige] (0,-2.25) rectangle (12.7,-1.77);
+    % libellés des lignes
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.05)  {Puces radio, processeur};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.53) {Carte électronique};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-2.01)  {Boîtier et antenne};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-2.49) {Assemblage, flash, test};
+    % puces : importées dans les trois phases
+    \cellimp{5.2}{-1.05}{importées}\cellimp{8.2}{-1.05}{importées}\cellimp{11.2}{-1.05}{importées}
+    % carte
+    \cellimp{5.2}{-1.53}{module Heltec}\cellok{8.2}{-1.53}{conçue ici}\cellok{11.2}{-1.53}{conçue ici}
+    % boîtier et antenne
+    \cellok{5.2}{-2.01}{impression 3D}\cellok{8.2}{-2.01}{impression 3D}\cellok{11.2}{-2.01}{injection}
+    % assemblage
+    \cellok{5.2}{-2.49}{France}\cellok{8.2}{-2.49}{France}\cellok{11.2}{-2.49}{France}
+  \end{tikzpicture}
+
+  \vspace{-0.4cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.45cm,valign=top]
+        \raggedright\gros{+ 5 à 6\,€ par kit}\\[1pt]
+        {\footnotesize de coût pour une carte faite en France (35,30\,€ contre 30,30\,€).}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.45cm,valign=top]
+        \raggedright\gros{≈ 2 emplois}\\[1pt]
+        {\footnotesize d'assemblage à 22\,000 kits par an (10 min par kit).}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.45cm,valign=top]
+        \raggedright\gros{Né à Grenoble}\\[1pt]
+        {\footnotesize LoRa~: inventé par Cycléo, rachetée par Semtech en 2012.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pointcle}\centering\footnotesize
+    Carte de 5\,cm sur 2,5\,cm, composants du commerce~: rien d'irréalisable chez nous.
+  \end{pointcle}
+  \srcnote{Estimations à confirmer par devis~; prix calculés pour garder une marge de 20 à 22\,€ par kit. Sources~: \cite{actutem_lora,heltec_v3}}
+\end{frame}

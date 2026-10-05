@@ -1,0 +1,144 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie 1 -- L'idée : le problème, notre réponse, réseau d'opérateur contre réseau maillé
+%  (3 diapositives)
+%  Note : dans les schémas TikZ, mettre des accolades à toutes les boucles \foreach
+%  (le corps d'une diapositive est lu avant d'être exécuté).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{L'idée}
+
+%---------------------------------------------------------------------------
+% Diapositive 3 : le problème (chaîne de dépendance)
+%---------------------------------------------------------------------------
+\begin{frame}{Quand le réseau s'arrête, tout s'arrête}
+  % \intervenant{NOM}  % décommenter pour afficher l'intervenant
+  \centering
+  \begin{tikzpicture}[font=\footnotesize]
+    \node[pcli,minimum height=0.9cm,text width=1.7cm] (toi) {Toi};
+    \node[pgris,minimum height=0.9cm,text width=1.7cm,right=0.42cm of toi] (ant) {Antenne-relais};
+    \node[pgris,minimum height=0.9cm,text width=1.7cm,right=0.42cm of ant] (op) {Réseau de l'opérateur};
+    \node[pgris,minimum height=0.9cm,text width=1.7cm,right=0.42cm of op] (pf) {Plateforme (serveurs)};
+    \node[pcli,minimum height=0.9cm,text width=1.7cm,right=0.42cm of pf] (ami) {Ton contact};
+    \foreach \a/\b in {toi/ant,ant/op,op/pf,pf/ami} {\draw[fluxr] (\a) -- (\b);}
+    % points de défaillance : une croix au-dessus de chaque maillon centralisé
+    \foreach \n in {ant,op,pf} {\pic[scale=1.1] at ([yshift=0.6cm]\n.north) {icone croix};}
+    \node[font=\footnotesize\bfseries,text=insarouge,anchor=east,align=right]
+      at ([yshift=0.6cm,xshift=-0.4cm]ant.north) {trois points\\de défaillance};
+    \node[font=\scriptsize,text=insagris,text width=2.2cm,align=center,below=0.08cm of ant]
+      {tempête, séisme, coupure de courant};
+    \node[font=\scriptsize,text=insagris,text width=2.2cm,align=center,below=0.08cm of op]
+      {panne, saturation, coupure décidée};
+    \node[font=\scriptsize,text=insagris,text width=2.2cm,align=center,below=0.08cm of pf]
+      {serveur injoignable, compte suspendu};
+  \end{tikzpicture}
+
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}
+        \gros{99,2 à 99,6\,\%}\\[1pt]
+        {\footnotesize de couverture 4G selon l'opérateur (fin 2025), mais des zones blanches persistent.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}
+        \gros{17,88\,€ par mois}\\[1pt]
+        {\footnotesize facture moyenne d'un forfait mobile (ARCEP, T4 2025).}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}
+        \gros{Avant les secours}\\[1pt]
+        {\footnotesize les communications tombent souvent avant même l'arrivée des secours.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Sources~: \cite{arcep_mobile,arcep_prix,laresilience}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 4 : notre idée (trois briques)
+%---------------------------------------------------------------------------
+\begin{frame}{Notre idée~: un kit radio que chacun contrôle}
+  \centering
+  \begin{tikzpicture}[font=\footnotesize]
+    \tikzset{brique/.style={draw=insarouge,fill=white,thick,rounded corners=4pt,minimum width=2.8cm,
+                            minimum height=2.2cm,text width=2.6cm,align=center,inner sep=3pt}}
+    \node[brique] (a) at (0,0) {};
+    \node[brique] (b) at (3.6,0) {};
+    \node[brique] (c) at (7.2,0) {};
+    \node[brique,fill=insarose] (d) at (10.8,0) {};
+    \pic[insarouge,scale=1.3] at ([yshift=0.62cm]a.center) {icone antenne};
+    \pic[insarouge,scale=1.3] at ([yshift=0.62cm]b.center) {icone code};
+    \pic[insarouge,scale=1.3] at ([yshift=0.62cm]c.center) {icone personne};
+    \pic[scale=1.2] at ([yshift=0.58cm]d.center) {icone cairn};
+    \node[text width=2.6cm,align=center,anchor=north] at ([yshift=0.1cm]a.center)
+      {{\bfseries Une antenne}\\Heltec V3, LoRa, préconfigurée};
+    \node[text width=2.6cm,align=center,anchor=north] at ([yshift=0.1cm]b.center)
+      {{\bfseries Un logiciel libre}\\code ouvert, sans compte ni serveur};
+    \node[text width=2.6cm,align=center,anchor=north] at ([yshift=0.1cm]c.center)
+      {{\bfseries Des voisins}\\chaque antenne relaie les autres};
+    \node[text width=2.6cm,align=center,anchor=north] at ([yshift=0.1cm]d.center)
+      {{\bfseries Ton réseau}\\une messagerie qui t'appartient};
+    \node[font=\Huge\bfseries\sffamily,text=insarouge] at ($(a)!0.5!(b)$) {+};
+    \node[font=\Huge\bfseries\sffamily,text=insarouge] at ($(b)!0.5!(c)$) {+};
+    \node[font=\Huge\bfseries\sffamily,text=insarouge] at ($(c)!0.5!(d)$) {=};
+  \end{tikzpicture}
+
+  \vspace{0.12cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}\centering\gros{≈ 69\,€}\\[1pt]{\footnotesize achat unique, sans abonnement}\end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}\centering\gros{Zéro compte}\\[1pt]{\footnotesize ni opérateur, ni réseau social}\end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}\centering\gros{GPL-3.0}\\[1pt]{\footnotesize logiciel libre, auditable, gratuit}\end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{idee}\centering\footnotesize
+    Écrire à ses proches à plusieurs kilomètres, \textbf{sans réseau mobile, sans internet, sans abonnement}.
+  \end{idee}
+  \srcnote{Sources~: \cite{heltec_v3,meshtastic_fw}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 5 : réseau d'opérateur (étoile) contre réseau maillé
+%---------------------------------------------------------------------------
+\begin{frame}{Réseau d'opérateur ou réseau maillé~?}
+  \centering
+  \begin{tikzpicture}[font=\footnotesize]
+    % ---- à gauche : réseau en étoile (tout passe par le centre)
+    \begin{scope}[shift={(-3.55,0)}]
+      \foreach \a in {30,90,...,330} {
+        \draw[insagris!70,thick] (\a:0.55) -- (\a:1.5);
+        \pic[insagris,scale=0.62] at (\a:1.72) {icone personne};
+      }
+      \pic[insagris,scale=1.35] at (0,0.05) {icone tour};
+      \pic[scale=1.15] at (0.62,0.5) {icone croix};
+      \node[pgris,anchor=north] at (0,-2.3) {Réseau d'opérateur};
+      \node[font=\scriptsize,text=insagris,align=center,anchor=north] at (0,-3.0)
+        {le centre tombe~: plus personne ne communique};
+    \end{scope}
+    \node[font=\large\bfseries\sffamily,text=insagris] at (-0.55,0.1) {contre};
+    % ---- à droite : réseau maillé (chaque antenne relaie)
+    \begin{scope}[shift={(3.3,0)}]
+      \coordinate (A) at (-1.85,-0.2); \coordinate (B) at (-1.0,0.95); \coordinate (C) at (-0.1,-0.25);
+      \coordinate (D) at (0.85,0.95); \coordinate (E) at (1.8,0.05); \coordinate (F) at (-1.1,-1.3);
+      \coordinate (G) at (1.0,-1.3);
+      \foreach \p/\q in {A/B,A/F,B/C,C/F,C/G,F/G,G/E,C/D} {\draw[insagris!70,thick] (\p) -- (\q);}
+      \foreach \p/\q in {B/D,D/E,C/E} {\draw[insagris!45,thick,dashed] (\p) -- (\q);}
+      \foreach \p/\q in {B/D,C/E} {\pic[scale=0.8] at ($(\p)!0.5!(\q)$) {icone croix};}
+      \draw[insarouge,line width=1.7pt,-{Stealth[length=2.6mm]}] (A) -- (B) -- (C) -- (G) -- (E);
+      \foreach \p in {A,B,C,D,E,F,G} {
+        \node[circle,draw=insarouge,fill=white,thick,minimum size=0.42cm,inner sep=0pt] at (\p) {};}
+      \node[font=\footnotesize\bfseries,text=insarouge,anchor=south east] at ([xshift=-0.05cm,yshift=0.12cm]A.north west) {Toi};
+      \node[font=\footnotesize\bfseries,text=insarouge,anchor=west] at ([xshift=0.28cm]E) {Ton contact};
+      \node[pcli,anchor=north] at (0,-2.3) {Réseau maillé};
+      \node[font=\scriptsize,text=insagris,align=center,anchor=north] at (0,-3.0)
+        {chaque antenne est un relais~: le message contourne la panne};
+    \end{scope}
+  \end{tikzpicture}
+  \srcnote{Principe~: chaque nœud retransmet les paquets qu'il reçoit (diffusion gérée) \cite{meshtastic_algo}}
+\end{frame}

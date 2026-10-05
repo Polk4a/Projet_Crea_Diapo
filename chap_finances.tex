@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie 5 -- Finances : décomposition du prix d'un kit, compte de résultat sur trois ans
+%  (2 diapositives)
+%  Tous les chiffres sont des HYPOTHÈSES de travail (scénario de référence), cohérentes entre
+%  elles : prix 69 € TTC (57,50 € HT), matériel 30,30 €, vente 4 €, kits solidaires 1 pour 10,
+%  volumes 2 000 / 8 000 / 22 000 kits, charges fixes 200 / 330 / 430 k€.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finances}
+
+%---------------------------------------------------------------------------
+% Diapositive 15 : où vont les 69 € d'un kit
+%---------------------------------------------------------------------------
+\begin{frame}{Où vont les 69\,€ d'un kit (année 3)~?}
+  \centering
+  % échelle : 1 unité = 1 € = 0,1884 cm, donc 69 € = 13 cm
+  \begin{tikzpicture}[font=\scriptsize,x=0.18841cm,y=1cm]
+    \def\h{1.25}
+    \fill[insagris!25] (0,0)       rectangle (11.5,\h);
+    \fill[insarouge]   (11.5,0)    rectangle (41.8,\h);
+    \fill[insasafran]  (41.8,0)    rectangle (48.83,\h);
+    \fill[insaorange]  (48.83,0)   rectangle (59.74,\h);
+    \fill[insarose]    (59.74,0)   rectangle (68.38,\h);
+    \fill[black]       (68.38,0)   rectangle (69,\h);
+    \draw[white,line width=0.9pt] (11.5,0) -- (11.5,\h) (41.8,0) -- (41.8,\h) (48.83,0) -- (48.83,\h)
+                                  (59.74,0) -- (59.74,\h) (68.38,0) -- (68.38,\h);
+    \node[align=center,text=black] at (5.75,0.625)  {TVA\\{\bfseries 11,50\,€}};
+    \node[align=center,text=white] at (26.65,0.625) {{\small\bfseries L'antenne}~: matériel et assemblage\\{\large\bfseries\sffamily 30,30\,€}};
+    \node[align=center,text=black] at (45.3,0.625)  {Vente,\\kits\\offerts\\{\bfseries 7,03\,€}};
+    \node[align=center,text=white] at (54.3,0.625)  {{\bfseries Développeurs}\\{\bfseries 10,91\,€}};
+    \node[align=center,text=black] at (64.06,0.625) {Autres\\charges\\{\bfseries 8,64\,€}};
+    \node[anchor=south east,font=\tiny,text=black,align=right] at (69,\h+0.04) {résultat 0,62\,€};
+    \draw[decorate,decoration={brace,mirror,amplitude=4pt},insagris,thick] (48.83,-0.12) -- (68.38,-0.12)
+      node[midway,below=6pt,font=\scriptsize,text=insagris] {charges fixes~: 19,55\,€ par kit};
+  \end{tikzpicture}
+
+  \vspace{-0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{encadre}{Dans les 30,30\,€ de l'antenne}
+        \footnotesize\renewcommand{\arraystretch}{0.95}
+        \begin{tabularx}{\linewidth}{@{}Xr@{}}
+          Carte Heltec V3 + antenne LoRa   & 17,00\,€ \\
+          Batterie Li-Po                   & 4,50\,€ \\
+          Assemblage, flashage, test (10 min) & 3,50\,€ \\
+          Boîtier imprimé en 3D            & 2,50\,€ \\
+          Emballage, carte de démarrage    & 1,80\,€ \\
+          Câble USB-C                      & 1,00\,€ \\
+        \end{tabularx}
+      \end{encadre}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \begin{carte}[height=1.58cm,valign=top]
+        \raggedright
+        \gros{≈ 11\,€ par kit}\\[1pt]
+        {\footnotesize financent quatre développeurs du logiciel libre.}
+      \end{carte}
+      \vspace{0.1cm}
+      \begin{carte}[height=1.58cm,valign=top]
+        \raggedright
+        \gros{17,90 à 19,90\,\$}\\[1pt]
+        {\footnotesize prix public d'une carte V3~: nous comptons 17\,€.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Hypothèses de travail~: 22\,000 kits (année 3), TVA 20\,\%, 1 kit offert pour 10 vendus. Source~: \cite{heltec_v3}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 16 : trois ans de compte de résultat
+%---------------------------------------------------------------------------
+\begin{frame}{Compte de résultat sur trois ans}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \renewcommand{\arraystretch}{1.17}
+      \footnotesize
+      \begin{tabular}{@{}l@{\hspace{4pt}}r@{\hspace{9pt}}r@{\hspace{9pt}}r@{}}
+        \rowcolor{insarose}
+        \textcolor{insarouge}{\bfseries k€ sauf mention} & \textcolor{insarouge}{\bfseries An 1} & \textcolor{insarouge}{\bfseries An 2} & \textcolor{insarouge}{\bfseries An 3} \\
+        Kits vendus                 & 2\,000    & 8\,000    & 22\,000 \\
+        Chiffre d'affaires HT       & 115,0     & 460,0     & 1\,265,0 \\
+        Coûts variables             & −74,7     & −298,6    & −821,3 \\
+        Marge de contribution       & 40,3      & 161,4     & 443,7 \\
+        Charges fixes               & −200,0    & −330,0    & −430,0 \\
+        \quad dont développeurs     & 120,0     & 180,0     & 240,0 \\
+        \rowcolor{insabeige}
+        \bfseries Résultat          & \bfseries −159,7 & \bfseries −168,6 & \bfseries +13,7 \\
+        Résultat cumulé             & −159,7    & −328,3    & −314,6 \\
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[width=5.3cm,height=3.8cm,xmin=0,xmax=3,ymin=-520,ymax=60,
+            xtick={0,1,2,3},xticklabels={départ,An 1,An 2,An 3},ytick={-400,-200,0},
+            tick label style={font=\scriptsize},
+            title={Résultat cumulé (k€)},title style={font=\scriptsize\bfseries,yshift=-3pt},
+            axis x line=bottom,axis y line=left,grid=major,grid style={insagris!25,thin},clip=false]
+          \addplot[insarouge,very thick,mark=*,mark size=2pt] coordinates {(0,0) (1,-159.7) (2,-328.3) (3,-314.6)};
+          \node[font=\tiny,anchor=north] at (axis cs:1,-178) {−160};
+          \node[font=\tiny,anchor=north] at (axis cs:2,-346) {−328};
+          \node[font=\tiny,anchor=north] at (axis cs:3,-332) {−315};
+          \draw[dashed,insaorange,thick] (axis cs:0,-450) -- (axis cs:3,-450);
+          \node[font=\tiny,text=insaorange,anchor=south west] at (axis cs:0.05,-445) {besoin ≈ 450};
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.75cm,valign=top]
+        \raggedright\gros{≈ 21\,300 kits}\\[1pt]
+        {\footnotesize par an~: le point mort, avec les charges fixes de l'année 3.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.75cm,valign=top]
+        \raggedright\gros{≈ 450\,k€}\\[1pt]
+        {\footnotesize à financer~: 328\,k€ de pertes, 100\,k€ de stock, une marge.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.75cm,valign=top]
+        \raggedright\gros{−127\,k€}\\[1pt]
+        {\footnotesize résultat de l'année 3 si seuls 15\,000 kits sont vendus.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Scénario de référence, hypothèses à valider~: aucun salaire fondateur, aucune aide publique. 22\,000 kits = 0,08\,\% des 27 millions de randonneurs~\cite{ffrando}.}
+\end{frame}

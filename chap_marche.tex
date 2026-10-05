@@ -1,0 +1,76 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie 4 -- Marché cible : trois premiers segments puis grand public, approche commerciale
+%  (2 diapositives)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Marché cible}
+
+%---------------------------------------------------------------------------
+% Diapositive 13 : trois premiers segments, puis le grand public
+%---------------------------------------------------------------------------
+\begin{frame}{Trois segments d'abord, le grand public ensuite}
+  \centering
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \begin{tikzpicture}[font=\footnotesize]
+    \tikzset{seg/.style={fill=insabeige,rounded corners=3pt,text width=6.0cm,minimum height=1.45cm,
+                         inner sep=6pt,anchor=west,align=left}}
+    % trois segments de départ
+    \node[seg] (s1) at (0.95,1.6)  {{\bfseries ONG et secours}~: guerre, séismes, inondations\\
+                                   Coordonner des équipes quand les antennes-relais sont tombées ou coupées.};
+    \node[seg] (s2) at (0.95,0)    {{\bfseries Randonneurs et aventuriers}\\
+                                   Prévenir un proche, se retrouver, partager sa position en zone blanche.};
+    \node[seg] (s3) at (0.95,-1.6) {{\bfseries Amateurs d'alternatives}~: high-tech, low-tech\\
+                                   Posséder ses outils, se passer des plateformes~; déjà sensibles au libre.};
+    \pic[insarouge,scale=1.2] at (0.45,1.6)  {icone tente};
+    \pic[insarouge,scale=1.2] at (0.45,0)    {icone mont};
+    \pic[insarouge,scale=1.2] at (0.45,-1.6) {icone code};
+    % flèches vers le grand public
+    \foreach \y in {1.6,0,-1.6} {\draw[fluxr] (7.05,\y) -- (8.55,0);}
+    % grand public (phase 2)
+    \node[fill=insarose,draw=insarouge,thick,rounded corners=4pt,text width=3.9cm,minimum height=4.7cm,
+          inner sep=7pt,anchor=west,align=center] (gp) at (8.65,0)
+      {{\sffamily\bfseries\color{insarouge}Phase 2\\Grand public}\\[4pt]
+       Familles, voyageurs, habitants des zones rurales, sportifs d'extérieur.\\[5pt]
+       {\gros{27 M}}\\{\scriptsize de Français pratiquent la randonnée}\\[5pt]
+       {\scriptsize\bfseries\color{insarouge}Effet de réseau~: chaque kit renforce le maillage de tous}};
+  \end{tikzpicture}
+  \srcnote{Source~: \cite{ffrando}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 14 : comment les atteindre (message, canaux) + programme solidaire
+%---------------------------------------------------------------------------
+\begin{frame}{Comment les atteindre~: un message par cible}
+  \renewcommand{\arraystretch}{1.3}
+  \footnotesize\hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{2.35cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \rowcolor{insarose}
+    \textcolor{insarouge}{Cible} & \textcolor{insarouge}{Message} & \textcolor{insarouge}{Canaux} \\
+    ONG, secours & «\,Une messagerie qui survit aux infrastructures\,» &
+      kits de démonstration, pilotes gratuits, réseaux de bénévoles, appels d'offres \\
+    \arrayrulecolor{insagris!30}\hline
+    Randonneurs & «\,Écrire à ses proches là où le réseau s'arrête\,» &
+      clubs et fédérations, refuges, boutiques de sport, salons outdoor \\
+    \hline
+    Alternatives & «\,Ton réseau t'appartient\,» &
+      forums du libre et des makers, financement participatif, ateliers (fablabs), vidéos \\
+    \hline
+    Grand public & «\,Un filet de sécurité à 69\,€, sans abonnement\,» &
+      site marchand, distributeurs spécialisés, bouche-à-oreille \\
+  \end{tabularx}
+
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=2.15cm,valign=top]
+        \gros{1 kit offert pour 10 vendus}\\[2pt]
+        {\footnotesize Programme solidaire pour les ONG~: un argument de marque et un moyen d'équiper des pilotes (coût déjà inclus dans les finances).}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=2.15cm,valign=top]
+        \gros{Précommandes d'abord}\\[2pt]
+        {\footnotesize Un financement participatif valide la demande et finance le premier stock avant toute production en série.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+\end{frame}

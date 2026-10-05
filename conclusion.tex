@@ -1,0 +1,83 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie 7 -- Risques et conformité, conclusion et prochaines étapes (2 diapositives)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Risques et suite}
+
+%---------------------------------------------------------------------------
+% Diapositive 18 : risques et conformité
+%---------------------------------------------------------------------------
+\begin{frame}{Risques et conformité~: ce qu'il faut maîtriser}
+  \renewcommand{\arraystretch}{1.22}
+  \footnotesize\hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \rowcolor{insarose}
+    \textcolor{insarouge}{Risque} & \textcolor{insarouge}{Pourquoi} & \textcolor{insarouge}{Notre réponse} \\
+    Conformité et droit & Marquage CE (directive RED)~; chiffrement à vérifier hors UE. &
+      Tests en laboratoire dès l'an 1 (25\,k€)~; avis juridique avant export. \\
+    \arrayrulecolor{insagris!30}\hline
+    Règles radio & 10\,\% de temps d'émission, 500\,mW ERP au plus (869,4 à 869,65\,MHz). &
+      Région Europe préréglée, antennes d'origine, guide d'usage. \\
+    \hline
+    Densité du maillage & Sans voisins équipés, le réseau ne sert à rien. &
+      Packs de 2 à 3 kits, démarrage par zones, cartes de couverture. \\
+    \hline
+    Projet libre amont & Meshtastic peut changer de cap~; des alternatives existent (MeshCore). &
+      Code GPL~: fork possible, développeurs contributeurs, veille. \\
+    \hline
+    Concurrence du fait-maison & La carte seule coûte ≈ 17\,€~; les passionnés assemblent eux-mêmes. &
+      Valeur = prêt à l'emploi, support, garantie~; cible non technique. \\
+    \hline
+    Promesses et limites & Débit faible, aucun secours relié~: risque d'attentes excessives. &
+      Messagerie texte, jamais présentée comme une balise de détresse. \\
+    \hline
+    Trésorerie & Le stock importé se paie avant de vendre. &
+      Précommandes, achats par lots, financement participatif. \\
+  \end{tabularx}
+  \srcnote{Sources~: \cite{red_2014_53,ttn_eu868,meshtastic_crypto,techconnect}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 19 : conclusion et prochaines étapes
+%---------------------------------------------------------------------------
+\begin{frame}{Conclusion~: l'essentiel et la suite}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \begin{carte}[height=1.25cm,valign=top]
+        \raggedright\gros{Un besoin réel}\\[1pt]
+        {\footnotesize Réseau coupé, cher, dépendant d'opérateurs.}
+      \end{carte}
+      \vspace{0.1cm}
+      \begin{carte}[height=1.25cm,valign=top]
+        \raggedright\gros{Une réponse simple}\\[1pt]
+        {\footnotesize Kit radio + logiciel libre, 69\,€ sans abonnement.}
+      \end{carte}
+      \vspace{0.1cm}
+      \begin{carte}[height=1.25cm,valign=top]
+        \raggedright\gros{Un modèle viable}\\[1pt]
+        {\footnotesize Point mort à 21\,300 kits/an, 450\,k€ à financer.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \vspace{0.2cm}
+      \begin{tikzpicture}[font=\footnotesize]
+        \draw[insarouge!40,thick] (0.2,0.25) -- (0.2,-3.65);
+        \node[num] at (0.2,0)     {1};
+        \node[num] at (0.2,-1.2)  {2};
+        \node[num] at (0.2,-2.4)  {3};
+        \node[num] at (0.2,-3.6)  {4};
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,0)
+          {{\bfseries 0 à 3 mois}\\Prototype et dix kits testés sur le terrain (montagne, ville, ONG).};
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-1.2)
+          {{\bfseries 3 à 6 mois}\\Nom et marque à vérifier, précommandes, dossier de financement.};
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-2.4)
+          {{\bfseries 6 à 12 mois}\\Tests de conformité CE, première série de 2\,000 kits.};
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-3.6)
+          {{\bfseries Année 2}\\ONG pilotes, relocalisation de la carte en France.};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{0cm}
+  \begin{idee}\centering
+    {\sffamily\bfseries\color{insarouge}Là où le réseau s'arrête, le tien commence.}
+  \end{idee}
+\end{frame}
