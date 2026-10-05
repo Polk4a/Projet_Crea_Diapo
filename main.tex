@@ -36,18 +36,20 @@
 %    texte « INSA » est composé).
 %  - Mise en page prévue pour aspectratio=169. Texte de 10 pt : les plus petits textes
 %    des schémas restent à \footnotesize (8 pt) ou plus.
+%  - Sources : seul le nom de domaine est imprimé dans la liste (package xstring, voir « Bibliographie »),
+%    le lien complet reste cliquable dans le PDF ; titres courts pour tenir sur une seule diapositive.
 %  - Compilation : pdflatex main, biber main, pdflatex main, pdflatex main.
 %    (deux passes de pdflatex au minimum : sommaire, décor TikZ de chaque page)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[aspectratio=169,10pt,t]{beamer}
 
 %%%%% Informations du document (à modifier pour chaque présentation) %%%%%
-\newcommand{\nomproduit}{Antennes libres}   % nom de travail du projet (à remplacer)
+\newcommand{\nomproduit}{Antennes Libres}   % nom de travail du projet (à remplacer)
 \newcommand{\doctitre}{\nomproduit}
 \newcommand{\docsoustitre}{La messagerie radio libre,\\ sans opérateur ni abonnement}
 \newcommand{\doctagline}{Ton réseau, tes règles}
 \newcommand{\docauteur}{Niels LOPEZ}
-\newcommand{\docprof}{STI 5A ASL-IA}
+\newcommand{\docprof}{STI 5A -- ASL-IA}
 \newcommand{\docecole}{INSA Centre Val de Loire}
 %\newcommand{\docdate}{\today}
 \newcommand{\docdate}{\aujourdhui}
@@ -398,7 +400,7 @@
       % logo, titre, sous-titre
       \node[anchor=north west,inner sep=0pt] at (65,58) {\insalogo{0.1647\paperwidth}};
       \node[anchor=north west,inner sep=0pt,text=white,text width=0.55\paperwidth,align=left] at (63,170)
-        {{\sffamily\bfseries\fontsize{34}{38}\selectfont\doctitre\par}\vspace{0.25cm}%
+        {{\sffamily\bfseries\fontsize{32}{34}\selectfont\doctitre\par}\vspace{0.25cm}%
          {\sffamily\fontsize{14}{17}\selectfont\docsoustitre\par}};
       % auteur, cursus, école, date
       \node[anchor=north west,inner sep=0pt,align=left,text width=0.62\paperwidth] at (63,392)
@@ -417,11 +419,16 @@
 \setcounter{biburlnumpenalty}{100}
 \setcounter{biburlucpenalty}{100}
 \setcounter{biburllcpenalty}{100}
-\renewcommand*{\bibfont}{\fontsize{5.4}{6.4}\selectfont}
+\renewcommand*{\bibfont}{\fontsize{5.4}{6.4}\selectfont\raggedright}
 \setlength{\bibitemsep}{0.1\baselineskip}
 \AtEveryBibitem{\clearfield{urlyear}\clearfield{urlmonth}\clearfield{urlday}}
 \urlstyle{same}
-\DeclareFieldFormat{url}{\url{#1}}
+% Adresse imprimée = nom de domaine seulement (xstring) ; le lien complet reste cliquable dans le PDF.
+% Cela permet de faire tenir de nombreuses sources sur une seule diapositive.
+\usepackage{xstring}
+\newcommand{\bibhost}[1]{\StrBehind{#1}{://}[\bibhosttmp]\StrBefore{\bibhosttmp}{/}[\bibhosttmpb]%
+  \IfBeginWith{\bibhosttmpb}{www.}{\StrGobbleLeft{\bibhosttmpb}{4}}{\bibhosttmpb}}
+\DeclareFieldFormat{url}{\href{#1}{\bibhost{#1}}}
 \usepackage{multicol}
 
 \title{\doctitre}
@@ -468,7 +475,7 @@
 \begin{frame}{Sources (pages web consultées le 5 octobre 2026)}
   \etiquette{Sources}
   % liste sur 3 colonnes, un peu plus large que le texte courant pour tenir sur une seule diapositive
-  \makebox[\textwidth][c]{\begin{minipage}{14.2cm}
+  \makebox[\textwidth][c]{\begin{minipage}{13.6cm}
     \setlength{\columnsep}{0.3cm}
     \begin{multicols}{3}
       \printbibliography[heading=none]

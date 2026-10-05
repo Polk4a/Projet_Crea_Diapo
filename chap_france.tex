@@ -1,8 +1,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Partie 6 -- Produire en France : la technologie est simple, la relocalisation possible par étapes
-%  (1 diapositive)
-%  Estimations à confirmer par devis : carte française = 22 € (composants 14,5 + circuit 1,5 +
-%  assemblage 6), soit un coût de kit de 35,30 € (phase 2) puis 35,80 € (phase 3).
+%  (2 diapositives : 17 = matrice des trois phases ; 18 = avec qui produire : injection,
+%  puces de Grenoble, acier français)
+%
+%  Hypothèses chiffrées (à confirmer par devis) :
+%  - carte française = 22 € (composants 14,5 + circuit 1,5 + assemblage 6), soit un coût de kit de
+%    35,30 € (phase 2) puis 35,80 € (phase 3) ;
+%  - phase 3 : boîtier injecté = pièce 1,50 € + moule amorti 1,50 € (≈ 33 k€ pour 22 000 kits,
+%    moule en deux pièces : coque et capot) = 3,00 €, contre 2,50 € pour le boîtier imprimé en 3D ;
+%  - les prix de 75 et 79 € ne contiennent PAS le surcoût éventuel de puces ou d'antennes françaises
+%    (non chiffré) ;
+%  - un fouet en acier de 3 mm sur 8 cm pèse ≈ 5 g : 22 000 kits ≈ 110 kg d'acier par an.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Produire en France}
 
@@ -25,48 +33,130 @@
       {Ans 2 et 3\\{\scriptsize\mdseries carte conçue ici}\\{\scriptsize\color{insarouge}75\,€}};
     \node[pastille,draw=insarouge,fill=insarose,text=black,minimum width=2.8cm,minimum height=0.9cm] at (11.2,0)
       {An 4 et après\\{\scriptsize\mdseries quasi tout ici}\\{\scriptsize\color{insarouge}79\,€}};
-    % bandes de lecture
-    \fill[insabeige] (0,-1.29) rectangle (12.7,-0.81);
-    \fill[insabeige] (0,-2.25) rectangle (12.7,-1.77);
+    % bandes de lecture (une ligne sur deux)
+    \fill[insabeige] (0,-1.25) rectangle (12.7,-0.85);
+    \fill[insabeige] (0,-2.05) rectangle (12.7,-1.65);
+    \fill[insabeige] (0,-2.85) rectangle (12.7,-2.45);
     % libellés des lignes
-    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.05)  {Puces radio, processeur};
-    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.53) {Carte électronique};
-    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-2.01)  {Boîtier et antenne};
-    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-2.49) {Assemblage, flash, test};
-    % puces : importées dans les trois phases
-    \cellimp{5.2}{-1.05}{importées}\cellimp{8.2}{-1.05}{importées}\cellimp{11.2}{-1.05}{importées}
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.05) {Puce radio LoRa};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.45) {Processeur};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-1.85) {Carte électronique};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-2.25) {Boîtier};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-2.65) {Antenne};
+    \node[anchor=west,font=\footnotesize\bfseries] at (0.1,-3.05) {Assemblage, flash, test};
+    % puce radio : importée, puis fabriquée à Grenoble (objectif)
+    \cellimp{5.2}{-1.05}{importée}\cellimp{8.2}{-1.05}{importée}\cellok{11.2}{-1.05}{Grenoble (visé)}
+    % processeur : importé dans les trois phases
+    \cellimp{5.2}{-1.45}{importé}\cellimp{8.2}{-1.45}{importé}\cellimp{11.2}{-1.45}{importé}
     % carte
-    \cellimp{5.2}{-1.53}{module Heltec}\cellok{8.2}{-1.53}{conçue ici}\cellok{11.2}{-1.53}{conçue ici}
-    % boîtier et antenne
-    \cellok{5.2}{-2.01}{impression 3D}\cellok{8.2}{-2.01}{impression 3D}\cellok{11.2}{-2.01}{injection}
+    \cellimp{5.2}{-1.85}{module Heltec}\cellok{8.2}{-1.85}{conçue ici}\cellok{11.2}{-1.85}{conçue ici}
+    % boîtier
+    \cellok{5.2}{-2.25}{impression 3D}\cellok{8.2}{-2.25}{impression 3D}\cellok{11.2}{-2.25}{injection}
+    % antenne
+    \cellimp{5.2}{-2.65}{d'origine Heltec}\cellok{8.2}{-2.65}{acier, à valider}\cellok{11.2}{-2.65}{acier français}
     % assemblage
-    \cellok{5.2}{-2.49}{France}\cellok{8.2}{-2.49}{France}\cellok{11.2}{-2.49}{France}
+    \cellok{5.2}{-3.05}{France}\cellok{8.2}{-3.05}{France}\cellok{11.2}{-3.05}{France}
   \end{tikzpicture}
 
-  \vspace{-0.4cm}
+  \vspace{-0.45cm}
   \begin{columns}[T]
     \begin{column}{0.325\textwidth}
-      \begin{carte}[height=1.45cm,valign=top]
+      \begin{carte}[height=1.05cm,valign=top]
         \raggedright\gros{+ 5 à 6\,€ par kit}\\[1pt]
-        {\footnotesize de coût pour une carte faite en France (35,30\,€ contre 30,30\,€).}
+        {\footnotesize 35,30\,€ au lieu de 30,30\,€.}
       \end{carte}
     \end{column}
     \begin{column}{0.325\textwidth}
-      \begin{carte}[height=1.45cm,valign=top]
+      \begin{carte}[height=1.05cm,valign=top]
         \raggedright\gros{≈ 2 emplois}\\[1pt]
-        {\footnotesize d'assemblage à 22\,000 kits par an (10 min par kit).}
+        {\footnotesize d'assemblage à 22\,000 kits.}
       \end{carte}
     \end{column}
     \begin{column}{0.325\textwidth}
-      \begin{carte}[height=1.45cm,valign=top]
+      \begin{carte}[height=1.05cm,valign=top]
         \raggedright\gros{Né à Grenoble}\\[1pt]
-        {\footnotesize LoRa~: inventé par Cycléo, rachetée par Semtech en 2012.}
+        {\footnotesize LoRa~: inventé par Cycléo.}
       \end{carte}
     \end{column}
   \end{columns}
-  \vspace{0.05cm}
+  \vspace{0cm}
   \begin{pointcle}\centering\footnotesize
     Carte de 5\,cm sur 2,5\,cm, composants du commerce~: rien d'irréalisable chez nous.
   \end{pointcle}
-  \srcnote{Estimations à confirmer par devis~; prix calculés pour garder une marge de 20 à 22\,€ par kit. Sources~: \cite{actutem_lora,heltec_v3}}
+  \srcnote{Estimations à confirmer par devis~; prix de 75 et 79\,€ calculés pour garder une marge de 20 à 22\,€ par kit, hors surcoût éventuel de puces et d'antennes françaises. Sources~: \cite{actutem_lora,heltec_v3}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 18 : avec qui produire ? injection plastique, puces de Grenoble, acier français
+%---------------------------------------------------------------------------
+\begin{frame}{Boîtier, puces, antennes~: avec qui produire~?}
+  \begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+      % schéma d'une presse à injecter : trémie, vis chauffante, moule en acier, pièce
+      \begin{tikzpicture}[font=\footnotesize,scale=0.85]
+        % trémie remplie de granulés
+        \draw[insagris,thick,fill=insagris!10] (0.1,1.1) -- (1.3,1.1) -- (0.95,0.5) -- (0.45,0.5) -- cycle;
+        \foreach \x/\y in {0.4/0.95,0.65/1.0,0.9/0.93,0.55/0.74,0.8/0.7} {\fill[insaorange] (\x,\y) circle (0.045);}
+        \node[anchor=west,inner sep=1pt] at (1.45,0.92) {granulés};
+        % fourreau, vis et colliers chauffants (rouges)
+        \draw[insagris,thick,fill=insagris!15,rounded corners=2pt] (0,0) rectangle (3.3,0.5);
+        \foreach \i in {0,...,9} {\draw[insagris,thin] ({0.2+0.3*\i},0.07) -- ({0.35+0.3*\i},0.43);}
+        \foreach \x in {1.45,2.1,2.75} {\fill[insarouge] (\x,-0.05) rectangle (\x+0.12,0.55);}
+        \fill[insagris!60] (-0.4,0.12) rectangle (0,0.38);
+        \node[inner sep=1pt] at (1.65,-0.3) {vis chauffante};
+        % buse et moule en acier : deux plaques et une cavité (matière en rouge)
+        \draw[insagris,thick,fill=insagris!15] (3.3,0.13) -- (3.62,0.2) -- (3.62,0.3) -- (3.3,0.37) -- cycle;
+        \draw[insagris,thick,fill=insagris!40] (3.62,-0.3) rectangle (5.4,0.25);
+        \draw[insagris,thick,fill=insagris!40] (3.62,0.25) rectangle (5.4,0.8);
+        \fill[insarouge!65] (3.62,0.22) rectangle (3.95,0.28);
+        \draw[insarouge,fill=insarouge!65,rounded corners=1.5pt] (3.95,0.08) rectangle (5.05,0.42);
+        \node[inner sep=1pt] at (4.5,1.0) {moule en acier};
+        % pièce démoulée : le boîtier
+        \draw[fluxr] (5.55,0.25) -- (6.25,0.25);
+        \draw[insarouge,thick,fill=insarose,rounded corners=2pt] (6.4,-0.02) rectangle (7.6,0.52);
+        \draw[insarouge,thick] (6.4,0.36) -- (7.6,0.36);
+        \fill[insarouge] (7.38,0.18) circle (0.04);
+        \node[inner sep=1pt] at (7.0,0.8) {boîtier};
+      \end{tikzpicture}
+
+      \vspace{0cm}
+      {\footnotesize\raggedright
+       \textbf{Injection~:} granulés fondus par la vis, injectés sous pression dans un moule en acier,
+       refroidis, puis éjectés. Partenaires~: les plasturgistes d'Oyonnax (Plastics Vallée).\par}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \vspace{-0.3cm}
+      \begin{carte}[height=1.05cm,valign=top]
+        \raggedright\gros{5 à 50\,k€}\\[1pt]
+        {\footnotesize pour un moule en acier.}
+      \end{carte}
+      \vspace{-0.15cm}
+      \begin{carte}[height=1.05cm,valign=top]
+        \raggedright\gros{0,50 à 5\,€}\\[1pt]
+        {\footnotesize la pièce, hors moule.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.02cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{encadre}{Puces~: l'écosystème de Grenoble}
+        \begin{puces}
+          \item Crolles grave en 22 puis 18\,nm (IoT, 5G)~: une puce radio, pas un processeur de pointe.
+          \item ST, GlobalFoundries, Soitec. Piste~: STM32WL de ST, radio LoRa + processeur, soutenue par la communauté Meshtastic.
+          \item Limite~: 22\,000 puces par an, trop peu pour une usine~; passer par un fabricant.
+        \end{puces}
+      \end{encadre}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{encadre}{Antennes~: l'acier français}
+        \begin{puces}
+          \item ArcelorMittal~: 608 postes supprimés (Dunkerque, Florange, Basse-Indre…), mais 1,3\,Md€ en four électrique (2029).
+          \item Basse-Indre~: acier plat étamé, soudable~: de quoi faire réflecteurs et plans de masse.
+          \item ≈ 110\,kg d'acier par an, via des transformateurs. Cuivre, alu~: à comparer.
+        \end{puces}
+      \end{encadre}
+    \end{column}
+  \end{columns}
+  \srcnote{Hypothèses~: moule ≈ 33\,k€ (1,50\,€ par kit) et pièce à 1,50\,€, soit 3,00\,€ contre 2,50\,€ imprimé~; fouet en acier de 5\,g × 22\,000 kits ≈ 110\,kg. Sources~: \cite{injection_cout,injection_procede,plastics_vallee,st_crolles,lmi_crolles,soitec,stm32wl,meshtastic_community,am_plan,am_four,am_basseindre,ttn_antennes}}
 \end{frame}
