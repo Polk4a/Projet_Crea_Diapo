@@ -186,6 +186,9 @@
 %%%%% Pour la date %%%%%
 \usepackage[delan,parigot]{guillotime}
 
+%%%%% Pour inclure du pdf %%%%%
+\usepackage{pdfpages}
+
 %%%%% Lignes de code (frames [fragile]) %%%%%
 \usepackage{listings}
 \lstset{
@@ -469,6 +472,7 @@
 \include{chap_marche}            % 4. Marché cible
 \include{chap_finances}          % 5. Finances
 \include{chap_france}            % 6. Produire en France (réindustrialisation)
+\includepdf[pages={1-5}, fitpaper=true]{SWOT_Antennes_Libres_preview.pdf}
 \include{etude} 
 \include{conclusion}             % 7. Risques, prochaines étapes, conclusion
 

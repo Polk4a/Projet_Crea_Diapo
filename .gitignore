@@ -1,7 +1,7 @@
 *.bak
 *.tox
 *.toc
-*.pdf
+#*.pdf
 *.zip
 *.bbl
 *.bcf
