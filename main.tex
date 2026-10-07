@@ -18,11 +18,11 @@
 %       \etiquette{Texte}   (facultatif) remplace l'étiquette rouge en haut à gauche,
 %                           qui reprend sinon le titre de la section en cours
 %       \srcnote{...}       note de source en bas à gauche, ex. \srcnote{Source : \cite{cle}}
-%  - Encadrés : idee (rose, bord rouge), pointcle (pêche), remarque[titre] (gris),
-%    encadre{titre} (rouge), carte (beige ; carte[height=3cm,valign=top] pour aligner
-%    plusieurs cartes) avec \gros{chiffre ou mot-clé} en grand. Listes compactes dans les
-%    encadrés : puces et numeros. Coche / croix en début de ligne : \oui, \non.
-%    Tableaux : tabular ou tabularx avec \rowcolor{insarose}.
+%  - Encadrés : idee (rose, bord rouge), pointcle (pêche) et sa variante compacte pcompact
+%    (diapositives très remplies), remarque[titre] (gris), encadre{titre} (rouge), carte (beige ;
+%    carte[height=3cm,valign=top] pour aligner plusieurs cartes) avec \gros{chiffre ou mot-clé}
+%    en grand. Listes compactes dans les encadrés : puces et numeros. Coche / croix en début
+%    de ligne : \oui, \non. Tableaux : tabular ou tabularx avec \rowcolor{insarose}.
 %  - Ponctuation française : babel-french est désactivé pour « : ; ! ? » (conflit avec TikZ) ;
 %    écrire donc texte~: suite, texte~?, texte\,!, texte\,; (espace insécable à la main).
 %  - Dans les schémas TikZ d'une diapositive : toujours des accolades autour du corps d'un
@@ -37,9 +37,15 @@
 %  - Mise en page prévue pour aspectratio=169. Texte de 10 pt : les plus petits textes
 %    des schémas restent à \footnotesize (8 pt) ou plus.
 %  - Sources : seul le nom de domaine est imprimé dans la liste (package xstring, voir « Bibliographie »),
-%    le lien complet reste cliquable dans le PDF ; titres courts pour tenir sur une seule diapositive.
+%    le lien complet reste cliquable dans le PDF. La liste est répartie sur trois diapositives d'après
+%    le numéro de citation (bornes dans les filtres srcA, srcB, srcC de la section « Bibliographie »).
 %  - Compilation : pdflatex main, biber main, pdflatex main, pdflatex main.
 %    (deux passes de pdflatex au minimum : sommaire, décor TikZ de chaque page)
+%  - Fichiers du projet : main.tex (gabarit et ordre des parties), un fichier par partie
+%    (chap_idee, chap_fonctionnement, chap_marche, chap_concurrence, chap_marketing, chap_finances,
+%    chap_france, etude, chap_swot, chap_quanti, conclusion), sources.bib, guillotime.sty et
+%    images/. questionnaire.tex est un document A4 autonome (pdflatex questionnaire), à imprimer
+%    ou à recopier dans un formulaire en ligne : ses numéros de question sont ceux de chap_quanti.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[aspectratio=169,10pt,t]{beamer}
 
@@ -78,6 +84,7 @@
 \DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
 \DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
 \DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
 
 %%%%% Charte graphique INSA CVL %%%%%
 \usepackage{xcolor}
@@ -186,9 +193,6 @@
 %%%%% Pour la date %%%%%
 \usepackage[delan,parigot]{guillotime}
 
-%%%%% Pour inclure du pdf %%%%%
-\usepackage{pdfpages}
-
 %%%%% Lignes de code (frames [fragile]) %%%%%
 \usepackage{listings}
 \lstset{
@@ -209,6 +213,8 @@
 % (« definition » existe déjà dans Beamer : l'encadré titré s'appelle donc « encadre ».)
 \newtcolorbox{idee}{colback=insarose,colframe=insarouge,boxrule=0.7pt,arc=2pt}
 \newtcolorbox{pointcle}{colback=insapeche2,colframe=insapeche2,boxrule=0pt,arc=3pt}
+% Variante compacte du point clé (marges haute et basse réduites), pour les diapositives très remplies.
+\newtcolorbox{pcompact}{colback=insapeche2,colframe=insapeche2,boxrule=0pt,arc=3pt,top=2pt,bottom=2pt}
 \newtcolorbox{remarque}[1][Remarque]{colback=insagris!7,colframe=insagris,
   fonttitle=\bfseries\sffamily\small,title={#1}}
 \newtcolorbox{encadre}[1]{colback=insarouge!4,colframe=insarouge,
@@ -416,13 +422,13 @@
 
 %%%%% Bibliographie (sources.bib) %%%%%
 \usepackage{csquotes}
-\usepackage[backend=biber,style=numeric,sorting=none,maxbibnames=3,minbibnames=1,
+\usepackage[backend=biber,style=numeric-comp,sorting=none,maxbibnames=3,minbibnames=1,
             doi=false,isbn=false,eprint=false]{biblatex}
 \addbibresource{sources.bib}
 \setcounter{biburlnumpenalty}{100}
 \setcounter{biburlucpenalty}{100}
 \setcounter{biburllcpenalty}{100}
-\renewcommand*{\bibfont}{\fontsize{5.4}{6.4}\selectfont\raggedright}
+\renewcommand*{\bibfont}{\fontsize{6}{7.2}\selectfont\raggedright}
 \setlength{\bibitemsep}{0.1\baselineskip}
 \AtEveryBibitem{\clearfield{urlyear}\clearfield{urlmonth}\clearfield{urlday}}
 \urlstyle{same}
@@ -433,6 +439,15 @@
   \IfBeginWith{\bibhosttmpb}{www.}{\StrGobbleLeft{\bibhosttmpb}{4}}{\bibhosttmpb}}
 \DeclareFieldFormat{url}{\href{#1}{\bibhost{#1}}}
 \usepackage{multicol}
+% La liste des sources est coupée en trois diapositives d'après le numéro de citation (ordre de première citation).
+% \srcrange{n1}{n2} garde les sources numérotées de n1 à n2 ; ajuster les bornes si le nombre de sources change.
+\newcommand{\srcrange}[2]{%
+  \iffieldint{labelnumber}%
+    {\ifboolexpe{test{\ifnumless{\thefield{labelnumber}}{#1}} or test{\ifnumgreater{\thefield{labelnumber}}{#2}}}{\skipentry}{}}%
+    {\skipentry}}
+\defbibcheck{srcA}{\srcrange{1}{25}}
+\defbibcheck{srcB}{\srcrange{26}{50}}
+\defbibcheck{srcC}{\srcrange{51}{999}}
 
 \title{\doctitre}
 \author{\docauteur}
@@ -446,18 +461,22 @@
 %%%%% Page de titre : diapositive 1 %%%%%
 \insatitleframe
 
-%%%%% Sommaire %%%%%
+%%%%% Sommaire (deux colonnes : parties 1 à 6, puis 7 à 11 ; ajuster si le nombre de parties change) %%%%%
 \begin{frame}{Sommaire}
   \etiquette{Plan}
   \begin{columns}[T]
-    \begin{column}{0.62\textwidth}
+    \begin{column}{0.37\textwidth}
       \vspace{0.2cm}
-      \tableofcontents[hideallsubsections]
+      \tableofcontents[sections={1-6},hideallsubsections]
     \end{column}
-    \begin{column}{0.34\textwidth}
+    \begin{column}{0.37\textwidth}
+      \vspace{0.2cm}
+      \tableofcontents[sections={7-11},hideallsubsections]
+    \end{column}
+    \begin{column}{0.22\textwidth}
       \centering
       \vspace{0.3cm}
-      \begin{tikzpicture}[scale=3.4]
+      \begin{tikzpicture}[scale=2.3]
         \pic at (0,0) {icone cairn};
       \end{tikzpicture}\\[0.2cm]
       {\sffamily\bfseries\color{insarouge}\doctagline}
@@ -466,27 +485,35 @@
 \end{frame}
 
 %%%%% Parties du plan (un fichier par partie, chacun commence par \section) %%%%%
-\include{chap_idee}              % 1. L'idée
-\include{chap_fonctionnement}    % 2. Fonctionnement : partie physique, partie logicielle
-\include{chap_marketing}         % 3. Marketing
-\include{chap_marche}            % 4. Marché cible
-\include{chap_finances}          % 5. Finances
-\include{chap_france}            % 6. Produire en France (réindustrialisation)
-\includepdf[pages={1-5}, fitpaper=true]{SWOT_Antennes_Libres_preview.pdf}
-\include{etude} 
-\include{conclusion}             % 7. Risques, prochaines étapes, conclusion
+% L'ordre des \include donne l'ordre du sommaire : pour déplacer une partie, déplacer sa ligne.
+% La partie SWOT cite les freins F1 à F7 de l'étude documentaire, qui doit donc la précéder.
+\include{chap_idee}              % 1.  L'idée
+\include{chap_fonctionnement}    % 2.  Fonctionnement : partie physique, partie logicielle
+\include{chap_marche}            % 3.  Marché cible : segments, taille, canaux
+\include{chap_concurrence}       % 4.  Concurrence : positionnement, comparatif, coût sur trois ans
+\include{chap_marketing}         % 5.  Marketing : promesses, terrains, ce qu'on ne promet pas
+\include{chap_finances}          % 6.  Finances
+\include{chap_france}            % 7.  Produire en France (réindustrialisation)
+\include{etude}                  % 8.  Étude documentaire : coûts, freins F1 à F7, opportunités
+\include{chap_swot}              % 9.  SWOT et enjeux
+\include{chap_quanti}            % 10. Étude quantitative : cibles, questionnaire, seuils de décision
+\include{conclusion}             % 11. Risques, prochaines étapes, conclusion
 
 
 %%%%% Sources (sources.bib : appel \cite{cle} dans les diapositives) %%%%%
-\begin{frame}{Sources (pages web consultées le 5 octobre 2026)}
-  \etiquette{Sources}
-  % liste sur 3 colonnes, un peu plus large que le texte courant pour tenir sur une seule diapositive
-  \makebox[\textwidth][c]{\begin{minipage}{13.6cm}
-    \setlength{\columnsep}{0.3cm}
-    \begin{multicols}{3}
-      \printbibliography[heading=none]
-    \end{multicols}
-  \end{minipage}}
-\end{frame}
+% Liste sur 3 colonnes, un peu plus large que le texte courant, coupée en trois diapositives (filtres srcA, srcB, srcC).
+\newcommand{\diaposources}[2]{%
+  \begin{frame}{#2}
+    \etiquette{Sources}
+    \makebox[\textwidth][c]{\begin{minipage}{13.6cm}
+      \setlength{\columnsep}{0.3cm}
+      \begin{multicols}{3}
+        \printbibliography[heading=none,check=#1]
+      \end{multicols}
+    \end{minipage}}
+  \end{frame}}
+\diaposources{srcA}{Sources 1/3~: pages consultées du 5 au 8 octobre 2026}
+\diaposources{srcB}{Sources 2/3}
+\diaposources{srcC}{Sources 3/3}
 
 \end{document}

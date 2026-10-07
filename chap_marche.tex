@@ -1,76 +1,139 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Partie 4 -- Marché cible : trois premiers segments puis grand public, approche commerciale
-%  (2 diapositives)
+%  Partie « Marché cible » (3 diapositives) -- à importer avec \include{chap_marche}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%
+%  Les trois segments sont ceux de l'étude quantitative (même ordre, mêmes noms) :
+%    1 Plein air et sport outdoor      2 Camping, voyage, famille      3 Secours et gestion de crise
+%  Chaque segment a un RÔLE : départ (1 et 3) ou extension (2, puis le grand public).
+%  Cette partie reprend aussi les tailles de marché sourcées de l'ancienne étude documentaire,
+%  qui ne figurent plus ailleurs (les autres parties y renvoient).
+%  Les tailles sont des nombres de personnes ou d'organisations, pas des ventes prévues.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Marché cible}
 
-%---------------------------------------------------------------------------
-% Diapositive 13 : trois premiers segments, puis le grand public
+% Barre horizontale à échelle logarithmique (origine = 1 000) :
+% \mbarre{y}{log10 de la valeur}{libellé}{valeur affichée}{couleur de la barre}
+\newcommand{\mbarre}[5]{%
+  \pgfmathsetmacro{\mlen}{1.0*(#2-3)}%
+  \fill[#5] (2.65,#1-0.17) rectangle ++(\mlen,0.34);%
+  \node[anchor=east,text width=2.5cm,align=right,font=\scriptsize] at (2.55,#1) {#3};%
+  \node[anchor=west,font=\scriptsize\bfseries] at ({2.65+\mlen+0.08},#1) {#4};}
+
 %---------------------------------------------------------------------------
 \begin{frame}{Trois segments d'abord, le grand public ensuite}
-  \centering
-  \hyphenpenalty=10000 \exhyphenpenalty=10000
-  \begin{tikzpicture}[font=\footnotesize]
-    \tikzset{seg/.style={fill=insabeige,rounded corners=3pt,text width=6.0cm,minimum height=1.45cm,
-                         inner sep=6pt,anchor=west,align=left}}
-    % trois segments de départ
-    \node[seg] (s1) at (0.95,1.6)  {{\bfseries ONG et secours}~: guerre, séismes, inondations\\
-                                   Coordonner des équipes quand les antennes-relais sont tombées ou coupées.};
-    \node[seg] (s2) at (0.95,0)    {{\bfseries Randonneurs et aventuriers}\\
-                                   Prévenir un proche, se retrouver, partager sa position en zone blanche.};
-    \node[seg] (s3) at (0.95,-1.6) {{\bfseries Amateurs d'alternatives}~: high-tech, low-tech\\
-                                   Posséder ses outils, se passer des plateformes~; déjà sensibles au libre.};
-    \pic[insarouge,scale=1.2] at (0.45,1.6)  {icone tente};
-    \pic[insarouge,scale=1.2] at (0.45,0)    {icone mont};
-    \pic[insarouge,scale=1.2] at (0.45,-1.6) {icone code};
-    % flèches vers le grand public
-    \foreach \y in {1.6,0,-1.6} {\draw[fluxr] (7.05,\y) -- (8.55,0);}
-    % grand public (phase 2)
-    \node[fill=insarose,draw=insarouge,thick,rounded corners=4pt,text width=3.9cm,minimum height=4.7cm,
-          inner sep=7pt,anchor=west,align=center] (gp) at (8.65,0)
-      {{\sffamily\bfseries\color{insarouge}Phase 2\\Grand public}\\[4pt]
-       Familles, voyageurs, habitants des zones rurales, sportifs d'extérieur.\\[5pt]
-       {\gros{27 M}}\\{\scriptsize de Français pratiquent la randonnée}\\[5pt]
-       {\scriptsize\bfseries\color{insarouge}Effet de réseau~: chaque kit renforce le maillage de tous}};
-  \end{tikzpicture}
-  \srcnote{Source~: \cite{ffrando}}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=3.85cm,valign=top]
+        \raggedright
+        \begin{minipage}[c]{0.9cm}\tikz{\path (0,-0.4) rectangle (0.9,0.4);\pic[scale=0.75] at (0.45,0) {icone mont};}\end{minipage}%
+        \begin{minipage}[c]{2.85cm}\raggedright{\sffamily\bfseries\small\color{insarouge}1 · Plein air et sport outdoor}\end{minipage}\\[4pt]
+        \footnotesize Randonneurs, trailers, vététistes, chasseurs.\\[3pt]
+        {\scriptsize 27 M de pratiquants, 240\,000 licenciés (3\,300 clubs), 963\,571 chasseurs.}\\[4pt]
+        {\scriptsize\bfseries\color{insarouge}Départ~: usage réel en zone blanche, achat simple.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=3.85cm,valign=top]
+        \raggedright
+        \begin{minipage}[c]{0.9cm}\tikz{\path (0,-0.4) rectangle (0.9,0.4);\pic[scale=0.75] at (0.45,0) {icone tente};}\end{minipage}%
+        \begin{minipage}[c]{2.85cm}\raggedright{\sffamily\bfseries\small\color{insarouge}2 · Camping, voyage, famille}\end{minipage}\\[4pt]
+        \footnotesize Campeurs, camping-caristes, voyageurs, familles qui sortent en zone isolée.\\[3pt]
+        {\scriptsize Taille inconnue~: c'est l'étude quantitative qui la mesure.}\\[4pt]
+        {\scriptsize\bfseries\color{insarouge}Extension~: marché de masse, une fois le réseau visible.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=3.85cm,valign=top]
+        \raggedright
+        \begin{minipage}[c]{0.9cm}\tikz{\path (0,-0.4) rectangle (0.9,0.4);\pic[scale=0.75] at (0.45,0) {icone alerte};}\end{minipage}%
+        \begin{minipage}[c]{2.85cm}\raggedright{\sffamily\bfseries\small\color{insarouge}3 · Secours et gestion de crise}\end{minipage}\\[4pt]
+        \footnotesize Radioamateurs et ADRASEC, communes, ONG, protection civile.\\[3pt]
+        {\scriptsize 15\,836 indicatifs de radioamateurs~; ≈ 10\,800 communes tenues d'avoir un plan communal de sauvegarde.}\\[4pt]
+        {\scriptsize\bfseries\color{insarouge}Départ~: prescripteurs, premiers nœuds, preuves d'usage.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.12cm}
+  \begin{pcompact}\centering\footnotesize
+    Départ avec les segments 1 et 3, puis extension vers le segment 2 et le grand public. Les makers du mesh, déjà équipés, restent des relais d'opinion, pas une cible.
+  \end{pcompact}
+  \srcnote{Sources~: \cite{ffrando,ffrando_licencies,chasse_wiki,ref66_radioamateurs,maire_pcs}. Communes~: estimation de l'État en 2022~; plan obligatoire pour toutes visé en 2029 (projet). Mêmes trois segments que l'étude quantitative.}
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 14 : comment les atteindre (message, canaux) + programme solidaire
+\begin{frame}{Un marché assez grand pour 22\,000 kits~?}
+  \begin{columns}[T]
+    \begin{column}{0.645\textwidth}
+      \begin{tikzpicture}
+        % repère de l'objectif : log10(22 000) = 4,342, soit x = 2,65 + 1,342
+        \mbarre{0}{7.431}{Pratiquants de la randonnée}{27 millions}{insagris!70}
+        \mbarre{-0.62}{5.984}{Chasseurs}{963\,571}{insagris!70}
+        \mbarre{-1.24}{5.380}{Licenciés FFRandonnée}{240\,000}{insagris!70}
+        \mbarre{-1.86}{4.200}{Radioamateurs}{15\,836}{insagris!30}
+        \mbarre{-2.48}{4.033}{Communes à plan de sauvegarde}{10\,800}{insagris!30}
+        \draw[insarouge,line width=1.4pt,dashed] (3.992,0.42) -- (3.992,-2.9);
+        \node[anchor=south,font=\scriptsize\bfseries,text=insarouge,align=center] at (3.992,0.42) {objectif~: 22\,000 kits};
+        % axe logarithmique
+        \draw[insagris,thin] (2.65,-2.95) -- (7.15,-2.95);
+        \draw[insagris,thin] (2.65,-2.95) -- (2.65,-3.05) (3.65,-2.95) -- (3.65,-3.05) (4.65,-2.95) -- (4.65,-3.05) (5.65,-2.95) -- (5.65,-3.05) (6.65,-2.95) -- (6.65,-3.05);
+        \node[anchor=north,font=\tiny,text=insagris] at (2.65,-3.05) {1\,000};
+        \node[anchor=north,font=\tiny,text=insagris] at (3.65,-3.05) {10\,000};
+        \node[anchor=north,font=\tiny,text=insagris] at (4.65,-3.05) {100\,000};
+        \node[anchor=north,font=\tiny,text=insagris] at (5.65,-3.05) {1 million};
+        \node[anchor=north,font=\tiny,text=insagris] at (6.65,-3.05) {10 millions};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.3cm,valign=top]
+        \raggedright\gros{0,08\,\%}\\[1pt]{\footnotesize des 27 millions de pratiquants, à raison d'un kit par personne.}
+      \end{carte}
+      \vspace{0.08cm}
+      \begin{carte}[height=1.3cm,valign=top]
+        \raggedright\gros{≈ 9\,\%}\\[1pt]{\footnotesize des 240\,000 licenciés de la FFRandonnée.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Radioamateurs et communes amorcent le réseau mais ne portent pas 22\,000 kits~: le volume viendra du plein air, puis du grand public.
+  \end{pcompact}
+  \srcnote{Échelle logarithmique, ordres de grandeur et non prévisions (l'intention d'achat est mesurée aux questions 17 et 18)~; mêmes sources que la diapositive précédente. Objectif de 22\,000 kits~: année 3 du modèle financier. Les populations ne s'additionnent pas~: les licenciés sont inclus dans les 27 millions.}
+\end{frame}
+
 %---------------------------------------------------------------------------
 \begin{frame}{Comment les atteindre~: un message par cible}
   \renewcommand{\arraystretch}{1.3}
   \footnotesize\hyphenpenalty=10000 \exhyphenpenalty=10000
-  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{2.35cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
     \rowcolor{insarose}
     \textcolor{insarouge}{Cible} & \textcolor{insarouge}{Message} & \textcolor{insarouge}{Canaux} \\
-    ONG, secours & «\,Une messagerie qui survit aux infrastructures\,» &
-      kits de démonstration, pilotes gratuits, réseaux de bénévoles, appels d'offres \\
-    \arrayrulecolor{insagris!30}\hline
-    Randonneurs & «\,Écrire à ses proches là où le réseau s'arrête\,» &
+    1 Plein air & «\,Écrire à ses proches là où le réseau s'arrête\,» &
       clubs et fédérations, refuges, boutiques de sport, salons outdoor \\
+    \arrayrulecolor{insagris!30}\hline
+    2 Camping, voyage, famille & «\,Un filet de sécurité à 69\,€, sans abonnement\,» &
+      site marchand, distributeurs spécialisés, campings, bouche-à-oreille \\
     \hline
-    Alternatives & «\,Ton réseau t'appartient\,» &
+    3 Secours et crise & «\,Une messagerie qui survit aux infrastructures\,» &
+      kits de démonstration, pilotes gratuits, réseaux de bénévoles, mairies, appels d'offres \\
+    \hline
+    Makers et libre & «\,Ton réseau t'appartient\,» &
       forums du libre et des makers, financement participatif, ateliers (fablabs), vidéos \\
-    \hline
-    Grand public & «\,Un filet de sécurité à 69\,€, sans abonnement\,» &
-      site marchand, distributeurs spécialisés, bouche-à-oreille \\
   \end{tabularx}
 
   \vspace{0.15cm}
   \begin{columns}[T]
     \begin{column}{0.485\textwidth}
-      \begin{carte}[height=2.15cm,valign=top]
+      \begin{carte}[height=1.9cm,valign=top]
         \gros{1 kit offert pour 10 vendus}\\[2pt]
         {\footnotesize Programme solidaire pour les ONG~: un argument de marque et un moyen d'équiper des pilotes (coût déjà inclus dans les finances).}
       \end{carte}
     \end{column}
     \begin{column}{0.485\textwidth}
-      \begin{carte}[height=2.15cm,valign=top]
+      \begin{carte}[height=1.9cm,valign=top]
         \gros{Précommandes d'abord}\\[2pt]
         {\footnotesize Un financement participatif valide la demande et finance le premier stock avant toute production en série.}
       \end{carte}
     \end{column}
   \end{columns}
+  \srcnote{Messages et canaux~: choix de l'équipe, à tester dans l'étude quantitative (question 22, lieu d'achat).}
 \end{frame}

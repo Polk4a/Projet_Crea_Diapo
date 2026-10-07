@@ -1,11 +1,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Partie 2 -- Fonctionnement : vue d'ensemble, partie physique, partie logicielle,
-%  trajet d'un message (4 diapositives)
+%  Partie « Fonctionnement » (4 diapositives) -- à importer avec \include{chap_fonctionnement}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%  Vue d'ensemble, partie physique, partie logicielle, trajet d'un message.
+%  Corrections de cette version : 239 octets (et non kilooctets) par message, ≈ 1 kbit/s en LongFast
+%  (et non Mbit/s), 3 relais par défaut et 7 au maximum (et non 50) ; les deux encadrés de la première
+%  diapositive, qui répétaient les deux suivantes, sont remplacés par deux cartes de parcours.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fonctionnement}
 
 %---------------------------------------------------------------------------
-% Diapositive 6 : vue d'ensemble (physique + logiciel)
+% Vue d'ensemble (physique + logiciel)
 %---------------------------------------------------------------------------
 \begin{frame}{Vue d'ensemble~: de ton téléphone à ton contact}
   \centering
@@ -39,29 +43,23 @@
   \vspace{0.2cm}
   \begin{columns}[T]
     \begin{column}{0.485\textwidth}
-      \begin{encadre}{Partie physique~: ce que tu tiens en main}
-        \begin{puces}
-          \item Carte Heltec V3~: radio LoRa, Bluetooth, écran
-          \item Antenne 868 MHz, batterie Li-Po (recharge USB-C)
-          \item Boîtier de protection
-        \end{puces}
-      \end{encadre}
+      \begin{carte}[height=1.6cm,valign=top]
+        \raggedright\gros{Partie physique}\\[1pt]
+        {\footnotesize Ce que l'on tient en main~: carte, antenne, batterie, boîtier (diapositive suivante).}
+      \end{carte}
     \end{column}
     \begin{column}{0.485\textwidth}
-      \begin{encadre}{Partie logicielle~: ce qui la fait vivre}
-        \begin{puces}
-          \item Firmware libre Meshtastic (GPL-3.0)~: maillage, chiffrement
-          \item Application mobile gratuite~: messages, carte, positions
-          \item Réglages préchargés, guides en français
-        \end{puces}
-      \end{encadre}
+      \begin{carte}[height=1.6cm,valign=top]
+        \raggedright\gros{Partie logicielle}\\[1pt]
+        {\footnotesize Le code libre qui la fait vivre et ce que nous y ajoutons (deux diapositives plus loin).}
+      \end{carte}
     \end{column}
   \end{columns}
   \srcnote{Sources~: \cite{heltec_v3,meshtastic_overview,meshtastic_android}}
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 7 : partie physique (schéma-bloc de la carte + contenu du kit)
+% Partie physique (schéma-bloc de la carte + contenu du kit)
 %---------------------------------------------------------------------------
 \begin{frame}{Partie physique~: une carte de 5\,cm sur 2,5\,cm}
   \begin{columns}[T]
@@ -117,7 +115,7 @@
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 8 : partie logicielle (socle libre + notre contribution)
+% Partie logicielle (socle libre + notre contribution)
 %---------------------------------------------------------------------------
 \begin{frame}{Partie logicielle~: du code libre et vérifiable}
   \begin{columns}[T]
@@ -150,7 +148,7 @@
       \end{encadre}
     \end{column}
   \end{columns}
-  \vspace{-0.15cm}
+  \vspace{-0.25cm}
   \begin{pointcle}\centering\footnotesize
     Aucun compte, aucun serveur central~: un code ouvert que chacun peut vérifier.
   \end{pointcle}
@@ -158,7 +156,7 @@
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 9 : trajet d'un message + limites assumées
+% Trajet d'un message + limites assumées
 %---------------------------------------------------------------------------
 \begin{frame}{Trajet d'un message~: aucun opérateur sur la route}
   \centering
@@ -179,16 +177,16 @@
   \vspace{0.15cm}
   \begin{columns}[T]
     \begin{column}{0.245\textwidth}
-      \begin{carte}\centering\gros{239 kilooctets}\\[1pt]{\scriptsize par message~: du texte seulement}\end{carte} %239 octets
+      \begin{carte}\centering\gros{239 octets}\\[1pt]{\scriptsize par message~: du texte seulement}\end{carte}
     \end{column}
     \begin{column}{0.245\textwidth}
-      \begin{carte}\centering\gros{≈ 1 Mbit/s}\\[1pt]{\scriptsize débit du mode LongFast, portée maximale}\end{carte} % 1ko
+      \begin{carte}\centering\gros{≈ 1 kbit/s}\\[1pt]{\scriptsize débit du mode LongFast, portée maximale}\end{carte}
     \end{column}
     \begin{column}{0.245\textwidth}
       \begin{carte}\centering\gros{10\,\%}\\[1pt]{\scriptsize du temps d'émission au plus, en Europe}\end{carte}
     \end{column}
     \begin{column}{0.245\textwidth}
-      \begin{carte}\centering\gros{3 relais}\\[1pt]{\scriptsize par défaut (50 au maximum)}\end{carte} % 7 au max
+      \begin{carte}\centering\gros{3 relais}\\[1pt]{\scriptsize par défaut (7 au maximum)}\end{carte}
     \end{column}
   \end{columns}
   \srcnote{Limites assumées. Sources~: \cite{meshtastic_overview,meshtastic_regions,meshtastic_lora,meshtastic_algo}}

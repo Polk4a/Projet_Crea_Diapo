@@ -1,0 +1,425 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  QUESTIONNAIRE DE L'ÉTUDE QUANTITATIVE -- document autonome (A4)
+%
+%  Compilation : pdflatex questionnaire  (deux passes, aucune bibliographie).
+%  Ce fichier est indépendant de la présentation (main.tex) ; il en reprend la numérotation
+%  des questions (Q1 à Q23) et des sections (1 à 9) : voir la partie « Étude quantitative ».
+%
+%  Il contient :
+%   - la notice pour l'équipe (objectif, cibles, tailles d'échantillon, règles de saisie) ;
+%   - le questionnaire tel que le voit le répondant (texte d'accueil, 9 sections, concept neutre) ;
+%   - la variante « secours et gestion de crise » (questions reformulées) ;
+%   - les indicateurs de lecture et les seuils proposés.
+%
+%  Ce que vous pouvez modifier sans risque : les tailles d'échantillon, les seuils (annexe B),
+%  les prix de la question 21, la liste des activités (Q4) et des lieux d'achat (Q22).
+%  Les passages en italique gris entre crochets sont des consignes de programmation (logique de saut,
+%  tirage au hasard) : ils ne s'affichent pas au répondant.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{fancyhdr}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=black]{hyperref}
+
+\definecolor{insarouge}{HTML}{E42618}
+\definecolor{insagris}{HTML}{5F5F5F}
+\definecolor{insabeige}{HTML}{F8F0EC}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\small\color{insagris}Étude quantitative~: communiquer sans réseau mobile\quad --\quad page \thepage}
+
+% titres de sections : le numéro de section de la présentation est celui du questionnaire
+\newcommand{\sect}[2]{\par\Needspace{9\baselineskip}\vspace{10pt}{\large\sffamily\bfseries\color{insarouge}Section #1\ \ #2}\par\vspace{2pt}\hrule height 0.6pt\vspace{4pt}}
+% consigne de programmation (invisible pour le répondant)
+\newcommand{\qa}[1]{\textbf{\textcolor{insarouge}{#1}}}
+\newcommand{\logique}[1]{{\small\itshape\color{insagris}[#1]}}
+% question : \quest{numéro}{énoncé}
+\newcommand{\quest}[2]{\par\Needspace{6\baselineskip}\vspace{4pt}\noindent{\sffamily\bfseries\color{insarouge}Q#1}\hspace{0.5em}\textbf{#2}\par\nopagebreak}
+% liste de cases à cocher
+\newenvironment{choix}
+  {\begin{list}{$\square$}{\setlength{\itemsep}{0pt}\setlength{\topsep}{2pt}\setlength{\parsep}{0pt}%
+    \setlength{\leftmargin}{1.7em}\setlength{\labelwidth}{1.2em}\setlength{\labelsep}{0.5em}}}
+  {\end{list}}
+% même liste sur deux colonnes (pour les listes longues)
+\newenvironment{choixdeux}
+  {\begin{multicols}{2}\begin{choix}}
+  {\end{choix}\end{multicols}}
+% échelle à cinq niveaux : \echelle{libellé du 1}{libellé du 5}
+\newcommand{\echelle}[2]{\par\nopagebreak\noindent$\square$~1\quad$\square$~2\quad$\square$~3\quad$\square$~4\quad$\square$~5\qquad{\small(1 = #1~; 5 = #2)}\par}
+
+\begin{document}
+
+\begin{center}
+  {\Large\sffamily\bfseries Questionnaire~: communiquer sans réseau mobile}\\[4pt]
+  {\sffamily Étude quantitative --- INSA Centre Val de Loire, STI 5A ASL-IA}
+\end{center}
+
+%==========================================================================
+\section*{Notice pour l'équipe (à ne pas montrer aux répondants)}
+
+\textbf{Objectif.} Mesurer, segment par segment, la chaîne \emph{problème $\rightarrow$ besoin $\rightarrow$
+solution $\rightarrow$ intérêt $\rightarrow$ adoption $\rightarrow$ prix}, puis comparer les trois segments
+(plein air~; camping, voyage, famille~; secours et gestion de crise).
+
+\textbf{Principes de rédaction.}
+\begin{itemize}[nosep]
+  \item Les sections 1 à 4 viennent \emph{avant} la présentation du concept, pour ne pas influencer les réponses sur le problème et le besoin.
+  \item Le concept est présenté sans nom, sans marque et sans prix~; le prix n'apparaît qu'en section 9, après la question ouverte (Q19).
+  \item Les limites sont dites dans le concept (texte seul, pas une balise de détresse) pour éviter de sur-vendre.
+  \item Une question = une idée~; échelles à cinq niveaux, ordre des cases tiré au hasard quand c'est possible~; toujours une case «~Autre~» ou «~Aucun~».
+\end{itemize}
+
+\textbf{Échantillon.} Non aléatoire, par choix raisonné. Tailles proposées~: 150 réponses pour le plein air,
+100 pour camping, voyage et famille, 60 pour secours et gestion de crise (310 au total). La marge d'erreur d'un
+pourcentage vaut environ $\pm\,98/\sqrt{n}$ points (95\,\%, tirage aléatoire supposé)~: $\pm\,8$ points pour $n=150$,
+$\pm\,10$ pour $n=100$, $\pm\,13$ pour $n=60$. L'échantillon sert à \emph{comparer} les segments, pas à prévoir
+les ventes ni à mesurer une part de marché.
+
+\textbf{Où diffuser.} Plein air~: clubs de randonnée et de montagne, groupes de pratiquants en ligne, magasins outdoor,
+refuges (affiche avec QR code). Camping, voyage, famille~: campings (QR code à l'accueil), groupes de camping-caristes
+et de voyageurs, associations de parents, réseau personnel. Secours et gestion de crise~: ADRASEC et associations de
+radioamateurs, Protection civile, Croix-Rouge, mairies, réseaux d'ONG. Les liens ou QR codes portent un paramètre
+(\texttt{?src=club}, \texttt{?src=camping}\dots) pour compter les réponses par canal.
+
+\textbf{Avant de diffuser.} Pré-test sur dix personnes (durée, questions mal comprises). Réponses anonymes~;
+l'adresse e-mail de la question 23 est facultative et stockée à part (RGPD). Nettoyage à prévoir~: questionnaires
+terminés en moins de trois minutes, prix maximal de la question 19 supérieur à 500\,\texteuro{} (à traiter à part).
+
+\newpage
+%==========================================================================
+\section*{Questionnaire}
+
+\begin{center}
+  \fbox{\parbox{0.92\linewidth}{\small
+  Bonjour, nous sommes des étudiants de l'INSA Centre Val de Loire et menons une enquête sur la communication en dehors
+  des zones couvertes par le réseau mobile. Elle dure environ 8 à 10 minutes. Vos réponses sont anonymes, il n'y a pas
+  de bonne ou de mauvaise réponse, et vous pouvez arrêter à tout moment. Cette enquête s'adresse aux personnes majeures.}}
+\end{center}
+
+%--------------------------------------------------------------------------
+\sect{1}{Votre profil}
+
+\quest{1}{Parmi ces profils, lequel vous correspond le mieux~?}
+\logique{une seule réponse~; détermine le segment}
+\begin{choix}
+  \item Plein air et sport outdoor (randonnée, trail, VTT, alpinisme, ski, escalade\dots)
+  \item Camping, voyage ou sorties en pleine nature, seul(e), entre amis ou en famille
+  \item Secours et gestion de crise (professionnel, bénévole, association, commune, ONG)
+  \item Autre (précisez)~: \rule{4cm}{0.3pt} \ \logique{analysé à part}
+\end{choix}
+\logique{profil 3 $\rightarrow$ poser les variantes de l'annexe A}
+
+\quest{2}{Quelle est votre tranche d'âge~?}
+\begin{choix}\setlength{\itemsep}{0pt}
+  \item 18 à 24 ans \quad $\square$ 25 à 34 ans \quad $\square$ 35 à 44 ans \quad $\square$ 45 à 54 ans \quad $\square$ 55 à 64 ans \quad $\square$ 65 ans et plus
+\end{choix}
+
+\quest{3}{Où vivez-vous~?}
+\begin{choix}
+  \item En ville \quad $\square$ En zone périurbaine \quad $\square$ À la campagne \quad $\square$ En montagne
+\end{choix}
+
+%--------------------------------------------------------------------------
+\sect{2}{Habitudes et pratiques}
+
+\quest{4}{Au cours des 12 derniers mois, quelles activités avez-vous pratiquées en pleine nature~?}
+\logique{plusieurs réponses~; si «~Aucune~» $\rightarrow$ passer à Q7}
+\begin{choixdeux}
+  \item Randonnée, trekking
+  \item Trail, course à pied nature
+  \item VTT, vélo
+  \item Alpinisme, escalade
+  \item Ski, raquettes
+  \item Camping, bivouac, camping-car
+  \item Voyage en zone isolée
+  \item Chasse, pêche
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+  \item Aucune
+\end{choixdeux}
+
+\quest{5}{En moyenne, à quelle fréquence pratiquez-vous ces activités~?}
+\begin{choix}
+  \item Quelques fois par an \quad $\square$ Une à trois fois par mois \quad $\square$ Chaque semaine \quad $\square$ Plusieurs fois par semaine
+\end{choix}
+
+\quest{6}{Le plus souvent, vous sortez\dots}
+\begin{choix}
+  \item seul(e) \quad $\square$ à deux \quad $\square$ en groupe de 3 à 5 personnes \quad $\square$ en groupe de 6 personnes ou plus \quad $\square$ cela dépend
+\end{choix}
+
+%--------------------------------------------------------------------------
+\sect{3}{Existence du problème}
+
+\quest{7}{Vous arrive-t-il de vous retrouver dans une zone sans réseau mobile (ni appel, ni SMS possible)~?}
+\logique{si «~Jamais~» $\rightarrow$ passer à Q10}
+\begin{choix}
+  \item Jamais \quad $\square$ Rarement \quad $\square$ Parfois \quad $\square$ Souvent \quad $\square$ Très souvent
+\end{choix}
+
+\quest{8}{Où cela vous est-il arrivé~?}
+\logique{plusieurs réponses}
+\begin{choixdeux}
+  \item En montagne
+  \item À la campagne ou en forêt
+  \item En mer ou sur le littoral
+  \item À l'étranger
+  \item En ville (sous-sol, bâtiment, foule)
+  \item Lors d'une catastrophe ou d'une panne de réseau
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+\end{choixdeux}
+
+\quest{9}{Dans ces moments, comment communiquez-vous aujourd'hui avec votre groupe ou vos proches~?}
+\logique{plusieurs réponses}
+\begin{choixdeux}
+  \item Je ne communique pas
+  \item Des rendez-vous ou des horaires convenus à l'avance
+  \item Des talkies-walkies
+  \item La radio amateur
+  \item Une balise de détresse
+  \item Un communicateur satellite (messages par satellite)
+  \item Le SOS satellite de mon smartphone
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+\end{choixdeux}
+
+%--------------------------------------------------------------------------
+\sect{4}{Importance du besoin}
+
+\quest{10}{Quand il n'y a pas de réseau, à quel point est-il important pour vous de pouvoir\dots}
+\logique{ordre des lignes tiré au hasard}
+\par\nopagebreak\smallskip
+\begingroup\small\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}p{8.2cm}ccccc@{}}
+  & 1 & 2 & 3 & 4 & 5 \\
+  \midrule
+  a)~rester en contact avec les personnes qui sont avec vous & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+  b)~prévenir vos proches que tout va bien & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+  c)~partager votre position & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+  d)~coordonner une équipe (si cela vous concerne) & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+  e)~alerter les secours & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+\end{tabular}
+\endgroup\par
+{\small(1 = pas du tout important~; 5 = très important)}
+
+\quest{11}{L'absence de réseau vous a-t-elle déjà posé un vrai problème (se perdre de vue, ne pas pouvoir prévenir quelqu'un, renoncer à une sortie\dots)~?}
+\begin{choix}
+  \item Jamais \quad $\square$ Une fois \quad $\square$ Plusieurs fois
+\end{choix}
+\logique{si «~Une fois~» ou «~Plusieurs fois~» $\rightarrow$ champ libre facultatif~: «~Décrivez en une phrase la dernière fois.~»}
+
+%--------------------------------------------------------------------------
+\vspace{10pt}
+\begin{center}
+  \fbox{\parbox{0.92\linewidth}{\small
+  \textbf{Présentation d'une solution}\quad\logique{page séparée, avec une image sans marque}\\[3pt]
+  Imaginez un petit appareil radio de poche, relié à votre téléphone par Bluetooth. Il permet d'envoyer des messages texte
+  à des proches qui ont le même appareil, sans réseau mobile, sans internet et sans abonnement. Les messages passent d'un
+  appareil à l'autre par radio~: la portée est de 0,5 à 2\,km en ville et de 5 à 15\,km en terrain dégagé, davantage si d'autres appareils relaient.
+  Texte seulement~: pas d'appel, pas de photo. Ce n'est pas une balise de détresse~: l'appareil ne prévient pas les secours.\\[3pt]
+  Les questions suivantes portent sur cette solution.}}
+\end{center}
+
+%--------------------------------------------------------------------------
+\sect{5}{Intérêt pour la solution}
+
+\quest{12}{Dans quelle mesure cette solution vous paraît-elle utile pour vous~?}
+\echelle{pas du tout utile}{très utile}
+
+\quest{13}{Qu'est-ce qui vous intéresse le plus~?}
+\logique{deux réponses au plus~; ordre tiré au hasard}
+\begin{choixdeux}
+  \item Elle fonctionne sans réseau
+  \item Il n'y a pas d'abonnement
+  \item Mes messages restent privés (pas de compte, pas de serveur central)
+  \item Elle est simple à utiliser
+  \item Son prix
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+  \item Rien ne m'intéresse
+\end{choixdeux}
+
+%--------------------------------------------------------------------------
+\sect{6}{Usages envisagés}
+
+\quest{14}{Dans quelles situations l'utiliseriez-vous~?}
+\logique{plusieurs réponses}
+\begin{choixdeux}
+  \item Randonnée, montagne
+  \item Camping, bivouac
+  \item Voyage
+  \item Sport (trail, VTT, ski\dots)
+  \item Zones isolées, campagne
+  \item Intervention de secours
+  \item Catastrophe ou panne de réseau
+  \item Événement ou festival
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+  \item Je ne l'utiliserais pas
+\end{choixdeux}
+
+%--------------------------------------------------------------------------
+\sect{7}{Freins à l'adoption}
+
+\quest{15}{Qu'est-ce qui pourrait vous empêcher de l'acheter~?}
+\logique{plusieurs réponses~; ordre tiré au hasard}
+\begin{choixdeux}
+  \item Le prix
+  \item Devoir équiper aussi les autres personnes
+  \item La portée
+  \item L'autonomie de la batterie
+  \item La complexité d'utilisation
+  \item Elle n'est pas assez utile pour moi
+  \item J'ai déjà une solution
+  \item La confiance dans une marque inconnue
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+  \item Rien
+\end{choixdeux}
+
+\quest{16}{Parmi ces freins, lequel est le principal~?}
+\logique{un seul choix, parmi les réponses données à Q15}
+
+%--------------------------------------------------------------------------
+\sect{8}{Intention d'achat ou d'adoption}
+
+\quest{17}{Seriez-vous prêt(e) à acheter ou à adopter cette solution~?}
+\begin{choix}
+  \item Certainement pas \quad $\square$ Probablement pas \quad $\square$ Peut-être \quad $\square$ Probablement \quad $\square$ Certainement
+\end{choix}
+
+\quest{18}{Combien de personnes de votre entourage équiperiez-vous, vous compris~?}
+\begin{choix}
+  \item 1 \quad $\square$ 2 \quad $\square$ 3 à 4 \quad $\square$ 5 à 9 \quad $\square$ 10 ou plus
+\end{choix}
+
+%--------------------------------------------------------------------------
+\sect{9}{Prix acceptable}
+
+\quest{19}{Quel prix maximal seriez-vous prêt(e) à payer pour un appareil, sans abonnement~?}
+\logique{réponse libre, en euros~; à poser \emph{avant} toute mention d'un prix}\par
+\noindent\rule{3cm}{0.3pt}~\texteuro
+
+\quest{20}{Cet appareil coûterait 69\,\texteuro, en un seul achat et sans abonnement. L'achèteriez-vous~?}
+\logique{variante possible~: tirer au hasard 59, 69 ou 79\,\texteuro{} pour lire trois points de la courbe de demande}
+\begin{choix}
+  \item Oui \quad $\square$ Peut-être \quad $\square$ Non
+\end{choix}
+
+\quest{21}{Pour équiper plusieurs personnes, quelle formule préféreriez-vous~?}
+\logique{prix de l'équipe, à aligner sur le prix unitaire retenu~; si l'on craint un effet d'ancrage avec Q20, répartir au hasard (moitié Q20, moitié Q21)}
+\begin{choix}
+  \item Solo~: 1 appareil à 79\,\texteuro
+  \item Duo~: 2 appareils à 139\,\texteuro
+  \item Groupe~: 4 appareils à 249\,\texteuro
+  \item Aucune de ces formules
+\end{choix}
+
+\quest{22}{Où l'achèteriez-vous le plus volontiers~?}
+\begin{choixdeux}
+  \item Dans une boutique de sport ou d'outdoor
+  \item Sur le site internet de la marque
+  \item Par mon club ou ma fédération (achat groupé)
+  \item Par ma commune ou mon association (achat collectif)
+  \item Sur un site de vente généraliste
+  \item Autre (précisez)~: \rule{4cm}{0.3pt}
+\end{choixdeux}
+
+\quest{23}{(Facultatif) Souhaitez-vous être informé(e) du projet ou tester l'appareil gratuitement~?}
+\begin{choix}
+  \item Non, merci
+  \item Oui, mon adresse e-mail~: \rule{6cm}{0.3pt}
+\end{choix}
+{\small Cette adresse sera utilisée uniquement pour vous recontacter au sujet de ce projet d'étude et supprimée à la fin de l'étude.}
+
+\vspace{4pt}
+\begin{center}
+  \fbox{\parbox{0.92\linewidth}{\small Merci pour votre participation~! Vos réponses nous aident à savoir si cette solution répond à un vrai besoin.}}
+\end{center}
+
+\newpage
+%==========================================================================
+\section*{Annexe A~: variante « secours et gestion de crise » (profil 3)}
+
+Mêmes sections, mêmes numéros. Seules les questions suivantes sont reformulées~; les autres sont posées telles quelles.
+
+\begingroup\small\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}p{0.9cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  \textbf{Q} & \textbf{Énoncé} & \textbf{Réponses} \\
+  \midrule
+  \qa{4} & Dans quel cadre intervenez-vous ou participez-vous à la gestion de crise~? (plusieurs réponses) &
+      secours en montagne ou en milieu isolé~; sécurité civile, pompiers~; radioamateurs (réseau d'urgence)~; commune ou collectivité~; ONG, humanitaire~; association de secouristes~; autre \\
+  \qa{5} & Combien de fois par an intervenez-vous ou participez-vous à un exercice~? &
+      moins de 5~; 5 à 20~; plus de 20 \\
+  \qa{6} & Quelle est la taille habituelle de votre équipe sur le terrain~? &
+      1 à 2~; 3 à 5~; 6 à 10~; plus de 10 \\
+  \qa{7} & Lors de vos interventions ou de vos exercices, le réseau mobile est-il absent, coupé ou saturé~? &
+      jamais $\rightarrow$ très souvent \\
+  \qa{8} & Dans quelles situations~? (plusieurs réponses) &
+      zone isolée~; coupure d'électricité~; catastrophe naturelle~; saturation du réseau lors d'un rassemblement~; zone de conflit~; autre \\
+  \qa{9} & Quels moyens utilisez-vous alors~? (plusieurs réponses) &
+      radio professionnelle (réseau dédié)~; talkies-walkies~; radio amateur~; téléphone satellite~; messagerie du smartphone quand c'est possible~; messagers à pied ou en véhicule~; autre \\
+  \qa{11} & Cette absence de communication a-t-elle déjà compliqué une intervention ou un exercice~? &
+      jamais~; une fois~; plusieurs fois \\
+  \qa{14} & Dans quelles situations votre structure l'utiliserait-elle~? &
+      interventions~; exercices~; renfort des moyens existants~; catastrophe ou panne de réseau~; événement~; jamais \\
+  \qa{17} & Votre structure ou votre équipe serait-elle prête à acheter ou à adopter cette solution~? &
+      certainement pas $\rightarrow$ certainement \\
+  \qa{18} & Combien d'appareils faudrait-il pour votre équipe~? &
+      1 à 2~; 3 à 5~; 6 à 10~; 11 à 30~; plus de 30 \\
+  \bottomrule
+\end{tabularx}
+\endgroup
+
+\vspace{6pt}
+Pour les structures qui achètent (communes, associations), ajouter si besoin~: «~Qui décide d'un achat de ce type, et avec quel budget~?~» (réponse libre).
+
+\newpage
+%==========================================================================
+\section*{Annexe B~: indicateurs de lecture et seuils proposés}
+
+Les seuils sont des propositions de départ, à valider \emph{avant} l'enquête~; ils servent à comparer les segments.
+Un segment est dit prioritaire s'il atteint au moins six seuils sur huit~; si le «~oui~» à 69\,\texteuro{} reste sous 10\,\%
+dans tous les segments, revoir le prix ou le concept avant le moule et la série.
+
+\begingroup\small\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{4.3cm}>{\centering\arraybackslash}p{1.8cm}@{}}
+  \toprule
+  Indicateur & Calcul & Seuil proposé \\
+  \midrule
+  Problème~: sans réseau «~souvent~» ou «~très souvent~» & part des réponses «~Souvent~» et «~Très souvent~» à Q7 & $\geq$ 40\,\% \\
+  Besoin~: «~important~» ou «~très important~» & part des notes 4 ou 5 à Q10\,a ou Q10\,b & $\geq$ 60\,\% \\
+  Problème déjà vécu & part de «~Une fois~» et «~Plusieurs fois~» à Q11 & $\geq$ 30\,\% \\
+  Utilité & part des notes 4 ou 5 à Q12 & $\geq$ 50\,\% \\
+  Intention d'achat & part de «~Probablement~» et «~Certainement~» à Q17 & $\geq$ 30\,\% \\
+  Prix~: «~oui~» à 69\,\texteuro & part de «~Oui~» à Q20 & $\geq$ 20\,\% \\
+  Prix maximal & médiane de Q19 (valeurs $>$ 500\,\texteuro{} écartées) & $\geq$ 60\,\texteuro \\
+  Appareils à équiper & médiane de Q18 (classes codées 1, 2, 3,5, 7, 10) & $\geq$ 2 \\
+  \bottomrule
+\end{tabularx}
+\endgroup
+
+\vspace{6pt}
+\textbf{Lectures complémentaires.}
+\begin{itemize}[nosep]
+  \item \emph{Part solvable à 69\,\texteuro}~: part des réponses de Q19 au moins égales à 69\,\texteuro.
+  \item \emph{Recette à un prix $p$}~: $p \times$ (part des réponses de Q19 au moins égales à $p$)~; comparer 59, 69 et 79\,\texteuro.
+  \item \emph{Effet du prix}~: part de «~Probablement~» et «~Certainement~» à Q17, moins part de «~Oui~» à Q20.
+  \item \emph{Formule préférée}~: répartition de Q21 (Solo, Duo, Groupe, aucune), croisée avec Q18.
+  \item \emph{Canaux}~: répartition de Q22, par segment, pour choisir où vendre en premier.
+\end{itemize}
+
+\end{document}

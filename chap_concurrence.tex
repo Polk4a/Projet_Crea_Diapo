@@ -1,0 +1,170 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie « Concurrence » (4 diapositives) -- à importer avec \include{chap_concurrence}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%
+%  Contenu : (1) carte de positionnement, (2) comparatif détaillé, (3) coût sur trois ans,
+%  (4) atouts et limites face à chaque famille de concurrents.
+%  Cette partie REGROUPE les comparaisons de prix qui étaient dispersées (ancienne diapositive
+%  « Contre l'abonnement » de la partie Marketing, tableau et cartes de l'étude documentaire).
+%  Les prix sont des prix publics relevés du 5 au 8 octobre 2026 (voir sources.bib) : ils varient
+%  selon le revendeur, d'où des fourchettes. Choix faits pour les fourchettes :
+%   - talkies PMR446 : 65 à 80 € la paire, soit 33 à 40 € par personne ;
+%   - kits Meshtastic prêts à l'emploi : de 59 € (SenseCAP T1000-E, 49 € HT) à 153 € (WisMesh Pocket V2) ;
+%   - balise PLB : 300 à 400 € (pas d'abonnement) ;
+%   - inReach Mini 2 : 329 à 349 € + abonnement ; 827 € sur trois ans (calcul sous la 3e diapositive).
+%  Les coordonnées du graphique de la 1re diapositive sont en échelle logarithmique :
+%  x = 3,1 + 4 × log10(coût / 10 €) en cm (10 € = origine, 100 € = 7,1 cm).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Concurrence}
+
+%---------------------------------------------------------------------------
+% Diapositive 1 : carte de positionnement (qui peut-on joindre, pour quel coût ?)
+% Abscisse : coût sur 3 ans par personne équipée, échelle logarithmique.
+% Ordonnée : trois niveaux de « portée du contact ».
+%---------------------------------------------------------------------------
+\begin{frame}{Positionnement~: qui peut-on joindre, pour quel coût~?}
+  \centering
+  \begin{tikzpicture}[font=\scriptsize,x=1cm,y=1cm]
+    % bandes (une sur deux en beige) et libellés des trois niveaux
+    \fill[insabeige] (3.0,0.4) rectangle (11.6,1.5);
+    \fill[insabeige] (3.0,3.2) rectangle (11.6,4.5);
+    \draw[insagris!40,thin] (3.0,0.4) rectangle (11.6,4.5);
+    \node[anchor=east,align=right,font=\scriptsize\bfseries] at (2.9,3.85) {n'importe qui,\\les secours};
+    \node[anchor=east,align=right,font=\scriptsize\bfseries] at (2.9,2.35) {tout le maillage\\(7 sauts au plus)};
+    \node[anchor=east,align=right,font=\scriptsize\bfseries] at (2.9,0.95) {ceux qui sont\\à portée radio};
+    % axe des coûts
+    \draw[insagris,thick,-{Stealth[length=1.8mm]}] (3.0,0.4) -- (11.75,0.4);
+    \foreach \x/\t in {3.1/0\,€,5.01/30\,€,7.1/100\,€,9.01/300\,€,11.1/1\,000\,€} {
+      \draw[insagris] (\x,0.4) -- (\x,0.32);
+      \node[anchor=north,font=\tiny,text=insagris] at (\x,0.32) {\t};}
+    \node[anchor=north,font=\scriptsize,text=insagris] at (7.3,-0.1) {coût sur trois ans par personne équipée (échelle logarithmique)};
+
+    % --- niveau « n'importe qui » : satellite (cercle vide = SOS seul, pas de messages)
+    \draw[insaorange,thick,fill=white] (3.1,3.85) circle (0.14);
+    \node[anchor=west,align=left] at (3.35,3.85) {SOS du smartphone~: iPhone 14 et plus\\(gratuit deux ans, déjà dans la poche)};
+    \draw[insaorange,thick,fill=white] (9.28,3.85) circle (0.14);
+    \node[anchor=east,align=right] at (9.1,3.85) {balise PLB\\300 à 400\,€};
+    \fill[insaorange] (10.78,3.85) circle (0.17);
+    \node[anchor=north,align=center] at (10.78,3.62) {inReach Mini 2\\≈ 830\,€};
+
+    % --- niveau « tout le maillage » : Meshtastic
+    \draw[insarouge!55,line width=4pt,line cap=round] (4.12,2.25) -- (5.01,2.25);
+    \node[anchor=north,align=center] at (4.56,2.08) {carte nue\\18 à 30\,€};
+    \draw[insarouge!55,line width=4pt,line cap=round] (6.19,2.25) -- (7.84,2.25);
+    \node[anchor=north,align=center] at (7.0,2.08) {kits prêts à l'emploi\\59 à 153\,€};
+    \fill[insarouge] (6.46,2.25) circle (0.17);
+    \draw[insarouge,thick] (6.46,2.25) circle (0.27);
+    \node[anchor=south,font=\footnotesize\bfseries,text=insarouge] at (6.46,2.58) {\nomproduit\ 69\,€};
+    \node[callout,anchor=center,text width=2.6cm,align=left,font=\scriptsize] at (10.1,2.35)
+      {Notre créneau~: un groupe à portée, sans abonnement, prêt à l'emploi.};
+
+    % --- niveau « à portée radio » : talkies PMR446
+    \draw[insagris,line width=4pt,line cap=round] (4.89,0.95) -- (5.51,0.95);
+    \node[anchor=west,align=left] at (5.8,0.95) {talkies PMR446\\33 à 40\,€ par personne};
+
+    % légende
+    \begin{scope}[shift={(3.0,-0.85)},font=\tiny]
+      \fill[insarouge] (0.1,0) circle (0.08);\node[anchor=west] at (0.22,0) {Meshtastic (carte, kits)};
+      \fill[insagris] (3.0,0) circle (0.08);\node[anchor=west] at (3.12,0) {radio libre sans maillage};
+      \fill[insaorange] (5.95,0) circle (0.08);\node[anchor=west] at (6.07,0) {satellite};
+      \draw[insaorange,thick,fill=white] (7.4,0) circle (0.08);\node[anchor=west] at (7.52,0) {SOS seul (pas de messages)};
+    \end{scope}
+  \end{tikzpicture}
+  \srcnote{Prix publics relevés en octobre 2026. Sources~: \cite{irun_mini2,garmin_plans,plb_bateaux,plb_toplicht,pmr_decathlon,pmr_officeeasy,t1000e_passion,wismesh_openelab,apple_sat,techconnect}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 2 : comparatif détaillé
+%---------------------------------------------------------------------------
+\begin{frame}{Comparatif~: prix, abonnement, ce que chacun permet}
+  \centering\scriptsize\renewcommand{\arraystretch}{1.22}\setlength{\tabcolsep}{3pt}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.55cm}>{\centering\arraybackslash}p{1.3cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{2.35cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Offre} & \textcolor{insarouge}{\bfseries Achat} & \textcolor{insarouge}{\bfseries Abonnement} & \textcolor{insarouge}{\bfseries Écrire à son groupe} & \textcolor{insarouge}{\bfseries Joindre un proche hors zone} & \textcolor{insarouge}{\bfseries Appeler les secours} & \textcolor{insarouge}{\bfseries Portée utile}\\
+    \rowcolor{insabeige}\textbf{\nomproduit} (kit prêt à l'emploi) & 69\,€ & non & \oui & \non & \non & 0,5 à 2\,km en ville, 5 à 15\,km en campagne\\
+    Carte Heltec V3 nue (à régler soi-même) & 18 à 30\,€ & non & \oui & \non & \non & idem\\
+    Meshtastic prêt à l'emploi (T1000-E, WisMesh) & 59 à 153\,€ & non & \oui & \non & \non & idem\\
+    Talkies PMR446 (la paire) & 65 à 80\,€ & non & voix seule & \non & \non & 0,2 à 1\,km en ville, 3 à 6\,km dégagé\\
+    Garmin inReach Mini 2 & 329 à 349\,€ & ≈ 13\,€ par mois & \oui & \oui & \oui, 24\,h/24 & mondiale, ciel dégagé\\
+    Balise de détresse PLB 406\,MHz & 300 à 400\,€ & non & \non & \non & \oui, SOS seul & mondiale\\
+    iPhone 14 ou plus (SOS par satellite) & 0\,€ si déjà équipé & gratuit deux ans & \non & \non & \oui, SOS seul & mondiale, ciel dégagé\\
+  \end{tabular}
+  \vspace{0.12cm}
+  \begin{pcompact}\centering\footnotesize
+    Le kit est un outil de groupe, pas un secours~: il ne remplace ni le 112, ni une balise, ni le téléphone.
+  \end{pcompact}
+  \srcnote{Prix relevés en octobre 2026, variables selon le revendeur. Les messages par satellite d'Apple ne sont pas disponibles en France. Sources~: \cite{irun_mini2,irun_msgplus,garmin_plans,plb_bateaux,plb_toplicht,pmr_decathlon,pmr_officeeasy,pmr_hellopro,t1000e_passion,wismesh_hexaspot,wismesh_openelab,apple_sat,apple_msg,techconnect}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 3 : coût cumulé sur trois ans (ancienne diapositive « Contre l'abonnement »)
+%---------------------------------------------------------------------------
+\begin{frame}{Contre l'abonnement~: le coût sur trois ans}
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[
+            width=7.3cm,height=4.5cm,xmin=0,xmax=36,ymin=0,ymax=1000,
+            xtick={0,12,24,36},xticklabels={départ,1 an,2 ans,3 ans},
+            ytick={0,250,500,750,1000},
+            tick label style={font=\scriptsize},
+            ylabel={coût cumulé (€)},ylabel style={font=\scriptsize,yshift=-3pt},
+            axis lines=left,grid=major,grid style={insagris!25,thin},
+            legend style={at={(0.02,1.0)},anchor=north west,font=\scriptsize,draw=none,fill=none,
+                          legend cell align=left},
+            clip=false]
+          \addplot[insagris,very thick] coordinates {(0,0) (36,643.68)};
+          \addlegendentry{Forfait mobile moyen}
+          \addplot[insaorange,very thick] coordinates {(0,363.3) (36,827.4)};
+          \addlegendentry{Une balise + abonnement}
+          \addplot[insarouge,line width=2.2pt,dashed] coordinates {(0,276) (36,276)};
+          \addlegendentry{4 kits \nomproduit{}}
+          \addplot[insarouge,line width=2.2pt] coordinates {(0,138) (36,138)};
+          \addlegendentry{2 kits \nomproduit{}}
+          \node[anchor=west,font=\scriptsize\bfseries,text=insagris] at (axis cs:36.6,644) {644\,€};
+          \node[anchor=west,font=\scriptsize\bfseries,text=insaorange] at (axis cs:36.6,827) {827\,€};
+          \node[anchor=west,font=\scriptsize\bfseries,text=insarouge] at (axis cs:36.6,290) {276\,€};
+          \node[anchor=west,font=\scriptsize\bfseries,text=insarouge] at (axis cs:36.6,120) {138\,€};
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{remarque}[Ce que le graphique ne dit pas]
+        \begin{puces}
+          \item Le kit ne remplace pas le téléphone~: ni appels, ni internet.
+          \item Aucun centre de secours n'est relié~: ce n'est pas une balise de détresse.
+          \item Les contacts doivent être équipés aussi~: d'où les lots de 2 à 4 kits.
+        \end{puces}
+      \end{remarque}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pointcle}\centering\footnotesize
+    138\,€ pour deux kits, une fois~; 827\,€ sur trois ans pour une seule balise, qui elle relie aux secours.
+  \end{pointcle}
+  \srcnote{Hypothèses~: 36 mois, 1\,\$ = 0,86\,€, hors remplacement de batterie. Balise~: inReach Mini 2 (328,90\,€), forfait 14,99\,\$ par mois, activation 39,99\,\$. Forfait mobile moyen~: 17,88\,€ par mois. Sources~: \cite{arcep_prix,garmin_mini2,garmin_plans}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 4 : notre avantage face à chaque famille, et ce qu'il faut leur reconnaître
+%---------------------------------------------------------------------------
+\begin{frame}{Face à chaque concurrent~: atouts et limites}
+  \footnotesize\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{4pt}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash\bfseries}p{2.9cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{Face à…} & \textcolor{insarouge}{Notre avantage} & \textcolor{insarouge}{Leur avantage}\\
+    le fait-maison (carte nue, 18 à 30\,€) & Prêt à l'emploi~: réglages Europe, clé privée, boîtier, guide en français, garantie. & Prix plus bas, matériel au choix, aucune attente de livraison.\\
+    \arrayrulecolor{insagris!30}\hline
+    les kits prêts à l'emploi (59 à 153\,€) & Lots de 2 à 4 kits préconfigurés ensemble, guides et support en français, assemblage en France. & Marque établie, GPS, boîtier étanche (IP65 pour le T1000-E), parfois moins cher (59\,€).\\
+    \hline
+    les talkies PMR446 (65 à 80\,€ la paire) & Messages et positions sur carte, relais par les voisins, chiffrement. & Voix immédiate, sans smartphone ni réglage, usage libre.\\
+    \hline
+    le satellite (inReach, PLB, SOS iPhone) & Aucun abonnement~; marche sous les arbres et en ville, sans ciel dégagé. & SOS relié aux secours 24\,h/24, couverture mondiale, joignent tout le monde.\\
+  \end{tabularx}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    À mesurer dans l'enquête~: ce que les futurs clients emportent déjà (talkie, balise, rien) et ce qu'ils jugeraient suffisant.
+  \end{pcompact}
+  \srcnote{Sources~: \cite{pmr_hellopro,apple_sat,irun_msgplus,seeed_t1000e,wismesh_openelab}. Le satellite exige une vue dégagée du ciel (notices Apple et Garmin).}
+\end{frame}

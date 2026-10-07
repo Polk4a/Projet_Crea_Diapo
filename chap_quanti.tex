@@ -1,0 +1,321 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie « Étude quantitative » (7 diapositives) -- à importer avec \include{chap_quanti}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%
+%  Contenu : (1) ce qu'il faut valider, (2) qui interroger et où, (3) plan du questionnaire,
+%  (4) questions avant la présentation du concept, (5) questions après, (6) le prix,
+%  (7) lecture des résultats et seuils de décision.
+%  Cette partie reprend la méthodologie de l'équipe (étude quantitative, 3 segments, échantillon
+%  non aléatoire par choix raisonné, 9 sections avant / après un concept neutre, prix maximal
+%  puis « À 69 € … ? ») et la complète par : les questions rédigées, les lieux de diffusion,
+%  des tailles d'échantillon avec marge d'erreur, et des seuils de décision.
+%  Le questionnaire complet (formulations, échelles, logique de saut, variante secours) est
+%  dans le fichier autonome questionnaire.tex ; les numéros de question sont les mêmes.
+%
+%  À DÉCIDER PAR L'ÉQUIPE (propositions de départ, signalées « proposé » dans les diapositives) :
+%   - tailles d'échantillon : 150 (plein air), 100 (camping, voyage, famille), 60 (secours) ;
+%   - seuils de décision de la dernière diapositive ;
+%   - variante à trois prix (59, 69, 79 €) pour la question 20.
+%  Marge d'erreur indicative : 1,96 × racine(0,25 / n), soit ± 8 points pour n = 150,
+%  ± 9,8 pour n = 100, ± 12,7 pour n = 60 (échantillon aléatoire supposé : valeur indicative seulement).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Étude quantitative}
+
+% numéro de question en rouge ; \qq{n°}{question}{réponses} : question suivie de ses réponses en gris
+\newcommand{\qnum}[1]{{\sffamily\bfseries\color{insarouge}Q#1}}
+\newcommand{\qq}[3]{\qnum{#1}\hspace{0.3em}#2\ {\color{insagris}\itshape#3}\par}
+% titre de section de questionnaire, dans une carte
+\newcommand{\qsec}[2]{\begingroup\footnotesize\sffamily\bfseries{\color{insarouge}#1}\hspace{0.4em}#2\par\endgroup\vspace{1.5pt}}
+% cellule à remplir du tableau de résultats (diapositive 7)
+\newcommand{\qvide}{\cellcolor{insabeige}}
+
+%---------------------------------------------------------------------------
+% Diapositive 1 : ce qu'il faut valider (la chaîne problème -> prix)
+%---------------------------------------------------------------------------
+\begin{frame}{Étude quantitative~: ce qu'il faut valider}
+  \centering
+  \begin{tikzpicture}[font=\scriptsize]
+    \tikzset{etp/.style={minimum width=1.95cm,minimum height=0.62cm,inner xsep=3pt,font=\scriptsize\bfseries},
+             detp/.style={anchor=north,text width=2.05cm,align=center,font=\scriptsize}}
+    \node[pastille,etp,draw=insagris,fill=insagris!12,text=black]  (p1) at (0.98,0)  {PROBLÈME};
+    \node[pastille,etp,draw=insagris,fill=insagris!12,text=black]  (p2) at (3.26,0)  {BESOIN};
+    \node[pastille,etp,draw=insaorange,fill=insapeche,text=black]  (p3) at (5.54,0)  {SOLUTION};
+    \node[pastille,etp,draw=insaorange,fill=insapeche,text=black]  (p4) at (7.82,0)  {INTÉRÊT};
+    \node[pastille,etp,draw=insarouge,fill=insarose,text=black]    (p5) at (10.1,0) {ADOPTION};
+    \node[pastille,etp,draw=insarouge,fill=insarose,text=black]    (p6) at (12.38,0) {PRIX};
+    \foreach \a/\b in {p1/p2,p2/p3,p3/p4,p4/p5,p5/p6} {\draw[fluxr] (\a) -- (\b);}
+    \node[detp] at ([yshift=-0.12cm]p1.south) {Se retrouve-\mbox{t-on} sans réseau~?\\{\color{insarouge}\qnum{7}}};
+    \node[detp] at ([yshift=-0.12cm]p2.south) {Faut-il alors pouvoir communiquer~?\\{\color{insarouge}\qnum{10}, \qnum{11}}};
+    \node[detp] at ([yshift=-0.12cm]p3.south) {La solution paraît-elle utile~?\\{\color{insarouge}\qnum{12}, \qnum{13}}};
+    \node[detp] at ([yshift=-0.12cm]p4.south) {Dans quelles situations l'emploie-\mbox{rait-on}~?\\{\color{insarouge}\qnum{14}}};
+    \node[detp] at ([yshift=-0.12cm]p5.south) {L'achèterait-\mbox{on}~? Qu'est-ce qui freine~?\\{\color{insarouge}\qnum{15} à \qnum{18}}};
+    \node[detp] at ([yshift=-0.12cm]p6.south) {À quel prix~? 69\,€ passe-t-il~?\\{\color{insarouge}\qnum{19} à \qnum{22}}};
+    % regroupements A, B, C
+    \draw[decorate,decoration={brace,mirror,amplitude=4pt},insagris,thick] (-0.05,-1.95) -- (4.15,-1.95)
+      node[midway,below=6pt,font=\scriptsize\bfseries,text=insagris] {A · Le problème est-il réel~?};
+    \draw[decorate,decoration={brace,mirror,amplitude=4pt},insaorange,thick] (4.6,-1.95) -- (8.8,-1.95)
+      node[midway,below=6pt,font=\scriptsize\bfseries,text=insaorange] {B · La solution plaît-elle~?};
+    \draw[decorate,decoration={brace,mirror,amplitude=4pt},insarouge,thick] (9.1,-1.95) -- (13.3,-1.95)
+      node[midway,below=6pt,font=\scriptsize\bfseries,text=insarouge] {C · Le potentiel commercial};
+  \end{tikzpicture}
+
+  \vspace{0.0cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{carte}[height=1.45cm,valign=top]
+        \raggedright\gros{«\,Pas de réseau\,» ≠ besoin}\\[1pt]
+        {\footnotesize Se retrouver sans réseau ne prouve pas qu'on veuille communiquer~: on mesure les deux.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{carte}[height=1.45cm,valign=top]
+        \raggedright\gros{«\,Intéressant\,» ≠ achat}\\[1pt]
+        {\footnotesize Un concept qui plaît ne se vend pas forcément~: on mesure l'intention, puis le prix.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Objectif final~: comparer les trois segments, retenir ceux où besoin et potentiel sont les plus forts.
+  \end{pcompact}
+  \srcnote{Méthodologie de l'équipe. Les entretiens qualitatifs (15 à 20, première vague) disent \emph{pourquoi} et \emph{comment}~; le questionnaire mesure \emph{combien}.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 2 : qui interroger, où les trouver, combien
+%---------------------------------------------------------------------------
+\begin{frame}{Qui interroger, et où les trouver~?}
+  \scriptsize\renewcommand{\arraystretch}{1.2}\setlength{\tabcolsep}{4pt}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{2.3cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{4.8cm}>{\centering\arraybackslash}p{0.8cm}>{\centering\arraybackslash}p{1.0cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{Segment} & \textcolor{insarouge}{\bfseries Qui interroger} & \textcolor{insarouge}{\bfseries Où les trouver} & \textcolor{insarouge}{\bfseries Cible} & \textcolor{insarouge}{\bfseries Marge}\\
+    1 Plein air, sport outdoor &
+      randonneurs, trailers, vététistes, alpinistes, skieurs de randonnée &
+      clubs de randonnée et de montagne, groupes de pratiquants en ligne, magasins outdoor, refuges (affiche avec QR code) & 150 & ±\,8\,pts\\
+    \arrayrulecolor{insagris!30}\hline
+    2 Campeurs, voyageurs, familles &
+      campeurs, camping-caristes, voyageurs, familles qui sortent en zone isolée &
+      campings (QR code à l'accueil), groupes de camping-caristes et de voyageurs, associations de parents, réseau personnel & 100 & ±\,10\,pts\\
+    \hline
+    3 Secours et gestion de crise &
+      bénévoles et professionnels du secours, radioamateurs, élus et agents communaux, ONG &
+      ADRASEC et associations de radioamateurs, Protection civile, Croix-Rouge, mairies, réseaux d'ONG & 60 & ±\,13\,pts\\
+  \end{tabular}
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.55cm,valign=top]
+        \raggedright\gros{Choix raisonné}\\[1pt]
+        {\footnotesize Des personnes concernées, avec de la variété (âge, région, niveau de pratique). Question 1 = filtre~; «\,Autre\,» à part.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.55cm,valign=top]
+        \raggedright\gros{Comparer, pas prévoir}\\[1pt]
+        {\footnotesize Les segments entre eux~; pas de ventes ni de part de marché. Marge indicative ≈ ±\,98\,/\,$\sqrt{n}$ points.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Tailles proposées par l'équipe (310 réponses au total), à ajuster~; marge à 95\,\% pour $p$ = 50\,\%, valable pour un tirage aléatoire~; la population du segment 3 étant petite, sa marge réelle est plus faible. Canaux~: ceux du recrutement des entretiens.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 3 : plan du questionnaire (neuf sections, concept neutre au milieu)
+%---------------------------------------------------------------------------
+\begin{frame}{Plan du questionnaire~: neuf sections}
+  \centering
+  \begin{tikzpicture}[font=\scriptsize]
+    \tikzset{sec/.style={draw=insagris,fill=insagris!10,rounded corners=3pt,minimum width=4.3cm,minimum height=0.55cm,
+                         inner sep=3pt,align=left,anchor=west,text width=4.1cm},
+             sec2/.style={draw=insaorange,fill=insapeche,rounded corners=3pt,minimum width=4.5cm,minimum height=0.55cm,
+                         inner sep=3pt,align=left,anchor=west,text width=4.3cm}}
+    % colonne de gauche : avant la présentation
+    \node[font=\footnotesize\bfseries\sffamily,text=insagris,anchor=west] at (0,1.45) {AVANT~: problème et besoin};
+    \node[sec] at (0,0.85)  {{\bfseries 1 Profil}~: quel segment~?};
+    \node[sec] at (0,0.2)   {{\bfseries 2 Habitudes}~: pratiques actuelles};
+    \node[sec] at (0,-0.45) {{\bfseries 3 Problème}~: sans réseau~?};
+    \node[sec] at (0,-1.1)  {{\bfseries 4 Besoin}~: communiquer, pourquoi~?};
+    % centre : concept neutre
+    \node[fill=insarose,draw=insarouge,thick,rounded corners=4pt,text width=3.55cm,inner sep=5pt,align=left,anchor=north west]
+      at (4.75,1.6)
+      {{\sffamily\bfseries\color{insarouge}Concept présenté, sans nom ni prix}\\[2pt]
+       \scriptsize Un petit appareil radio de poche, relié au téléphone par Bluetooth. Il envoie des messages texte à des proches
+       ayant le même appareil, sans réseau mobile, sans internet, sans abonnement. Portée~: de 0,5 à 15\,km selon le terrain.
+       Texte seulement~; ce n'est pas une balise de détresse.};
+    % colonne de droite : après
+    \node[font=\footnotesize\bfseries\sffamily,text=insaorange,anchor=west] at (8.95,1.45) {APRÈS~: solution et adoption};
+    \node[sec2] at (8.95,0.85)  {{\bfseries 5 Intérêt}~: la solution est-elle utile~?};
+    \node[sec2] at (8.95,0.2)   {{\bfseries 6 Usages}~: dans quelles situations~?};
+    \node[sec2] at (8.95,-0.45) {{\bfseries 7 Freins}~: qu'est-ce qui bloque~?};
+    \node[sec2] at (8.95,-1.1)  {{\bfseries 8 Intention}~: acheter ou adopter~?};
+    \node[sec2] at (8.95,-1.75) {{\bfseries 9 Prix}~: maximal, puis 69\,€};
+    % flèches
+    \draw[fluxr] (4.35,-0.2) -- (4.7,-0.2);
+    \draw[fluxr] (8.35,-0.2) -- (8.9,-0.2);
+  \end{tikzpicture}
+
+  \vspace{0.05cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.25cm,valign=top]
+        \raggedright\gros{23 questions}\\[1pt]{\footnotesize 8 à 10 minutes, en ligne ou sur papier.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.25cm,valign=top]
+        \raggedright\gros{Concept neutre}\\[1pt]{\footnotesize après la section 4, pour ne pas influencer.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.25cm,valign=top]
+        \raggedright\gros{Pré-test}\\[1pt]{\footnotesize dix personnes~; réponses anonymes (RGPD).}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Structure de la méthodologie de l'équipe~; formulations complètes dans le fichier questionnaire.tex. Portée~: voir la partie Fonctionnement (\cite{techconnect}).}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 4 : questions 1 à 11 (avant la présentation)
+%---------------------------------------------------------------------------
+\begin{frame}{Avant la présentation~: questions 1 à 11}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.9cm,valign=top]
+        \qsec{1}{Profil}\scriptsize\raggedright
+        \qq{1}{À quel profil correspondez-vous le mieux~?}{plein air · camping, voyage, famille · secours et crise · autre}
+        \qq{2}{Votre âge}{tranches}
+        \qq{3}{Où vivez-vous~?}{ville · périurbain · campagne · montagne}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=2.2cm,valign=top]
+        \qsec{3}{Existence du problème}\scriptsize\raggedright
+        \qq{7}{Vous retrouvez-vous dans une zone sans réseau mobile~?}{jamais → très souvent}
+        \qq{8}{Où cela vous est-il arrivé~?}{montagne, campagne, étranger, ville, catastrophe…}
+        \qq{9}{Comment communiquez-vous alors~?}{rien, talkies, balise, satellite…}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.9cm,valign=top]
+        \qsec{2}{Habitudes et pratiques}\scriptsize\raggedright
+        \qq{4}{Quelles activités en pleine nature, ces 12 derniers mois~?}{choix multiple}
+        \qq{5}{À quelle fréquence~?}{jamais → chaque semaine}
+        \qq{6}{Avec qui sortez-vous~?}{seul · à deux · 3 à 5 · 6 ou plus}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=2.2cm,valign=top]
+        \qsec{4}{Importance du besoin}\scriptsize\raggedright
+        \qq{10}{Sans réseau, importance de~: rester en contact avec son groupe, prévenir ses proches, partager sa position, coordonner une équipe, alerter les secours}{1 à 5}
+        \qq{11}{Cela vous a-t-il déjà posé un vrai problème~?}{jamais · une fois · plusieurs fois}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Secours~: mêmes questions, reformulées. Le concept n'est présenté qu'après la question 11.
+  \end{pcompact}
+  \srcnote{Sections 1 à 4 de la méthodologie de l'équipe~; réponses complètes et variante secours dans questionnaire.tex.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 5 : questions 12 à 18 (après la présentation)
+%---------------------------------------------------------------------------
+\begin{frame}{Après la présentation~: questions 12 à 18}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.95cm,valign=top]
+        \qsec{5}{Intérêt pour la solution}\scriptsize\raggedright
+        \qq{12}{Dans quelle mesure cette solution vous paraît-elle utile~?}{pas du tout → très utile}
+        \qq{13}{Qu'est-ce qui vous intéresse le plus~? (deux au plus)}{sans réseau · sans abonnement · messages privés · simplicité · prix}
+      \end{carte}
+      \vspace{0.1cm}
+      \begin{carte}[height=1.95cm,valign=top]
+        \qsec{7}{Freins à l'adoption}\scriptsize\raggedright
+        \qq{15}{Qu'est-ce qui pourrait vous empêcher de l'acheter~?}{prix · équiper les autres · portée · autonomie · complexité · utilité · déjà équipé · marque inconnue}
+        \qq{16}{Quel est le frein principal~?}{un seul choix}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.95cm,valign=top]
+        \qsec{6}{Usages envisagés}\scriptsize\raggedright
+        \qq{14}{Dans quelles situations l'utiliseriez-vous~?}{randonnée · camping · voyage · sport · zones isolées · secours · catastrophe ou panne · événement · jamais}
+      \end{carte}
+      \vspace{0.1cm}
+      \begin{carte}[height=1.95cm,valign=top]
+        \qsec{8}{Intention d'achat ou d'adoption}\scriptsize\raggedright
+        \qq{17}{Seriez-vous prêt à acheter ou adopter cette solution~?}{certainement pas → certainement}
+        \qq{18}{Combien de personnes équiperiez-vous, vous compris~?}{1 · 2 · 3 à 4 · 5 à 9 · 10 ou plus}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    La question 18 donne la taille de groupe à équiper~: elle éclaire le choix kit seul, Duo ou Groupe.
+  \end{pcompact}
+  \srcnote{Sections 5 à 8 de la méthodologie de l'équipe~; échelles à cinq niveaux, ordre des réponses tiré au hasard quand c'est possible.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 6 : le prix (questions 19 à 23)
+%---------------------------------------------------------------------------
+\begin{frame}{Le prix~: de la question ouverte à la question précise}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \begin{tikzpicture}[font=\footnotesize]
+        \draw[insarouge!40,thick] (0.2,0.2) -- (0.2,-3.35);
+        \node[num] at (0.2,0)     {1};
+        \node[num] at (0.2,-1.2)  {2};
+        \node[num] at (0.2,-2.4)  {3};
+        \node[anchor=west,text width=6.5cm,align=left] at (0.5,0.05)
+          {\qnum{19}~: {\bfseries Quel prix maximal paieriez-vous, sans abonnement~?}\\[-1pt]
+           {\scriptsize réponse libre, en euros, \emph{avant} de montrer 69\,€~: pas d'ancrage.}};
+        \node[anchor=west,text width=6.5cm,align=left] at (0.5,-1.2)
+          {\qnum{20}~: {\bfseries À 69\,€, sans abonnement, l'achèteriez-vous~?}\\[-1pt]
+           {\scriptsize oui, peut-être, non~: teste l'hypothèse de prix.}};
+        \node[anchor=west,text width=6.5cm,align=left] at (0.5,-2.4)
+          {\qnum{21}~: {\bfseries Pour plusieurs personnes~: 2 kits à 139\,€, 4 à 249\,€, un seul à 69\,€, aucun~?}\\[-1pt]
+           {\scriptsize teste les lots Duo et Groupe de la partie SWOT.}};
+        \node[anchor=west,text width=6.5cm,align=left,font=\scriptsize,text=insagris] at (0.5,-3.3)
+          {\qnum{22}~: où l'acheter (boutique, site, club, commune)~; \qnum{23}~: contact facultatif pour un test ou une précommande.};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{encadre}{Comment lire}
+        \begin{puces}
+          \item \textbf{Part solvable à 69\,€}~: part des prix maximaux (Q19) au moins égaux à 69\,€.
+          \item \textbf{Recette à un prix $p$}~: $p$ × part des prix maximaux ≥ $p$~; comparer 59, 69 et 79\,€.
+          \item \textbf{Effet du prix}~: écart entre l'intention (Q17) et le «\,oui\,» à 69\,€ (Q20).
+        \end{puces}
+      \end{encadre}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Variante proposée~: tirer au hasard 59, 69 ou 79\,€ à la question 20, pour lire trois points de la courbe de demande.
+  \end{pcompact}
+  \srcnote{Ordre « prix maximal puis 69\,€ » de la méthodologie de l'équipe. Sensibilité du modèle financier~: ±\,5\,€ de prix = ±\,92\,k€ de résultat en année 3 (partie SWOT).}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 7 : lire les résultats, seuils de décision
+%---------------------------------------------------------------------------
+\begin{frame}{Décider~: indicateurs et seuils, segment par segment}
+  \scriptsize\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{4pt}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.65cm}>{\centering\arraybackslash}p{0.7cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1.75cm}!{\color{white}\vrule width 1.5pt}>{\centering\arraybackslash}p{1.75cm}!{\color{white}\vrule width 1.5pt}>{\centering\arraybackslash}p{1.75cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Indicateur} & \textcolor{insarouge}{\bfseries Q} & \textcolor{insarouge}{\bfseries Seuil proposé} & \textcolor{insarouge}{\bfseries 1 Plein air} & \textcolor{insarouge}{\bfseries 2 Camping, famille} & \textcolor{insarouge}{\bfseries 3 Secours}\\
+    Problème~: sans réseau «\,souvent\,» ou «\,très souvent\,» & 7 & ≥ 40\,\% & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Besoin~: «\,important\,» ou «\,très important\,» (4 ou 5 sur 5) & 10 & ≥ 60\,\% & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Problème déjà vécu au moins une fois & 11 & ≥ 30\,\% & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Utilité~: «\,utile\,» ou «\,très utile\,» & 12 & ≥ 50\,\% & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Intention~: «\,probablement\,» ou «\,certainement\,» & 17 & ≥ 30\,\% & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Prix~: «\,oui\,» à 69\,€ & 20 & ≥ 20\,\% & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Prix maximal, valeur médiane & 19 & ≥ 60\,€ & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+    Appareils à équiper, valeur médiane & 18 & ≥ 2 & \qvide & \qvide & \qvide\\ \arrayrulecolor{white}\hline
+  \end{tabular}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    Règle proposée~: segment prioritaire s'il atteint 6 seuils sur 8~; si le «\,oui\,» à 69\,€ reste sous 10\,\% partout, revoir prix ou concept avant le moule.
+  \end{pcompact}
+  \srcnote{Seuils proposés par l'équipe, à valider \emph{avant} l'enquête (sinon on les ajuste après coup). L'échantillon n'étant pas aléatoire, ils servent à comparer les segments, pas à prévoir les ventes. Cases beiges~: à remplir avec les résultats.}
+\end{frame}

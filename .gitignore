@@ -1,7 +1,7 @@
 *.bak
 *.tox
 *.toc
-#*.pdf
+*.pdf
 *.zip
 *.bbl
 *.bcf
@@ -16,3 +16,4 @@
 *.dvi
 *.nav
 *.snm
+*.pptx

@@ -1,13 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Partie 3 -- Marketing : promesses, coût face à l'abonnement, terrains d'usage
-%  (3 diapositives)
+%  Partie « Marketing » (3 diapositives) -- à importer avec \include{chap_marketing}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%
+%  Ordre : les trois promesses, les quatre terrains d'usage, puis ce qu'on affirme et ce qu'on
+%  ne promet jamais (diapositive ajoutée : elle reprend les messages de l'ancienne étude
+%  documentaire et sert de garde-fou juridique).
+%  Le comparatif de coût face à l'abonnement a été déplacé dans la partie Concurrence ;
+%  les tailles de marché (27 millions, etc.) sont dans la partie Marché cible.
 %  Astuce de mise en page : les cartes à hauteur fixe se règlent avec carte[height=...,valign=top] ;
 %  chaque icône est centrée dans un cadre invisible de 1,2 cm de haut pour aligner les titres.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Marketing}
 
 %---------------------------------------------------------------------------
-% Diapositive 10 : les trois promesses + slogans
+% Les trois promesses + slogans
 %---------------------------------------------------------------------------
 \begin{frame}{Trois promesses~: prix, autonomie, zones blanches}
   \begin{columns}[T]
@@ -36,7 +42,7 @@
       \end{carte}
     \end{column}
   \end{columns}
-  \vspace{0.15cm}
+  \vspace{0.12cm}
   \begin{idee}\centering
     {\sffamily\bfseries\color{insarouge}Pas d'abonnement. Pas de compte. Pas de permission.}\\[3pt]
     {\sffamily\bfseries\color{insarouge}Là où le réseau s'arrête, le tien commence.}
@@ -44,55 +50,7 @@
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 11 : coût cumulé face à l'abonnement
-%---------------------------------------------------------------------------
-\begin{frame}{Contre l'abonnement~: le coût sur trois ans}
-  \begin{columns}[T]
-    \begin{column}{0.62\textwidth}
-      \centering
-      \begin{tikzpicture}
-        \begin{axis}[
-            width=7.3cm,height=4.9cm,xmin=0,xmax=36,ymin=0,ymax=1180,
-            xtick={0,12,24,36},xticklabels={départ,1 an,2 ans,3 ans},
-            ytick={0,250,500,750,1000},
-            tick label style={font=\scriptsize},
-            ylabel={coût cumulé (€)},ylabel style={font=\scriptsize,yshift=-3pt},
-            axis lines=left,grid=major,grid style={insagris!25,thin},
-            legend style={at={(0.02,1.0)},anchor=north west,font=\scriptsize,draw=none,fill=none,
-                          legend cell align=left},
-            clip=false]
-          \addplot[insagris,very thick] coordinates {(0,0) (36,643.68)};
-          \addlegendentry{Forfait mobile moyen}
-          \addplot[insaorange,very thick] coordinates {(0,363.3) (36,827.4)};
-          \addlegendentry{Balise + abonnement}
-          \addplot[insarouge,line width=2.2pt] coordinates {(0,69) (36,69)};
-          \addlegendentry{Kit \nomproduit{}}
-          \node[anchor=west,font=\scriptsize\bfseries,text=insagris] at (axis cs:36.6,644) {644\,€};
-          \node[anchor=west,font=\scriptsize\bfseries,text=insaorange] at (axis cs:36.6,827) {827\,€};
-          \node[anchor=west,font=\scriptsize\bfseries,text=insarouge] at (axis cs:36.6,69) {69\,€};
-        \end{axis}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.35\textwidth}
-      \begin{remarque}[Un complément]
-        \begin{puces}
-          \item Il ne remplace pas ton téléphone~: appels, internet.
-          \item Aucun centre de secours n'est relié~: ce n'est pas une balise de détresse.
-          \item Tes contacts doivent être équipés aussi.
-        \end{puces}
-      \end{remarque}
-    \end{column}
-  \end{columns}
-  \vspace{0.1cm}
-  \begin{pointcle}\centering\footnotesize
-    69\,€, c'est moins de quatre mois d'un forfait mobile moyen (17,88\,€ par mois).
-  \end{pointcle}
-  \srcnote{Hypothèses~: 36 mois, 1\,\$ = 0,86\,€, hors remplacement de batterie. Balise~: inReach Mini 2 (328,90\,€), forfait 14,99\,\$ par mois, activation 39,99\,\$.
-           Sources~: \cite{arcep_prix,garmin_mini2,garmin_plans}}
-\end{frame}
-
-%---------------------------------------------------------------------------
-% Diapositive 12 : quatre terrains d'usage
+% Quatre terrains d'usage
 %---------------------------------------------------------------------------
 \begin{frame}{Là où le réseau s'arrête~: quatre terrains}
   \begin{columns}[T]
@@ -102,7 +60,7 @@
         \begin{tikzpicture}\path (-0.7,-0.6) rectangle (0.7,0.6);
           \pic[insagris,scale=1.05] at (-0.12,-0.05) {icone tour};\pic[scale=0.95] at (0.42,0.32) {icone croix};\end{tikzpicture}\\[3pt]
         \gros{Campagne}\\[3pt]
-        {\footnotesize Il reste des zones blanches malgré 99\,\% de couverture 4G.}
+        {\footnotesize Il reste des zones blanches, même avec une 4G très répandue.}
       \end{carte}
     \end{column}
     \begin{column}{0.245\textwidth}
@@ -110,7 +68,7 @@
         \centering
         \begin{tikzpicture}\path (-0.7,-0.6) rectangle (0.7,0.6);\pic[scale=1.5] at (0,0) {icone mont};\end{tikzpicture}\\[3pt]
         \gros{Montagne}\\[3pt]
-        {\footnotesize 27 millions de Français pratiquent la randonnée~; le relief coupe le signal.}
+        {\footnotesize Le relief coupe le signal~: c'est le terrain des randonneurs.}
       \end{carte}
     \end{column}
     \begin{column}{0.245\textwidth}
@@ -134,5 +92,38 @@
   \begin{pointcle}\centering\footnotesize
     Un seul produit pour quatre terrains~: la même antenne, le même logiciel.
   \end{pointcle}
-  \srcnote{Sources~: \cite{arcep_mobile,ffrando,laresilience}}
+  \srcnote{Sources~: \cite{arcep_mobile,laresilience}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Ce qu'on affirme, ce qu'on ne promet pas
+%---------------------------------------------------------------------------
+\begin{frame}{Ce qu'on affirme, ce qu'on ne promet pas}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{encadre}{À mettre en avant}
+        \footnotesize\raggedright
+        \oui\textbf{Payé une fois}~: 69\,€, sans abonnement (voir la partie Concurrence).\par\vspace{1pt}
+        \oui\textbf{Marche sans opérateur}~: des messages entre voisins quand le réseau tombe.\par\vspace{1pt}
+        \oui\textbf{Prêt à l'emploi, en français}~: réglages Europe, clé privée, guide.\par\vspace{1pt}
+        \oui\textbf{Libre et vérifiable}~: code ouvert, ni compte ni serveur central.\par\vspace{1pt}
+        \oui\textbf{Compatible Meshtastic}~: avec les logos du projet, jamais dans notre nom.\par
+      \end{encadre}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{remarque}[À ne jamais promettre]
+        \footnotesize\raggedright
+        \non\textbf{Un secours}~: ce n'est pas une balise de détresse, aucun centre de secours n'est relié.\par\vspace{1pt}
+        \non\textbf{Une portée garantie}~: elle dépend du relief, de l'antenne et des voisins.\par\vspace{1pt}
+        \non\textbf{Un téléphone}~: ni appels ni internet, du texte seulement.\par\vspace{1pt}
+        \non\textbf{Un réseau déjà là}~: il faut des voisins équipés pour que le kit serve.\par\vspace{1pt}
+        \non\textbf{Un produit «\,Meshtastic\,»}~: la marque appartient au projet libre.\par
+      \end{remarque}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Une promesse étroite et tenue protège la marque et réduit le risque juridique.
+  \end{pcompact}
+  \srcnote{Règles d'usage de la marque~: \cite{meshtastic_licence}. Risque juridique~: frein F3 de l'étude documentaire. Portées indicatives~: partie Fonctionnement.}
 \end{frame}

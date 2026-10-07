@@ -1,0 +1,294 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie « SWOT et enjeux » (6 diapositives) -- à importer avec \include{chap_swot}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%
+%  Remplace l'ancien SWOT en PDF (\includepdf supprimé) : le diagnostic est maintenant écrit
+%  en LaTeX/TikZ, avec la charte du reste de la présentation, et complété par un SWOT croisé.
+%  Ce qui a changé par rapport à la version PDF :
+%   - la décomposition des 69 € n'est plus répétée ici (elle est dans la partie Finances) ;
+%   - chaque point du diagnostic renvoie à un « frein » F1 à F7 de l'étude documentaire ;
+%   - les marges des offres Solo / Duo / Groupe sont recalculées (marge par commande ET par kit,
+%     avec le coût de vente de 4 € compté une seule fois par commande) ;
+%   - le SWOT croisé (stratégies SO, WO, ST, WT) relie le diagnostic aux trois enjeux.
+%  Hypothèses chiffrées : celles de la partie Finances (kit 69 € TTC, matériel 30,30 €, vente 4 €
+%  par commande, 1 kit offert pour 10, charges fixes de l'année 3 = 430 k€).
+%  Les offres Solo (79 €), Duo (139 €, 2 kits) et Groupe (249 €, 4 kits) sont celles du SWOT d'origine ;
+%  le nombre de kits du Groupe (4) est une hypothèse.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{SWOT et enjeux}
+
+% Entrée de SWOT : \swit[couleur du code]{code}{titre}{texte}  (titre et texte sur le même paragraphe)
+\newcommand{\swit}[4][insarouge]{%
+  \begin{tcolorbox}[colback=insabeige,colframe=insabeige,boxrule=0pt,arc=2pt,left=4pt,right=4pt,
+                    top=1.5pt,bottom=1.5pt,before skip=0pt,after skip=2pt]
+    \scriptsize\raggedright{\sffamily\bfseries\color{#1}#2}\hspace{0.3em}{\sffamily\bfseries\footnotesize #3}\hspace{0.3em}#4\par
+  \end{tcolorbox}}
+% En-tête de colonne : \swhead{Forces}{couleur}
+\newcommand{\swhead}[2]{%
+  {\sffamily\bfseries\footnotesize\color{#2}\MakeUppercase{#1}}\\[-3pt]{\color{#2}\rule{\linewidth}{0.6pt}}\\[-1pt]}
+% renvoi vers un enjeu ou un frein
+\newcommand{\swref}[1]{\textcolor{insarouge}{\textbf{→\,#1}}}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Diagnostic interne~: forces et faiblesses}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \swhead{Forces}{insarouge}
+      \swit{S1}{Proposition de valeur claire}{Une messagerie texte sans réseau mobile, sans compte ni abonnement.}
+      \swit{S2}{Coût d'entrée faible}{69\,€ une fois, contre ≈ 830\,€ sur trois ans pour une balise satellite.}
+      \swit{S3}{Écosystème libre existant}{Meshtastic, Heltec V3, applications~: l'effort porte sur l'usage.}
+      \swit{S4}{Simplicité comme différence}{Réglages Europe, clé privée, QR code, guides en français.}
+      \swit{S5}{Un socle, plusieurs usages}{Outdoor, campagne, ONG, crise~: un kit, quatre terrains.}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \swhead{Faiblesses}{insagris}
+      \swit[insagris]{W1}{Faible barrière technologique}{Un bricoleur refait un kit proche pour 18 à 30\,€. \swref{F5}}
+      \swit[insagris]{W2}{Effet de réseau indispensable}{Un kit isolé ne sert à rien~: la valeur vient des voisins. \swref{enjeu 1}}
+      \swit[insagris]{W3}{Marge de contribution fine}{20,17\,€ par kit, mais 0,62\,€ de résultat par kit en année 3. \swref{enjeu 2}}
+      \swit[insagris]{W4}{Financement avant rentabilité}{≈ 450\,k€ à financer, point mort ≈ 21\,300 kits par an. \swref{F7}}
+      \swit[insagris]{W5}{Positionnement trop large}{ONG, randonneurs, makers, public~: attentes différentes. \swref{enjeu 3}}
+    \end{column}
+  \end{columns}
+  \vspace{-0.2cm}
+  \begin{pcompact}\centering\footnotesize
+    Lecture clé~: la technologie est accessible~; la valeur viendra de l'usage, de la marque et de l'écosystème.
+  \end{pcompact}
+  \srcnote{Synthèse des parties Concurrence, Finances et Étude documentaire. F2 à F7 = freins de l'étude documentaire.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Diagnostic externe~: opportunités et menaces}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \swhead{Opportunités}{insarouge}
+      \swit{O1}{Un marché outdoor important}{27 millions de pratiquants, dont 240\,000 licenciés FFRandonnée.}
+      \swit{O2}{Besoin croissant de résilience}{Zones blanches, crises~: l'État invite à préparer un kit de 72\,h.}
+      \swit{O3}{Réseaux locaux à construire}{Refuges, clubs, communes, ADRASEC~: points d'ancrage du maillage.}
+      \swit{O4}{Précommandes adaptées}{Le financement participatif teste la demande et paie le premier stock.}
+      \swit{O5}{Made in France, souveraineté}{Relocalisation par étapes~: un argument pour les collectivités.}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \swhead{Menaces}{insagris}
+      \swit[insagris]{T1}{Fait-maison, kits concurrents}{Cartes dès 18\,€, kits prêts à l'emploi 59 à 153\,€. \swref{C}}
+      \swit[insagris]{T2}{Substituts puissants}{SOS satellite des smartphones, balises, SMS satellite. \swref{F2}}
+      \swit[insagris]{T3}{Contraintes réglementaires}{Marquage CE, cybersécurité, responsabilité produit. \swref{F3, F4}}
+      \swit[insagris]{T4}{Dépendance amont}{Un seul fabricant de carte~; cap et marque de Meshtastic. \swref{F5, F6}}
+      \swit[insagris]{T5}{Promesse mal comprise}{Ni téléphone, ni balise de détresse~: cadrer la promesse. \swref{F3}}
+    \end{column}
+  \end{columns}
+  \vspace{-0.22cm}
+  \begin{pcompact}\centering\footnotesize
+    Opportunité réelle, mais fenêtre concurrentielle courte~: il faut bâtir vite une communauté et une marque.
+  \end{pcompact}
+  \srcnote{Sources~: \cite{ffrando,ffrando_licencies,guide_tous_resp}. F2 à F6 = freins de l'étude documentaire~; C = chapitre Concurrence.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\newenvironment{pucesx}
+  {\begingroup\setbeamerfont{itemize/enumerate body}{size=\scriptsize}\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\topsep}{1pt}}
+  {\end{itemize}\endgroup}
+\begin{frame}{SWOT croisé~: quelles stratégies en déduire~?}
+  \footnotesize\renewcommand{\arraystretch}{1.0}\setlength{\tabcolsep}{4pt}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.65cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    & \cellcolor{insarose}\textcolor{insarouge}{\bfseries Opportunités (O)} & \cellcolor{insarose}\textcolor{insarouge}{\bfseries Menaces (T)} \\[2pt]
+    \cellcolor{insarose}\textcolor{insarouge}{\bfseries Forces (S)} &
+      \cellcolor{insabeige}{\sffamily\bfseries\color{insarouge}Attaquer}
+      \begin{pucesx}
+        \item Micro-réseaux prêts à l'emploi (Duo, Groupe) pour clubs, refuges, groupes de randonnée.
+        \item Précommandes~: tester la demande et financer le premier stock.
+        \item Pilotes avec des ADRASEC et des communes~: preuves d'usage, premiers nœuds.
+      \end{pucesx} &
+      \cellcolor{insabeige}{\sffamily\bfseries\color{insarouge}Défendre}
+      \begin{pucesx}
+        \item Vendre le prêt-à-l'emploi~: réglages, clé privée, guide, garantie, marquage CE.
+        \item Rester un complément du smartphone et de la balise, sans promesse de secours.
+        \item Contribuer au code libre, rester « compatible Meshtastic ».
+      \end{pucesx} \\[3pt]
+    \cellcolor{insarose}\textcolor{insarouge}{\bfseries Faiblesses (W)} &
+      \cellcolor{insabeige}{\sffamily\bfseries\color{insarouge}Corriger}
+      \begin{pucesx}
+        \item Densifier autour de points d'ancrage (refuge, club, mairie) contre l'effet de réseau.
+        \item Tester Solo, Duo et Groupe avant la série pour relever la marge.
+        \item Bâtir le dossier de financement sur les précommandes.
+      \end{pucesx} &
+      \cellcolor{insabeige}{\sffamily\bfseries\color{insarouge}Éviter}
+      \begin{pucesx}
+        \item Notice claire, test à 100\,\%, assurance responsabilité produit.
+        \item Double source de cartes (V3 et V4), stock tampon, vente d'abord en France.
+        \item Fixer des seuils d'arrêt avant le moule et la série (étude quantitative).
+      \end{pucesx} \\
+  \end{tabularx}
+  \srcnote{Croisement des deux diapositives précédentes (méthode TOWS)~: S, W = forces et faiblesses~; O, T = opportunités et menaces.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Liaisons possibles entre n kits : n(n-1)/2 (2 kits = 1, 4 = 6, 6 = 15, 10 = 45)
+\begin{frame}{Enjeu 1~: résoudre l'effet de réseau}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \begin{tikzpicture}[font=\footnotesize]
+        \node[pcli,text width=2.3cm,minimum height=0.7cm] (a) at (0,1.05) {Peu d'utilisateurs};
+        \node[pgris,text width=1.6cm,minimum height=0.7cm] (b) at (3.55,1.05) {Peu de relais};
+        \node[pgris,text width=1.6cm,minimum height=0.7cm] (c) at (1.78,-0.3) {Valeur limitée};
+        \draw[fluxr] (a) -- (b);
+        \draw[fluxr] (b) -- (c);
+        \draw[fluxr] (c) -- (a);
+        \node[font=\scriptsize\bfseries,text=insarouge,align=center] at (1.78,0.5) {cercle\\vicieux};
+      \end{tikzpicture}
+
+      \vspace{0.05cm}
+      {\footnotesize\textbf{Un groupe vaut plus que la somme de ses kits}~: $n$ kits offrent $n(n{-}1)/2$ liaisons.\par}
+      \begin{tikzpicture}[font=\scriptsize]
+        \tikzset{noeud/.style={circle,fill=insarouge,inner sep=1.3pt}}
+        % 2 kits
+        \begin{scope}[shift={(0.0,0)}]
+          \node[noeud] (u0) at (-0.28,0) {};\node[noeud] (u1) at (0.28,0) {};
+          \draw[insagris,thick] (u0) -- (u1);
+          \node[align=center,anchor=north] at (0,-0.55) {2 kits\\\textbf{1 liaison}};
+        \end{scope}
+        % 4 kits
+        \begin{scope}[shift={(1.85,0)}]
+          \foreach \i in {0,...,3} {\node[noeud] (v\i) at ({45+90*\i}:0.4) {};}
+          \foreach \i/\j in {0/1,0/2,0/3,1/2,1/3,2/3} {\draw[insagris,thick] (v\i) -- (v\j);}
+          \node[align=center,anchor=north] at (0,-0.55) {4 kits\\\textbf{6 liaisons}};
+        \end{scope}
+        % 6 kits
+        \begin{scope}[shift={(3.7,0)}]
+          \foreach \i in {0,...,5} {\node[noeud] (w\i) at ({90+60*\i}:0.42) {};}
+          \foreach \i/\j in {0/1,0/2,0/3,0/4,0/5,1/2,1/3,1/4,1/5,2/3,2/4,2/5,3/4,3/5,4/5} {\draw[insagris,thin] (w\i) -- (w\j);}
+          \node[align=center,anchor=north] at (0,-0.55) {6 kits\\\textbf{15 liaisons}};
+        \end{scope}
+        \node[align=center,font=\scriptsize] at (5.15,0) {10 kits\\\textbf{45}};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.51\textwidth}
+      \begin{columns}[T]
+        \begin{column}{0.47\linewidth}
+          \begin{carte}[height=1.7cm,valign=top]
+            \centering
+            \begin{tikzpicture}\path (-0.5,-0.35) rectangle (0.5,0.35);\pic[insarouge,scale=0.9] at (0,0) {icone personne};\end{tikzpicture}\\[1pt]
+            \gros{Duo, famille}\\[1pt]{\footnotesize 2 à 3 appareils}
+          \end{carte}
+        \end{column}
+        \begin{column}{0.47\linewidth}
+          \begin{carte}[height=1.7cm,valign=top]
+            \centering
+            \begin{tikzpicture}\path (-0.5,-0.35) rectangle (0.5,0.35);\pic[scale=0.9] at (0,0) {icone mont};\end{tikzpicture}\\[1pt]
+            \gros{Randonnée}\\[1pt]{\footnotesize 4 appareils}
+          \end{carte}
+        \end{column}
+      \end{columns}
+      \vspace{0.1cm}
+      \begin{columns}[T]
+        \begin{column}{0.47\linewidth}
+          \begin{carte}[height=1.7cm,valign=top]
+            \centering
+            \begin{tikzpicture}\path (-0.5,-0.35) rectangle (0.5,0.35);\pic[insarouge,scale=0.9] at (0,0) {icone tente};\end{tikzpicture}\\[1pt]
+            \gros{Refuge, club}\\[1pt]{\footnotesize un relais et ses utilisateurs}
+          \end{carte}
+        \end{column}
+        \begin{column}{0.47\linewidth}
+          \begin{carte}[height=1.7cm,valign=top]
+            \centering
+            \begin{tikzpicture}\path (-0.5,-0.35) rectangle (0.5,0.35);\pic[scale=0.9] at (0,0) {icone croix};\end{tikzpicture}\\[1pt]
+            \gros{ONG}\\[1pt]{\footnotesize secours~: 10 à 30 appareils}
+          \end{carte}
+        \end{column}
+      \end{columns}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Le bon produit est peut-être moins «\,une antenne\,» qu'un réseau prêt à l'emploi pour un groupe constitué.
+  \end{pcompact}
+  \srcnote{Micro-réseaux d'après le SWOT de l'équipe~; tailles de groupe à mesurer dans le questionnaire (questions 6 et 18).}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Enjeu 2~: un prix d'appel, une marge à protéger}
+  \footnotesize\renewcommand{\arraystretch}{1.3}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \newcolumntype{N}{>{\raggedleft\arraybackslash}p{1.5cm}}
+  \setlength{\tabcolsep}{3pt}
+  \noindent\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.9cm}NNNNNN@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Offre} & \textcolor{insarouge}{\bfseries Prix TTC} & \textcolor{insarouge}{\bfseries Par kit} & \textcolor{insarouge}{\bfseries Marge par commande} & \textcolor{insarouge}{\bfseries Marge par kit} & \textcolor{insarouge}{\bfseries Point mort (kits/an)} & \textcolor{insarouge}{\bfseries Résultat année 3}\\
+    Kit seul (référence)    & 69\,€  & 69,00\,€ & 20,17\,€ & 20,17\,€ & 21\,300 & +13,7\,k€\\
+    Solo                    & 79\,€  & 79,00\,€ & 28,50\,€ & 28,50\,€ & 15\,100 & +197\,k€\\
+    \rowcolor{insabeige}Duo (2 kits)           & 139\,€ & 69,50\,€ & 45,17\,€ & 22,59\,€ & 19\,000 & +67\,k€\\
+    Groupe (4 kits)         & 249\,€ & 62,25\,€ & 70,18\,€ & 17,54\,€ & 24\,500 & −44\,k€\\
+  \end{tabular}
+  \vspace{0.12cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.7cm,valign=top]
+        \raggedright\gros{−73\,k€}\\[1pt]{\footnotesize sur le résultat de l'année 3 si le coût matériel monte de 10\,\% (+3\,€ par kit).}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.7cm,valign=top]
+        \raggedright\gros{−44\,k€}\\[1pt]{\footnotesize si la vente, le SAV et la logistique coûtent 2\,€ de plus par commande.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.7cm,valign=top]
+        \raggedright\gros{±92\,k€}\\[1pt]{\footnotesize pour 5\,€ de prix en plus ou en moins sur chaque kit.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Le Duo relève la marge par kit~; le Groupe à 249\,€ la baisse (il faudrait ≥ 262\,€). Le prix se tranche par le test (questions 19 à 21 du questionnaire), pas par intuition.
+  \end{pcompact}
+  \srcnote{Calcul avec le modèle de la partie Finances~: matériel 30,30\,€, vente 4\,€ par commande, 1 kit offert pour 10, charges fixes 430\,k€, 22\,000 kits. Marge = prix HT moins coûts variables.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Enjeu 3~: choisir un marché de départ}
+  \begin{columns}[T]
+    \begin{column}{0.35\textwidth}
+      \begin{carte}[height=4.45cm,valign=top]
+        \raggedright
+        {\sffamily\bfseries\scriptsize\color{insarouge}CIBLE DE DÉPART (HYPOTHÈSE)}\\[2pt]
+        {\sffamily\bfseries\large\color{insarouge}Randonneurs et groupes outdoor}\\[2pt]
+        {\footnotesize\textbf{Pourquoi~?}}
+        \begin{puces}
+          \item besoin simple à comprendre
+          \item usage réel en zone blanche
+          \item marché large et accessible
+          \item vente plus simple que le secours
+        \end{puces}
+        {\scriptsize\textcolor{insarouge}{À confirmer par l'étude quantitative.}}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      {\sffamily\bfseries\footnotesize Progression naturelle}\\[3pt]
+      \begin{tikzpicture}[font=\footnotesize]
+        \draw[insarouge!40,thick] (0.2,0.05) -- (0.2,-3.55);
+        \node[num] at (0.2,0)     {1};
+        \node[num] at (0.2,-0.9) {2};
+        \node[num] at (0.2,-1.8)  {3};
+        \node[num] at (0.2,-2.7) {4};
+        \node[num] at (0.2,-3.6)  {5};
+        \node[anchor=west,text width=3.9cm,align=left] at (0.5,0)     {{\bfseries Outdoor}\\[-1pt]{\scriptsize randonneurs et groupes}};
+        \node[anchor=west,text width=3.9cm,align=left] at (0.5,-0.9) {{\bfseries Refuges et clubs}\\[-1pt]{\scriptsize points de relais locaux}};
+        \node[anchor=west,text width=3.9cm,align=left] at (0.5,-1.8)  {{\bfseries Associations}\\[-1pt]{\scriptsize ADRASEC, communautés structurées}};
+        \node[anchor=west,text width=3.9cm,align=left] at (0.5,-2.7) {{\bfseries ONG, communes, pros}\\[-1pt]{\scriptsize déploiements plus larges}};
+        \node[anchor=west,text width=3.9cm,align=left] at (0.5,-3.6)  {{\bfseries Grand public}\\[-1pt]{\scriptsize familles, voyageurs, une fois le réseau visible}};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.25\textwidth}
+      \begin{idee}\footnotesize\centering
+        {\sffamily\bfseries\color{insarouge}L'objectif}\\[3pt]
+        Créer d'abord une zone où le produit est vraiment utile…\\[3pt]
+        …puis utiliser cette densité, les retours terrain et la preuve d'usage pour élargir.
+      \end{idee}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Ne pas viser «\,tout le monde\,» au lancement~: gagner un premier territoire d'usage, puis élargir.
+  \end{pcompact}
+  \srcnote{Choix du marché de départ d'après le SWOT de l'équipe~; les seuils de décision sont dans la partie Étude quantitative.}
+\end{frame}

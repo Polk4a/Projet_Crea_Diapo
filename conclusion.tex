@@ -1,45 +1,66 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Partie 7 -- Risques et conformité, conclusion et prochaines étapes (2 diapositives)
+%  Partie « Risques et suite » (2 diapositives) -- à importer avec \include{conclusion}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%
+%  1. Matrice des risques (probabilité x gravité) : elle remplace l'ancien tableau de sept risques,
+%     dont les causes et les réponses sont maintenant dans les parties SWOT et Étude documentaire.
+%     Le placement des risques est une ESTIMATION à discuter en équipe, pas une mesure.
+%  2. Conclusion et feuille de route : les étapes intègrent l'étude qualitative, l'étude
+%     quantitative et la décision « poursuivre, ajuster, arrêter » avant le moule et la série.
+%  Le troisième chiffre clé dit « modèle à valider » (et non « viable ») : le point mort est
+%  loin du volume de l'année 1 et la demande n'est pas encore mesurée.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Risques et suite}
 
+% ligne de légende de la matrice : \rlig{y}{numéro}{nom}{réponse}
+\newcommand{\rlig}[4]{%
+  \node[num] at (0.2,#1) {#2};
+  \node[anchor=west,text width=6.9cm,align=left,inner sep=1pt] at (0.5,#1) {{\footnotesize\bfseries #3}\\[-2pt]{\scriptsize #4}};}
+
 %---------------------------------------------------------------------------
-% Diapositive 19 : risques et conformité
-%---------------------------------------------------------------------------
-\begin{frame}{Risques et conformité~: ce qu'il faut maîtriser}
-  \renewcommand{\arraystretch}{1.22}
-  \footnotesize\hyphenpenalty=10000 \exhyphenpenalty=10000
-  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
-    \rowcolor{insarose}
-    \textcolor{insarouge}{Risque} & \textcolor{insarouge}{Pourquoi} & \textcolor{insarouge}{Notre réponse} \\
-    Conformité et droit & Marquage CE (directive RED)~; chiffrement à vérifier hors UE. &
-      Tests en laboratoire dès l'an 1 (25\,k€)~; avis juridique avant export. \\
-    \arrayrulecolor{insagris!30}\hline
-    Règles radio & 10\,\% de temps d'émission, 500\,mW ERP au plus (869,4 à 869,65\,MHz). &
-      Région Europe préréglée, antennes d'origine, guide d'usage. \\
-    \hline
-    Densité du maillage & Sans voisins équipés, le réseau ne sert à rien. &
-      Packs de 2 à 3 kits, démarrage par zones, cartes de couverture. \\
-    \hline
-    Projet libre amont & Meshtastic peut changer de cap~; des alternatives existent (MeshCore). &
-      Code GPL~: fork possible, développeurs contributeurs, veille. \\
-    \hline
-    Concurrence du fait-maison & La carte seule coûte ≈ 17\,€~; les passionnés assemblent eux-mêmes. &
-      Valeur = prêt à l'emploi, support, garantie~; cible non technique. \\
-    \hline
-    Promesses et limites & Débit faible, aucun secours relié~: risque d'attentes excessives. &
-      Messagerie texte, jamais présentée comme une balise de détresse. \\
-    \hline
-    Trésorerie & Le stock importé se paie avant de vendre. &
-      Précommandes, achats par lots, financement participatif. \\
-  \end{tabularx}
-  \srcnote{Sources~: \cite{red_2014_53,ttn_eu868,meshtastic_crypto,techconnect}}
+\begin{frame}{Risques~: ce qu'il faut maîtriser en premier}
+  \begin{columns}[T]
+    \begin{column}{0.36\textwidth}
+      \centering
+      \begin{tikzpicture}[font=\scriptsize]
+        % cellules : colonne = probabilité (1 à 3), ligne = gravité (1 à 3)
+        \foreach \i/\j/\c in {1/1/insabeige,2/1/insabeige,3/1/insapeche2,1/2/insabeige,2/2/insapeche2,3/2/insarose,1/3/insapeche2,2/3/insarose,3/3/insarouge!35} {
+          \filldraw[fill=\c,draw=white,line width=1pt] ({(\i-1)*1.3},{(\j-1)*1.2}) rectangle ({\i*1.3},{\j*1.2});}
+        % risques (numéros de la légende)
+        \node[num] at (0.65,3.0) {4};
+        \node[num] at (1.95,3.0) {1};
+        \node[num] at (3.05,3.0) {3};\node[num] at (3.5,3.0) {7};
+        \node[num] at (0.65,1.8) {2};
+        \node[num] at (1.95,1.8) {6};
+        \node[num] at (3.25,1.8) {5};
+        % axes
+        \node[anchor=north] at (0.65,-0.05) {faible};
+        \node[anchor=north] at (1.95,-0.05) {moyenne};
+        \node[anchor=north] at (3.25,-0.05) {élevée};
+        \node[anchor=north,font=\scriptsize\bfseries,text=insagris] at (1.95,-0.4) {Probabilité};
+        \node[rotate=90,anchor=south,font=\scriptsize\bfseries,text=insagris] at (-0.05,1.8) {Gravité};
+        \node[rotate=90,anchor=south] at (-0.45,0.6) {faible};
+        \node[rotate=90,anchor=south] at (-0.45,3.0) {élevée};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.62\textwidth}
+      \begin{tikzpicture}[font=\footnotesize]
+        \rlig{0.1}{1}{Conformité et droit}{tests dès l'an 1, assurance, avis juridique (F3, F4)}
+        \rlig{-0.62}{2}{Règles radio}{10\,\% du temps d'émission, 500\,mW~: région Europe préréglée}
+        \rlig{-1.34}{3}{Densité du maillage}{micro-réseaux et démarrage par zones (F1, SWOT enjeu 1)}
+        \rlig{-2.06}{4}{Projet libre amont}{code GPL, fork possible, contributions et veille (F5)}
+        \rlig{-2.78}{5}{Concurrence du fait-maison}{valeur = prêt à l'emploi, support, garantie (concurrence)}
+        \rlig{-3.5}{6}{Promesses et limites}{texte seul, jamais une balise de détresse (F3, marketing)}
+        \rlig{-4.22}{7}{Trésorerie}{précommandes, achats par lots, seuils d'arrêt (F7)}
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \srcnote{Placement des risques~: estimation à discuter en équipe, aucune mesure. Causes et réponses~: parties Étude documentaire (freins F1 à F7), SWOT et Concurrence. Règles radio~: bande 869,4 à 869,65\,MHz, 500\,mW, 10\,\% du temps d'émission \cite{ttn_eu868,red_2014_53}.}
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 20 : conclusion et prochaines étapes
-%---------------------------------------------------------------------------
 \begin{frame}{Conclusion~: l'essentiel et la suite}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
   \begin{columns}[T]
     \begin{column}{0.47\textwidth}
       \begin{carte}[height=1.25cm,valign=top]
@@ -53,25 +74,24 @@
       \end{carte}
       \vspace{0.1cm}
       \begin{carte}[height=1.25cm,valign=top]
-        \raggedright\gros{Un modèle viable}\\[1pt]
-        {\footnotesize Point mort à 21\,300 kits/an, 450\,k€ à financer.}
+        \raggedright\gros{Un modèle à valider}\\[1pt]
+        {\footnotesize Point mort à 21\,300 kits/an, à valider.}
       \end{carte}
     \end{column}
     \begin{column}{0.5\textwidth}
-      \vspace{0.2cm}
       \begin{tikzpicture}[font=\footnotesize]
-        \draw[insarouge!40,thick] (0.2,0.25) -- (0.2,-3.65);
+        \draw[insarouge!40,thick] (0.2,0.25) -- (0.2,-3.85);
         \node[num] at (0.2,0)     {1};
-        \node[num] at (0.2,-1.2)  {2};
-        \node[num] at (0.2,-2.4)  {3};
-        \node[num] at (0.2,-3.6)  {4};
+        \node[num] at (0.2,-1.3)  {2};
+        \node[num] at (0.2,-2.6)  {3};
+        \node[num] at (0.2,-3.8)  {4};
         \node[anchor=west,text width=5.6cm,align=left] at (0.5,0)
-          {{\bfseries 0 à 3 mois}\\Prototype et dix kits testés sur le terrain (montagne, ville, ONG).};
-        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-1.2)
-          {{\bfseries 3 à 6 mois}\\Nom et marque à vérifier, précommandes, dossier de financement.};
-        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-2.4)
+          {{\bfseries 0 à 3 mois}\\Prototype, dix kits testés, entretiens, questionnaire (310 réponses).};
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-1.3)
+          {{\bfseries 3 à 6 mois}\\Décision (poursuivre, ajuster, arrêter), nom et marque, précommandes.};
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-2.6)
           {{\bfseries 6 à 12 mois}\\Tests de conformité CE, première série de 2\,000 kits.};
-        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-3.6)
+        \node[anchor=west,text width=5.6cm,align=left] at (0.5,-3.8)
           {{\bfseries Année 2}\\ONG pilotes, relocalisation de la carte en France.};
       \end{tikzpicture}
     \end{column}
