@@ -1,139 +1,2586 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Partie « Marché cible » (3 diapositives) -- à importer avec \include{chap_marche}
+%  Partie « Marché cible » -- à importer avec \include{chap_marche}
 %  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
-%
-%  Les trois segments sont ceux de l'étude quantitative (même ordre, mêmes noms) :
-%    1 Plein air et sport outdoor      2 Camping, voyage, famille      3 Secours et gestion de crise
-%  Chaque segment a un RÔLE : départ (1 et 3) ou extension (2, puis le grand public).
-%  Cette partie reprend aussi les tailles de marché sourcées de l'ancienne étude documentaire,
-%  qui ne figurent plus ailleurs (les autres parties y renvoient).
-%  Les tailles sont des nombres de personnes ou d'organisations, pas des ventes prévues.
+%  Étude de marché en quatre cibles, dans l'ordre où on les vise :
+%    1 randonneurs, explorateurs, amateurs de nature   2 ONG, secours, humanitaire
+%    3 low-tech, autonomistes, makers                   4 le reste (grand public)
+%  Pour chacune : France puis monde, entonnoir marché total -> exposés -> marché accessible
+%  -> acheteurs -> kits (trois scénarios), puis synthèse, contrôles croisés et sensibilité.
+%  Toutes les macros de cette partie commencent par « mk » (pas de conflit avec les autres parties).
+%  Les chiffres publiés sont sourcés (\cite) ; les autres sont des HYPOTHÈSES signalées comme telles
+%  (pastille « à mesurer »), à remplacer par les résultats de l'étude quantitative.
+%  Les totaux du modèle (entonnoir, scénarios, simulation) sont regroupés au début du fichier,
+%  dans les macros \mkv{...} et \mkr{...} : un seul endroit à mettre à jour si une hypothèse change.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Marché cible}
 
-% Barre horizontale à échelle logarithmique (origine = 1 000) :
-% \mbarre{y}{log10 de la valeur}{libellé}{valeur affichée}{couleur de la barre}
-\newcommand{\mbarre}[5]{%
-  \pgfmathsetmacro{\mlen}{1.0*(#2-3)}%
-  \fill[#5] (2.65,#1-0.17) rectangle ++(\mlen,0.34);%
-  \node[anchor=east,text width=2.5cm,align=right,font=\scriptsize] at (2.55,#1) {#3};%
-  \node[anchor=west,font=\scriptsize\bfseries] at ({2.65+\mlen+0.08},#1) {#4};}
+%===========================================================================
+% PALETTE ET GABARITS DE GRAPHIQUES (tous les noms commencent par « mk » pour ne pas
+% entrer en conflit avec les macros des autres parties)
+%===========================================================================
+% une couleur par cible, la même sur toutes les diapositives
+\colorlet{mkA}{insarouge}      % cible 1 : randonneurs, explorateurs, amateurs de nature
+\colorlet{mkB}{insasafran}     % cible 2 : ONG, humanitaire et secours
+\colorlet{mkC}{insagris}       % cible 3 : low-tech, autonomistes, makers
+\colorlet{mkD}{insagris!35}    % cible 4 : le reste (grand public)
 
-%---------------------------------------------------------------------------
-\begin{frame}{Trois segments d'abord, le grand public ensuite}
+% --- barres horizontales à échelle logarithmique -----------------------------
+% réglages : \mkox = début des barres (cm), \mkdec = cm par décade, \mkmin = log10 de la valeur à l'origine,
+%            \mklabw = largeur du libellé à gauche
+\newcommand{\mkox}{3.0}\newcommand{\mkdec}{1.0}\newcommand{\mkmin}{3}\newcommand{\mklabw}{2.8cm}
+% \mkbl{y}{mantisse}{exposant}{libellé}{texte affiché}{couleur}  : valeur = mantisse x 10^exposant
+% (pgfmath ne lit pas un entier supérieur à 16 383, d'où cette écriture)
+\newcommand{\mkbl}[6]{%
+  \pgfmathsetmacro{\mkL}{\mkdec*(log10(#2)+#3-\mkmin)}%
+  \fill[#6] (\mkox,#1-0.15) rectangle ++(\mkL,0.30);%
+  \node[anchor=east,text width=\mklabw,align=right,font=\scriptsize,inner sep=1pt] at (\mkox-0.08,#1) {#4};%
+  \node[anchor=west,font=\scriptsize\bfseries,inner sep=1pt] at ({\mkox+\mkL+0.06},#1) {#5};}
+% axe des décades sous les barres : \mkaxe{y}{première décade}{dernière décade}
+\newcommand{\mkaxe}[3]{%
+  \draw[insagris,thin] (\mkox,#1) -- ({\mkox+\mkdec*(#3-\mkmin)},#1);%
+  \foreach \mkd in {#2,...,#3} {%
+    \draw[insagris,thin] ({\mkox+\mkdec*(\mkd-\mkmin)},#1) -- ++(0,-0.07);%
+    \node[anchor=north,font=\tiny,text=insagris,inner sep=1pt] at ({\mkox+\mkdec*(\mkd-\mkmin)},#1-0.06) {$10^{\mkd}$};}}
+
+% --- barres horizontales à échelle linéaire ----------------------------------
+% \mkbmax = valeur qui correspond à \mkbw cm
+\newcommand{\mkbmax}{100}\newcommand{\mkbw}{5}
+% \mkbh{y}{valeur}{libellé}{texte affiché}{couleur}
+\newcommand{\mkbh}[5]{%
+  \pgfmathsetmacro{\mkL}{\mkbw*(#2)/\mkbmax}%
+  \fill[#5] (\mkox,#1-0.15) rectangle ++(\mkL,0.30);%
+  \node[anchor=east,text width=\mklabw,align=right,font=\scriptsize,inner sep=1pt] at (\mkox-0.08,#1) {#3};%
+  \node[anchor=west,font=\scriptsize\bfseries,inner sep=1pt] at ({\mkox+\mkL+0.06},#1) {#4};}
+
+% --- entonnoir : une ligne par étape ------------------------------------------
+% \mkfun{y}{largeur de la barre en cm}{couleur de fond}{couleur du texte}{nombre}{étape (à gauche)}{règle et source (à droite)}
+% la barre est centrée sur x = 0 ; l'étape est alignée à gauche de x = -\mkfl, la note à droite de x = \mkfr
+\newcommand{\mkfl}{4.7}\newcommand{\mkfr}{2.35}
+\newcommand{\mkfun}[7]{%
+  \fill[#3,rounded corners=2pt] (-#2/2,#1-0.25) rectangle (#2/2,#1+0.25);%
+  \node[text=#4,font=\footnotesize\bfseries,inner sep=0pt] at (0,#1) {#5};%
+  \node[anchor=west,text width=2.55cm,align=left,font=\scriptsize\bfseries,inner sep=1pt] at (-\mkfl,#1) {#6};%
+  \node[anchor=west,text width=5.1cm,align=left,font=\scriptsize,inner sep=1pt] at (\mkfr,#1) {#7};}
+
+% --- colonnes empilées (quatre cibles) -------------------------------------------
+% \mkcs = cm par unité ; \mkstk{x}{cible 1}{cible 2}{cible 3}{cible 4}{total affiché}
+\newcommand{\mkcs}{0.00022}
+\newcommand{\mkstk}[6]{%
+  \pgfmathsetmacro{\mkha}{\mkcs*#2}\pgfmathsetmacro{\mkhb}{\mkcs*#3}\pgfmathsetmacro{\mkhc}{\mkcs*#4}\pgfmathsetmacro{\mkhd}{\mkcs*#5}%
+  \pgfmathsetmacro{\mkya}{\mkha}\pgfmathsetmacro{\mkyb}{\mkha+\mkhb}\pgfmathsetmacro{\mkyc}{\mkha+\mkhb+\mkhc}\pgfmathsetmacro{\mkyd}{\mkha+\mkhb+\mkhc+\mkhd}%
+  \fill[mkA] (#1-0.45,0) rectangle (#1+0.45,\mkya);%
+  \fill[mkB] (#1-0.45,\mkya) rectangle (#1+0.45,\mkyb);%
+  \fill[mkC] (#1-0.45,\mkyb) rectangle (#1+0.45,\mkyc);%
+  \fill[mkD] (#1-0.45,\mkyc) rectangle (#1+0.45,\mkyd);%
+  \node[anchor=south,font=\footnotesize\bfseries,inner sep=2pt] at (#1,\mkyd) {#6};}
+
+% --- tornade (sensibilité) --------------------------------------------------------
+% \mkts = cm par unité ; \mktor{y}{libellé}{écart bas}{écart haut}{texte bas}{texte haut} ; axe central en x = 0
+\newcommand{\mkts}{0.12}
+\newcommand{\mktor}[6]{%
+  \fill[mkC!55] (0,#1-0.14) rectangle ({-\mkts*#3},#1+0.14);%
+  \fill[mkA] (0,#1-0.14) rectangle ({\mkts*#4},#1+0.14);%
+  \node[anchor=east,font=\scriptsize,inner sep=1pt] at ({-\mkts*#3-0.05},#1) {#5};%
+  \node[anchor=west,font=\scriptsize,inner sep=1pt] at ({\mkts*#4+0.05},#1) {#6};%
+  \node[anchor=east,font=\scriptsize,text width=3.4cm,align=right,inner sep=1pt] at (-3.3,#1) {#2};}
+
+% --- pastilles de statut d'un chiffre ---------------------------------------------
+% plein = chiffre publié ; demi = hypothèse encadrée (fourchette publiée ou littérature) ; vide = à mesurer
+\newcommand{\mkplein}{\tikz[baseline=-0.5ex]{\fill[insarouge] (0,0) circle (0.075);}}
+\newcommand{\mkdemi}{\tikz[baseline=-0.5ex]{\draw[insarouge,line width=0.5pt] (0,0) circle (0.075);\fill[insarouge] (0,0) -- (90:0.075) arc (90:270:0.075) -- cycle;}}
+\newcommand{\mkvide}{\tikz[baseline=-0.5ex]{\draw[insarouge,line width=0.5pt] (0,0) circle (0.075);}}
+
+% --- barres à échelle logarithmique dont on donne directement le log10 ---------------
+% \mkbg{y}{log10 de la valeur}{libellé}{texte affiché}{couleur}
+\newcommand{\mkbg}[5]{%
+  \pgfmathsetmacro{\mkL}{\mkdec*(#2-\mkmin)}%
+  \fill[#5] (\mkox,#1-0.15) rectangle ++(\mkL,0.30);%
+  \node[anchor=east,text width=\mklabw,align=right,font=\scriptsize,inner sep=1pt] at (\mkox-0.08,#1) {#3};%
+  \node[anchor=west,font=\scriptsize\bfseries,inner sep=1pt] at ({\mkox+\mkL+0.06},#1) {#4};}
+
+% --- barre flottante bas / central / haut (échelle logarithmique) ---------------------
+% \mkrng{y}{log10 bas}{log10 central}{log10 haut}{couleur}{libellé}{texte affiché à droite}
+\newcommand{\mkrng}[7]{%
+  \pgfmathsetmacro{\mkxb}{\mkox+\mkdec*(#2-\mkmin)}%
+  \pgfmathsetmacro{\mkxc}{\mkox+\mkdec*(#3-\mkmin)}%
+  \pgfmathsetmacro{\mkxh}{\mkox+\mkdec*(#4-\mkmin)}%
+  \fill[#5!35] (\mkxb,#1-0.13) rectangle (\mkxh,#1+0.13);%
+  \fill[#5] (\mkxc-0.035,#1-0.2) rectangle (\mkxc+0.035,#1+0.2);%
+  \node[anchor=east,text width=\mklabw,align=right,font=\scriptsize,inner sep=1pt] at (\mkox-0.08,#1) {#6};%
+  \node[anchor=west,font=\scriptsize\bfseries,inner sep=1pt] at ({\mkxh+0.06},#1) {#7};}
+
+% pas de coupure de mot dans les libellés de graphiques : à appeler au début d'un tikzpicture
+\newcommand{\mkpas}{\hyphenpenalty=10000 \exhyphenpenalty=10000 }
+%%% GÉNÉRÉ par mkall.py à partir du modèle (ne pas modifier à la main) %%%
+\newcommand{\mkset}[2]{\expandafter\gdef\csname mkv@#1\endcsname{#2}}
+\newcommand{\mkv}[1]{\csname mkv@#1\endcsname}
+\newcommand{\mksetr}[2]{\expandafter\gdef\csname mkr@#1\endcsname{#2}}
+\newcommand{\mkr}[1]{\csname mkr@#1\endcsname}
+\mkset{L1a.N.bas}{4,6~M}
+\mkset{L1a.N.central}{4,6~M}
+\mkset{L1a.N.haut}{8,1~M}
+\mkset{L1a.buy.bas}{460}
+\mkset{L1a.buy.central}{5\,500}
+\mkset{L1a.buy.haut}{61\,000}
+\mkset{L1a.expo.bas}{1,1~M}
+\mkset{L1a.expo.central}{1,8~M}
+\mkset{L1a.expo.haut}{4,9~M}
+\mkset{L1a.kits.bas}{690}
+\mkset{L1a.kits.central}{9\,900}
+\mkset{L1a.kits.haut}{130\,000}
+\mkset{L1a.sam.bas}{92\,000}
+\mkset{L1a.sam.central}{276\,000}
+\mkset{L1a.sam.haut}{1,2~M}
+\mkset{L1b.N.bas}{12~M}
+\mkset{L1b.N.central}{12~M}
+\mkset{L1b.N.haut}{12~M}
+\mkset{L1b.buy.bas}{31}
+\mkset{L1b.buy.central}{400}
+\mkset{L1b.buy.haut}{3\,300}
+\mkset{L1b.expo.bas}{620\,000}
+\mkset{L1b.expo.central}{1,2~M}
+\mkset{L1b.expo.haut}{1,9~M}
+\mkset{L1b.kits.bas}{46}
+\mkset{L1b.kits.central}{710}
+\mkset{L1b.kits.haut}{7\,400}
+\mkset{L1b.sam.bas}{24\,800}
+\mkset{L1b.sam.central}{99\,200}
+\mkset{L1b.sam.haut}{223\,000}
+\mkset{L1c.N.bas}{200\,000}
+\mkset{L1c.N.central}{236\,000}
+\mkset{L1c.N.haut}{300\,000}
+\mkset{L1c.buy.bas}{100}
+\mkset{L1c.buy.central}{940}
+\mkset{L1c.buy.haut}{6\,300}
+\mkset{L1c.expo.bas}{80\,000}
+\mkset{L1c.expo.central}{118\,000}
+\mkset{L1c.expo.haut}{210\,000}
+\mkset{L1c.kits.bas}{150}
+\mkset{L1c.kits.central}{1\,700}
+\mkset{L1c.kits.haut}{14\,000}
+\mkset{L1c.sam.bas}{8\,000}
+\mkset{L1c.sam.central}{23\,600}
+\mkset{L1c.sam.haut}{63\,000}
+\mkset{L1d.N.bas}{1,5~M}
+\mkset{L1d.N.central}{1,5~M}
+\mkset{L1d.N.haut}{1,5~M}
+\mkset{L1d.buy.bas}{8}
+\mkset{L1d.buy.central}{110}
+\mkset{L1d.buy.haut}{740}
+\mkset{L1d.expo.bas}{222\,000}
+\mkset{L1d.expo.central}{443\,000}
+\mkset{L1d.expo.haut}{739\,000}
+\mkset{L1d.kits.bas}{10}
+\mkset{L1d.kits.central}{160}
+\mkset{L1d.kits.haut}{1\,300}
+\mkset{L1d.sam.bas}{6\,650}
+\mkset{L1d.sam.central}{26\,600}
+\mkset{L1d.sam.haut}{73\,900}
+\mkset{L1e.N.bas}{70~M}
+\mkset{L1e.N.central}{117~M}
+\mkset{L1e.N.haut}{163~M}
+\mkset{L1e.buy.bas}{44}
+\mkset{L1e.buy.central}{2\,000}
+\mkset{L1e.buy.haut}{23\,000}
+\mkset{L1e.expo.bas}{7~M}
+\mkset{L1e.expo.central}{21~M}
+\mkset{L1e.expo.haut}{46~M}
+\mkset{L1e.kits.bas}{66}
+\mkset{L1e.kits.central}{3\,600}
+\mkset{L1e.kits.haut}{50\,000}
+\mkset{L1e.sam.bas}{350\,000}
+\mkset{L1e.sam.central}{2,5~M}
+\mkset{L1e.sam.haut}{9,2~M}
+\mkset{L1f.N.bas}{67~M}
+\mkset{L1f.N.central}{76~M}
+\mkset{L1f.N.haut}{105~M}
+\mkset{L1f.buy.bas}{0}
+\mkset{L1f.buy.central}{330}
+\mkset{L1f.buy.haut}{5\,900}
+\mkset{L1f.expo.bas}{6,7~M}
+\mkset{L1f.expo.central}{14~M}
+\mkset{L1f.expo.haut}{29~M}
+\mkset{L1f.kits.bas}{0}
+\mkset{L1f.kits.central}{590}
+\mkset{L1f.kits.haut}{13\,000}
+\mkset{L1f.sam.bas}{337\,000}
+\mkset{L1f.sam.central}{1,6~M}
+\mkset{L1f.sam.haut}{5,9~M}
+\mkset{L1g.N.bas}{10~M}
+\mkset{L1g.N.central}{13~M}
+\mkset{L1g.N.haut}{13~M}
+\mkset{L1g.buy.bas}{1}
+\mkset{L1g.buy.central}{31}
+\mkset{L1g.buy.haut}{200}
+\mkset{L1g.expo.bas}{100\,000}
+\mkset{L1g.expo.central}{390\,000}
+\mkset{L1g.expo.haut}{650\,000}
+\mkset{L1g.kits.bas}{1}
+\mkset{L1g.kits.central}{47}
+\mkset{L1g.kits.haut}{350}
+\mkset{L1g.sam.bas}{2\,000}
+\mkset{L1g.sam.central}{15\,600}
+\mkset{L1g.sam.haut}{39\,000}
+\mkset{L2a.N.bas}{600}
+\mkset{L2a.N.central}{1\,000}
+\mkset{L2a.N.haut}{1\,600}
+\mkset{L2a.buy.bas}{2}
+\mkset{L2a.buy.central}{22}
+\mkset{L2a.buy.haut}{130}
+\mkset{L2a.expo.bas}{300}
+\mkset{L2a.expo.central}{700}
+\mkset{L2a.expo.haut}{1\,440}
+\mkset{L2a.kits.bas}{8}
+\mkset{L2a.kits.central}{220}
+\mkset{L2a.kits.haut}{2\,600}
+\mkset{L2a.sam.bas}{30}
+\mkset{L2a.sam.central}{140}
+\mkset{L2a.sam.haut}{432}
+\mkset{L2b.N.bas}{12\,300}
+\mkset{L2b.N.central}{12\,300}
+\mkset{L2b.N.haut}{12\,300}
+\mkset{L2b.buy.bas}{0}
+\mkset{L2b.buy.central}{4}
+\mkset{L2b.buy.haut}{34}
+\mkset{L2b.expo.bas}{3\,680}
+\mkset{L2b.expo.central}{6\,140}
+\mkset{L2b.expo.haut}{8\,590}
+\mkset{L2b.kits.bas}{1}
+\mkset{L2b.kits.central}{18}
+\mkset{L2b.kits.haut}{340}
+\mkset{L2b.sam.bas}{74}
+\mkset{L2b.sam.central}{307}
+\mkset{L2b.sam.haut}{859}
+\mkset{L2c.N.bas}{183}
+\mkset{L2c.N.central}{183}
+\mkset{L2c.N.haut}{183}
+\mkset{L2c.buy.bas}{0}
+\mkset{L2c.buy.central}{2}
+\mkset{L2c.buy.haut}{9}
+\mkset{L2c.expo.bas}{73}
+\mkset{L2c.expo.central}{110}
+\mkset{L2c.expo.haut}{146}
+\mkset{L2c.kits.bas}{0}
+\mkset{L2c.kits.central}{20}
+\mkset{L2c.kits.haut}{180}
+\mkset{L2c.sam.bas}{4}
+\mkset{L2c.sam.central}{16}
+\mkset{L2c.sam.haut}{37}
+\mkset{L2d.N.bas}{6\,760}
+\mkset{L2d.N.central}{6\,760}
+\mkset{L2d.N.haut}{6\,760}
+\mkset{L2d.buy.bas}{0}
+\mkset{L2d.buy.central}{4}
+\mkset{L2d.buy.haut}{27}
+\mkset{L2d.expo.bas}{3\,380}
+\mkset{L2d.expo.central}{4\,730}
+\mkset{L2d.expo.haut}{6\,080}
+\mkset{L2d.kits.bas}{1}
+\mkset{L2d.kits.central}{38}
+\mkset{L2d.kits.haut}{550}
+\mkset{L2d.sam.bas}{338}
+\mkset{L2d.sam.central}{946}
+\mkset{L2d.sam.haut}{1\,820}
+\mkset{L2e.N.bas}{6\,070}
+\mkset{L2e.N.central}{6\,070}
+\mkset{L2e.N.haut}{6\,070}
+\mkset{L2e.buy.bas}{0}
+\mkset{L2e.buy.central}{1}
+\mkset{L2e.buy.haut}{8}
+\mkset{L2e.expo.bas}{3\,040}
+\mkset{L2e.expo.central}{4\,250}
+\mkset{L2e.expo.haut}{5\,470}
+\mkset{L2e.kits.bas}{0}
+\mkset{L2e.kits.central}{10}
+\mkset{L2e.kits.haut}{160}
+\mkset{L2e.sam.bas}{304}
+\mkset{L2e.sam.central}{850}
+\mkset{L2e.sam.haut}{1\,640}
+\mkset{L2f.N.bas}{5\,000}
+\mkset{L2f.N.central}{5\,000}
+\mkset{L2f.N.haut}{5\,000}
+\mkset{L2f.buy.bas}{0}
+\mkset{L2f.buy.central}{1}
+\mkset{L2f.buy.haut}{9}
+\mkset{L2f.expo.bas}{2\,000}
+\mkset{L2f.expo.central}{3\,000}
+\mkset{L2f.expo.haut}{4\,000}
+\mkset{L2f.kits.bas}{0}
+\mkset{L2f.kits.central}{10}
+\mkset{L2f.kits.haut}{180}
+\mkset{L2f.sam.bas}{60}
+\mkset{L2f.sam.central}{240}
+\mkset{L2f.sam.haut}{600}
+\mkset{L3a.N.bas}{15\,000}
+\mkset{L3a.N.central}{15\,800}
+\mkset{L3a.N.haut}{15\,800}
+\mkset{L3a.buy.bas}{5}
+\mkset{L3a.buy.central}{67}
+\mkset{L3a.buy.haut}{430}
+\mkset{L3a.expo.bas}{7\,500}
+\mkset{L3a.expo.central}{11\,100}
+\mkset{L3a.expo.haut}{14\,300}
+\mkset{L3a.kits.bas}{7}
+\mkset{L3a.kits.central}{130}
+\mkset{L3a.kits.haut}{1\,300}
+\mkset{L3a.sam.bas}{375}
+\mkset{L3a.sam.central}{1\,660}
+\mkset{L3a.sam.haut}{4\,280}
+\mkset{L3b.N.bas}{2\,000}
+\mkset{L3b.N.central}{2\,000}
+\mkset{L3b.N.haut}{2\,000}
+\mkset{L3b.buy.bas}{1}
+\mkset{L3b.buy.central}{10}
+\mkset{L3b.buy.haut}{60}
+\mkset{L3b.expo.bas}{1\,000}
+\mkset{L3b.expo.central}{1\,600}
+\mkset{L3b.expo.haut}{2\,000}
+\mkset{L3b.kits.bas}{2}
+\mkset{L3b.kits.central}{48}
+\mkset{L3b.kits.haut}{600}
+\mkset{L3b.sam.bas}{50}
+\mkset{L3b.sam.central}{160}
+\mkset{L3b.sam.haut}{400}
+\mkset{L3c.N.bas}{2,2~M}
+\mkset{L3c.N.central}{2,2~M}
+\mkset{L3c.N.haut}{3,4~M}
+\mkset{L3c.buy.bas}{26}
+\mkset{L3c.buy.central}{290}
+\mkset{L3c.buy.haut}{2\,500}
+\mkset{L3c.expo.bas}{1,3~M}
+\mkset{L3c.expo.central}{1,8~M}
+\mkset{L3c.expo.haut}{3,4~M}
+\mkset{L3c.kits.bas}{31}
+\mkset{L3c.kits.central}{430}
+\mkset{L3c.kits.haut}{5\,100}
+\mkset{L3c.sam.bas}{52\,400}
+\mkset{L3c.sam.central}{144\,000}
+\mkset{L3c.sam.haut}{506\,000}
+\mkset{L3d.N.bas}{217\,000}
+\mkset{L3d.N.central}{217\,000}
+\mkset{L3d.N.haut}{300\,000}
+\mkset{L3d.buy.bas}{3}
+\mkset{L3d.buy.central}{91}
+\mkset{L3d.buy.haut}{1\,200}
+\mkset{L3d.expo.bas}{108\,000}
+\mkset{L3d.expo.central}{152\,000}
+\mkset{L3d.expo.haut}{270\,000}
+\mkset{L3d.kits.bas}{4}
+\mkset{L3d.kits.central}{180}
+\mkset{L3d.kits.haut}{3\,600}
+\mkset{L3d.sam.bas}{5\,420}
+\mkset{L3d.sam.central}{22\,800}
+\mkset{L3d.sam.haut}{81\,000}
+\mkset{L3e.N.bas}{728\,000}
+\mkset{L3e.N.central}{728\,000}
+\mkset{L3e.N.haut}{1~M}
+\mkset{L3e.buy.bas}{0}
+\mkset{L3e.buy.central}{92}
+\mkset{L3e.buy.haut}{1\,400}
+\mkset{L3e.expo.bas}{364\,000}
+\mkset{L3e.expo.central}{510\,000}
+\mkset{L3e.expo.haut}{900\,000}
+\mkset{L3e.kits.bas}{0}
+\mkset{L3e.kits.central}{180}
+\mkset{L3e.kits.haut}{4\,000}
+\mkset{L3e.sam.bas}{18\,200}
+\mkset{L3e.sam.central}{76\,400}
+\mkset{L3e.sam.haut}{270\,000}
+\mkset{L4a.N.bas}{20~M}
+\mkset{L4a.N.central}{20~M}
+\mkset{L4a.N.haut}{20~M}
+\mkset{L4a.buy.bas}{59}
+\mkset{L4a.buy.central}{980}
+\mkset{L4a.buy.haut}{5\,800}
+\mkset{L4a.expo.bas}{5,9~M}
+\mkset{L4a.expo.central}{9,8~M}
+\mkset{L4a.expo.haut}{12~M}
+\mkset{L4a.kits.bas}{70}
+\mkset{L4a.kits.central}{1\,400}
+\mkset{L4a.kits.haut}{10\,000}
+\mkset{L4a.sam.bas}{117\,000}
+\mkset{L4a.sam.central}{489\,000}
+\mkset{L4a.sam.haut}{1,2~M}
+\mkset{L4b.N.bas}{245~M}
+\mkset{L4b.N.central}{245~M}
+\mkset{L4b.N.haut}{245~M}
+\mkset{L4b.buy.bas}{37}
+\mkset{L4b.buy.central}{930}
+\mkset{L4b.buy.haut}{8\,500}
+\mkset{L4b.expo.bas}{74~M}
+\mkset{L4b.expo.central}{110~M}
+\mkset{L4b.expo.haut}{142~M}
+\mkset{L4b.kits.bas}{44}
+\mkset{L4b.kits.central}{1\,300}
+\mkset{L4b.kits.haut}{15\,000}
+\mkset{L4b.sam.bas}{736\,000}
+\mkset{L4b.sam.central}{3,3~M}
+\mkset{L4b.sam.haut}{8,5~M}
+\mkset{L4c.N.bas}{250~M}
+\mkset{L4c.N.central}{250~M}
+\mkset{L4c.N.haut}{250~M}
+\mkset{L4c.buy.bas}{0}
+\mkset{L4c.buy.central}{270}
+\mkset{L4c.buy.haut}{4\,100}
+\mkset{L4c.expo.bas}{75~M}
+\mkset{L4c.expo.central}{112~M}
+\mkset{L4c.expo.haut}{137~M}
+\mkset{L4c.kits.bas}{0}
+\mkset{L4c.kits.central}{380}
+\mkset{L4c.kits.haut}{7\,400}
+\mkset{L4c.sam.bas}{749\,000}
+\mkset{L4c.sam.central}{3,4~M}
+\mkset{L4c.sam.haut}{8,2~M}
+\mkset{an1.bas}{71}
+\mkset{an1.central}{1\,300}
+\mkset{an1.haut}{17\,000}
+\mkset{an1.p10}{730}
+\mkset{an1.p50}{1\,400}
+\mkset{an1.p90}{2\,800}
+\mkset{an1.plan}{2\,000}
+\mkset{an2.bas}{280}
+\mkset{an2.central}{5\,300}
+\mkset{an2.haut}{68\,000}
+\mkset{an2.p10}{2\,900}
+\mkset{an2.p50}{5\,700}
+\mkset{an2.p90}{11\,000}
+\mkset{an2.plan}{8\,000}
+\mkset{an3.bas}{780}
+\mkset{an3.central}{15\,000}
+\mkset{an3.haut}{190\,000}
+\mkset{an3.p10}{8\,000}
+\mkset{an3.p50}{16\,000}
+\mkset{an3.p90}{30\,000}
+\mkset{an3.plan}{22\,000}
+\mkset{be.cum}{31\,000}
+\mkset{buy.EU.bas}{83}
+\mkset{buy.EU.central}{3\,000}
+\mkset{buy.EU.haut}{33\,000}
+\mkset{buy.FR.bas}{690}
+\mkset{buy.FR.central}{8\,400}
+\mkset{buy.FR.haut}{80\,000}
+\mkset{buy.NA.bas}{0}
+\mkset{buy.NA.central}{690}
+\mkset{buy.NA.haut}{11\,000}
+\mkset{buy.c1.bas}{640}
+\mkset{buy.c1.central}{9\,300}
+\mkset{buy.c1.haut}{100\,000}
+\mkset{buy.c2.bas}{2}
+\mkset{buy.c2.central}{34}
+\mkset{buy.c2.haut}{220}
+\mkset{buy.c3.bas}{34}
+\mkset{buy.c3.central}{550}
+\mkset{buy.c3.haut}{5\,600}
+\mkset{buy.c4.bas}{95}
+\mkset{buy.c4.central}{2\,200}
+\mkset{buy.c4.haut}{18\,000}
+\mkset{buy.total.bas}{780}
+\mkset{buy.total.central}{12\,000}
+\mkset{buy.total.haut}{120\,000}
+\mkset{c1.share.1a}{59\,\%}
+\mkset{c1.share.EU}{22\,\%}
+\mkset{c1.share.FR}{75\,\%}
+\mkset{capt.EU}{0,05\,\%}
+\mkset{capt.FR}{0,78\,\%}
+\mkset{capt.NA}{0,01\,\%}
+\mkset{don.central}{2\,100}
+\mkset{don.cum}{3\,200}
+\mkset{eff.total.bas}{625\,000}
+\mkset{eff.total.central}{4,8~M}
+\mkset{eff.total.haut}{18~M}
+\mkset{exp.EU.bas}{81~M}
+\mkset{exp.EU.central}{132~M}
+\mkset{exp.EU.haut}{188~M}
+\mkset{exp.FR.bas}{9,4~M}
+\mkset{exp.FR.central}{16~M}
+\mkset{exp.FR.haut}{23~M}
+\mkset{exp.NA.bas}{82~M}
+\mkset{exp.NA.central}{126~M}
+\mkset{exp.NA.haut}{168~M}
+\mkset{exp.c1.bas}{16~M}
+\mkset{exp.c1.central}{39~M}
+\mkset{exp.c1.haut}{83~M}
+\mkset{exp.c2.bas}{12\,500}
+\mkset{exp.c2.central}{18\,900}
+\mkset{exp.c2.haut}{25\,700}
+\mkset{exp.c3.bas}{1,8~M}
+\mkset{exp.c3.central}{2,5~M}
+\mkset{exp.c3.haut}{4,6~M}
+\mkset{exp.c4.bas}{154~M}
+\mkset{exp.c4.central}{232~M}
+\mkset{exp.c4.haut}{291~M}
+\mkset{exp.total.bas}{172~M}
+\mkset{exp.total.central}{274~M}
+\mkset{exp.total.haut}{379~M}
+\mkset{fun.c}{40\,\%}
+\mkset{fun.e}{37\,\%}
+\mkset{fun.i}{4,4\,\%}
+\mkset{fun.r}{0,25\,\%}
+\mkset{gap.pct}{52\,\%}
+\mkset{inv.eff}{400}
+\mkset{inv.sam}{990}
+\mkset{inv.tam}{61\,000}
+\mkset{kits.1a}{9\,900}
+\mkset{kits.EU.bas}{110}
+\mkset{kits.EU.central}{5\,200}
+\mkset{kits.EU.haut}{70\,000}
+\mkset{kits.FR.bas}{1\,000}
+\mkset{kits.FR.central}{15\,000}
+\mkset{kits.FR.haut}{180\,000}
+\mkset{kits.NA.bas}{0}
+\mkset{kits.NA.central}{1\,200}
+\mkset{kits.NA.haut}{25\,000}
+\mkset{kits.c1.bas}{960}
+\mkset{kits.c1.central}{17\,000}
+\mkset{kits.c1.haut}{220\,000}
+\mkset{kits.c1EU}{3\,600}
+\mkset{kits.c1FR}{13\,000}
+\mkset{kits.c1NA}{590}
+\mkset{kits.c2.bas}{10}
+\mkset{kits.c2.central}{320}
+\mkset{kits.c2.haut}{4\,000}
+\mkset{kits.c2EU}{47}
+\mkset{kits.c2FR}{260}
+\mkset{kits.c2NA}{10}
+\mkset{kits.c3.bas}{44}
+\mkset{kits.c3.central}{980}
+\mkset{kits.c3.haut}{15\,000}
+\mkset{kits.c3EU}{180}
+\mkset{kits.c3FR}{610}
+\mkset{kits.c3NA}{180}
+\mkset{kits.c4.bas}{110}
+\mkset{kits.c4.central}{3\,000}
+\mkset{kits.c4.haut}{33\,000}
+\mkset{kits.c4EU}{1\,300}
+\mkset{kits.c4FR}{1\,400}
+\mkset{kits.c4NA}{380}
+\mkset{kits.total.bas}{1\,100}
+\mkset{kits.total.central}{21\,000}
+\mkset{kits.total.haut}{270\,000}
+\mkset{kmoy.bas}{1,46}
+\mkset{kmoy.central}{1,75}
+\mkset{kmoy.haut}{2,19}
+\mkset{marge.kit}{20,17\,€}
+\mkset{mc.n}{40\,000}
+\mkset{mc.p05}{9\,600}
+\mkset{mc.p10}{12\,000}
+\mkset{mc.p25}{16\,000}
+\mkset{mc.p50}{23\,000}
+\mkset{mc.p75}{33\,000}
+\mkset{mc.p90}{44\,000}
+\mkset{mc.p95}{52\,000}
+\mkset{mc.pbe}{28\,\%}
+\mkset{mc.phalf}{75\,\%}
+\mkset{mc.pplan}{26\,\%}
+\mkset{nlines}{21}
+\mkset{plan.buyers}{18\,000}
+\mkset{plan.ca}{2,2~M€}
+\mkset{plan.cum}{32\,000}
+\mkset{plan.gap}{11\,000}
+\mkset{plan.ratio.central}{1,52}
+\mkset{plan.share.FRsam}{1,7\,\%}
+\mkset{plan.share.eff}{0,38\,\%}
+\mkset{plan.share.exp}{0,007\,\%}
+\mkset{plan.share.sam}{0,15\,\%}
+\mkset{plan.share.tam}{0,0025\,\%}
+\mkset{planinv.FRsam}{59}
+\mkset{planinv.eff}{260}
+\mkset{planinv.exp}{15\,000}
+\mkset{planinv.sam}{660}
+\mkset{planinv.tam}{40\,000}
+\mkset{pop.z868}{536~M}
+\mkset{pop.z915}{420~M}
+\mkset{pop.zones}{956~M}
+\mkset{ratio.android}{4,0\,\%}
+\mkset{ratio.meshmap}{2,2}
+\mkset{ratio.spot}{9\,\%}
+\mkset{res3.central}{−137\,k€}
+\mkset{res3.p10}{−268\,k€}
+\mkset{res3.p90}{+182\,k€}
+\mkset{sam.EU.bas}{1,1~M}
+\mkset{sam.EU.central}{5,9~M}
+\mkset{sam.EU.haut}{18~M}
+\mkset{sam.FR.bas}{304\,000}
+\mkset{sam.FR.central}{1,1~M}
+\mkset{sam.FR.haut}{3,3~M}
+\mkset{sam.NA.bas}{1,1~M}
+\mkset{sam.NA.central}{5,1~M}
+\mkset{sam.NA.haut}{14~M}
+\mkset{sam.c1.bas}{821\,000}
+\mkset{sam.c1.central}{4,6~M}
+\mkset{sam.c1.haut}{17~M}
+\mkset{sam.c2.bas}{809}
+\mkset{sam.c2.central}{2\,500}
+\mkset{sam.c2.haut}{5\,390}
+\mkset{sam.c3.bas}{76\,400}
+\mkset{sam.c3.central}{245\,000}
+\mkset{sam.c3.haut}{862\,000}
+\mkset{sam.c4.bas}{1,6~M}
+\mkset{sam.c4.central}{7,2~M}
+\mkset{sam.c4.haut}{18~M}
+\mkset{sam.share.central}{0,10\,\%}
+\mkset{sam.total.bas}{2,5~M}
+\mkset{sam.total.central}{12~M}
+\mkset{sam.total.haut}{35~M}
+\mkset{share.1a.total}{47\,\%}
+\mkset{share.EU}{24\,\%}
+\mkset{share.FR}{70\,\%}
+\mkset{share.NA}{5\,\%}
+\mkset{share.c1}{79\,\%}
+\mkset{share.c2}{2\,\%}
+\mkset{share.c3}{5\,\%}
+\mkset{share.c4}{14\,\%}
+\mkset{shr.c1EU}{17\,\%}
+\mkset{shr.c1FR}{59\,\%}
+\mkset{shr.c1NA}{3\,\%}
+\mkset{shr.c2EU}{0\,\%}
+\mkset{shr.c2FR}{1\,\%}
+\mkset{shr.c2NA}{0\,\%}
+\mkset{shr.c3EU}{1\,\%}
+\mkset{shr.c3FR}{3\,\%}
+\mkset{shr.c3NA}{1\,\%}
+\mkset{shr.c4EU}{6\,\%}
+\mkset{shr.c4FR}{6\,\%}
+\mkset{shr.c4NA}{2\,\%}
+\mkset{tam.EU.bas}{315~M}
+\mkset{tam.EU.central}{362~M}
+\mkset{tam.EU.haut}{409~M}
+\mkset{tam.FR.bas}{50~M}
+\mkset{tam.FR.central}{54~M}
+\mkset{tam.FR.haut}{58~M}
+\mkset{tam.NA.bas}{318~M}
+\mkset{tam.NA.central}{326~M}
+\mkset{tam.NA.haut}{355~M}
+\mkset{tam.c1.bas}{166~M}
+\mkset{tam.c1.central}{224~M}
+\mkset{tam.c1.haut}{304~M}
+\mkset{tam.c2.bas}{30\,900}
+\mkset{tam.c2.central}{31\,300}
+\mkset{tam.c2.haut}{31\,900}
+\mkset{tam.c3.bas}{3,1~M}
+\mkset{tam.c3.central}{3,2~M}
+\mkset{tam.c3.haut}{4,7~M}
+\mkset{tam.c4.bas}{514~M}
+\mkset{tam.c4.central}{514~M}
+\mkset{tam.c4.haut}{514~M}
+\mkset{tam.total.bas}{684~M}
+\mkset{tam.total.central}{742~M}
+\mkset{tam.total.haut}{823~M}
+\mkset{tor.c.bas}{13\,000}
+\mkset{tor.c.haut}{26\,000}
+\mkset{tor.e.bas}{13\,000}
+\mkset{tor.e.haut}{31\,000}
+\mkset{tor.i.bas}{10\,000}
+\mkset{tor.i.haut}{36\,000}
+\mkset{tor.k.bas}{17\,000}
+\mkset{tor.k.haut}{26\,000}
+\mkset{tor.r.bas}{7\,500}
+\mkset{tor.r.haut}{49\,000}
+\mkset{val.sam.FR}{130~M€}
+\mkset{val.sam.total}{1,4~Md€}
+\mksetr{L1a.N.bas}{4.6}
+\mksetr{L1a.N.central}{4.6}
+\mksetr{L1a.N.haut}{8.1}
+\mksetr{L1a.buy.bas}{0.46}
+\mksetr{L1a.buy.central}{5.52}
+\mksetr{L1a.buy.haut}{60.75}
+\mksetr{L1a.expo.bas}{1.15}
+\mksetr{L1a.expo.central}{1.84}
+\mksetr{L1a.expo.haut}{4.86}
+\mksetr{L1a.kits.bas}{0.69}
+\mksetr{L1a.kits.central}{9.936}
+\mksetr{L1a.kits.haut}{133.65}
+\mksetr{L1a.sam.bas}{0.092}
+\mksetr{L1a.sam.central}{0.276}
+\mksetr{L1a.sam.haut}{1.215}
+\mksetr{L1b.N.bas}{12.4}
+\mksetr{L1b.N.central}{12.4}
+\mksetr{L1b.N.haut}{12.4}
+\mksetr{L1b.buy.bas}{0.031}
+\mksetr{L1b.buy.central}{0.3968}
+\mksetr{L1b.buy.haut}{3.348}
+\mksetr{L1b.expo.bas}{0.62}
+\mksetr{L1b.expo.central}{1.24}
+\mksetr{L1b.expo.haut}{1.86}
+\mksetr{L1b.kits.bas}{0.0465}
+\mksetr{L1b.kits.central}{0.71424}
+\mksetr{L1b.kits.haut}{7.3656}
+\mksetr{L1b.sam.bas}{0.0248}
+\mksetr{L1b.sam.central}{0.0992}
+\mksetr{L1b.sam.haut}{0.2232}
+\mksetr{L1c.N.bas}{0.2}
+\mksetr{L1c.N.central}{0.2358}
+\mksetr{L1c.N.haut}{0.3}
+\mksetr{L1c.buy.bas}{0.1}
+\mksetr{L1c.buy.central}{0.9432}
+\mksetr{L1c.buy.haut}{6.3}
+\mksetr{L1c.expo.bas}{0.08}
+\mksetr{L1c.expo.central}{0.1179}
+\mksetr{L1c.expo.haut}{0.21}
+\mksetr{L1c.kits.bas}{0.15}
+\mksetr{L1c.kits.central}{1.69776}
+\mksetr{L1c.kits.haut}{13.86}
+\mksetr{L1c.sam.bas}{0.008}
+\mksetr{L1c.sam.central}{0.02358}
+\mksetr{L1c.sam.haut}{0.063}
+\mksetr{L1d.N.bas}{1.478}
+\mksetr{L1d.N.central}{1.478}
+\mksetr{L1d.N.haut}{1.478}
+\mksetr{L1d.buy.bas}{0.00831375}
+\mksetr{L1d.buy.central}{0.106416}
+\mksetr{L1d.buy.haut}{0.739}
+\mksetr{L1d.expo.bas}{0.2217}
+\mksetr{L1d.expo.central}{0.4434}
+\mksetr{L1d.expo.haut}{0.739}
+\mksetr{L1d.kits.bas}{0.0099765}
+\mksetr{L1d.kits.central}{0.159624}
+\mksetr{L1d.kits.haut}{1.3302}
+\mksetr{L1d.sam.bas}{0.006651}
+\mksetr{L1d.sam.central}{0.026604}
+\mksetr{L1d.sam.haut}{0.0739}
+\mksetr{L1e.N.bas}{70.056}
+\mksetr{L1e.N.central}{116.76}
+\mksetr{L1e.N.haut}{163.464}
+\mksetr{L1e.buy.bas}{0.043785}
+\mksetr{L1e.buy.central}{2.01761}
+\mksetr{L1e.buy.haut}{22.885}
+\mksetr{L1e.expo.bas}{7.0056}
+\mksetr{L1e.expo.central}{21.0168}
+\mksetr{L1e.expo.haut}{45.7699}
+\mksetr{L1e.kits.bas}{0.0656775}
+\mksetr{L1e.kits.central}{3.6317}
+\mksetr{L1e.kits.haut}{50.3469}
+\mksetr{L1e.sam.bas}{0.35028}
+\mksetr{L1e.sam.central}{2.52202}
+\mksetr{L1e.sam.haut}{9.15398}
+\mksetr{L1f.N.bas}{67.4}
+\mksetr{L1f.N.central}{75.7}
+\mksetr{L1f.N.haut}{104.907}
+\mksetr{L1f.buy.bas}{0}
+\mksetr{L1f.buy.central}{0.327024}
+\mksetr{L1f.buy.haut}{5.87482}
+\mksetr{L1f.expo.bas}{6.74}
+\mksetr{L1f.expo.central}{13.626}
+\mksetr{L1f.expo.haut}{29.3741}
+\mksetr{L1f.kits.bas}{0}
+\mksetr{L1f.kits.central}{0.588643}
+\mksetr{L1f.kits.haut}{12.9246}
+\mksetr{L1f.sam.bas}{0.337}
+\mksetr{L1f.sam.central}{1.63512}
+\mksetr{L1f.sam.haut}{5.87482}
+\mksetr{L1g.N.bas}{10}
+\mksetr{L1g.N.central}{13}
+\mksetr{L1g.N.haut}{13}
+\mksetr{L1g.buy.bas}{0.001}
+\mksetr{L1g.buy.central}{0.0312}
+\mksetr{L1g.buy.haut}{0.195}
+\mksetr{L1g.expo.bas}{0.1}
+\mksetr{L1g.expo.central}{0.39}
+\mksetr{L1g.expo.haut}{0.65}
+\mksetr{L1g.kits.bas}{0.0012}
+\mksetr{L1g.kits.central}{0.0468}
+\mksetr{L1g.kits.haut}{0.351}
+\mksetr{L1g.sam.bas}{0.002}
+\mksetr{L1g.sam.central}{0.0156}
+\mksetr{L1g.sam.haut}{0.039}
+\mksetr{L2a.N.bas}{0.0006}
+\mksetr{L2a.N.central}{0.001}
+\mksetr{L2a.N.haut}{0.0016}
+\mksetr{L2a.buy.bas}{0.0015}
+\mksetr{L2a.buy.central}{0.0224}
+\mksetr{L2a.buy.haut}{0.1296}
+\mksetr{L2a.expo.bas}{0.0003}
+\mksetr{L2a.expo.central}{0.0007}
+\mksetr{L2a.expo.haut}{0.00144}
+\mksetr{L2a.kits.bas}{0.0075}
+\mksetr{L2a.kits.central}{0.224}
+\mksetr{L2a.kits.haut}{2.592}
+\mksetr{L2a.sam.bas}{3e-05}
+\mksetr{L2a.sam.central}{0.00014}
+\mksetr{L2a.sam.haut}{0.000432}
+\mksetr{L2b.N.bas}{0.012274}
+\mksetr{L2b.N.central}{0.012274}
+\mksetr{L2b.N.haut}{0.012274}
+\mksetr{L2b.buy.bas}{0.00018411}
+\mksetr{L2b.buy.central}{0.0036822}
+\mksetr{L2b.buy.haut}{0.0343672}
+\mksetr{L2b.expo.bas}{0.0036822}
+\mksetr{L2b.expo.central}{0.006137}
+\mksetr{L2b.expo.haut}{0.0085918}
+\mksetr{L2b.kits.bas}{0.00055233}
+\mksetr{L2b.kits.central}{0.018411}
+\mksetr{L2b.kits.haut}{0.343672}
+\mksetr{L2b.sam.bas}{7.3644e-05}
+\mksetr{L2b.sam.central}{0.00030685}
+\mksetr{L2b.sam.haut}{0.00085918}
+\mksetr{L2c.N.bas}{0.000183}
+\mksetr{L2c.N.central}{0.000183}
+\mksetr{L2c.N.haut}{0.000183}
+\mksetr{L2c.buy.bas}{9.15e-05}
+\mksetr{L2c.buy.central}{0.0019764}
+\mksetr{L2c.buy.haut}{0.00915}
+\mksetr{L2c.expo.bas}{7.32e-05}
+\mksetr{L2c.expo.central}{0.0001098}
+\mksetr{L2c.expo.haut}{0.0001464}
+\mksetr{L2c.kits.bas}{0.0004575}
+\mksetr{L2c.kits.central}{0.019764}
+\mksetr{L2c.kits.haut}{0.183}
+\mksetr{L2c.sam.bas}{3.66e-06}
+\mksetr{L2c.sam.central}{1.647e-05}
+\mksetr{L2c.sam.haut}{3.66e-05}
+\mksetr{L2d.N.bas}{0.0067589}
+\mksetr{L2d.N.central}{0.0067589}
+\mksetr{L2d.N.haut}{0.0067589}
+\mksetr{L2d.buy.bas}{0.000168973}
+\mksetr{L2d.buy.central}{0.00378498}
+\mksetr{L2d.buy.haut}{0.0273735}
+\mksetr{L2d.expo.bas}{0.00337945}
+\mksetr{L2d.expo.central}{0.00473123}
+\mksetr{L2d.expo.haut}{0.00608301}
+\mksetr{L2d.kits.bas}{0.000844863}
+\mksetr{L2d.kits.central}{0.0378498}
+\mksetr{L2d.kits.haut}{0.547471}
+\mksetr{L2d.sam.bas}{0.000337945}
+\mksetr{L2d.sam.central}{0.000946246}
+\mksetr{L2d.sam.haut}{0.0018249}
+\mksetr{L2e.N.bas}{0.00607279}
+\mksetr{L2e.N.central}{0.00607279}
+\mksetr{L2e.N.haut}{0.00607279}
+\mksetr{L2e.buy.bas}{0}
+\mksetr{L2e.buy.central}{0.00102023}
+\mksetr{L2e.buy.haut}{0.00819827}
+\mksetr{L2e.expo.bas}{0.0030364}
+\mksetr{L2e.expo.central}{0.00425096}
+\mksetr{L2e.expo.haut}{0.00546551}
+\mksetr{L2e.kits.bas}{0}
+\mksetr{L2e.kits.central}{0.0102023}
+\mksetr{L2e.kits.haut}{0.163965}
+\mksetr{L2e.sam.bas}{0.00030364}
+\mksetr{L2e.sam.central}{0.000850191}
+\mksetr{L2e.sam.haut}{0.00163965}
+\mksetr{L2f.N.bas}{0.005}
+\mksetr{L2f.N.central}{0.005}
+\mksetr{L2f.N.haut}{0.005}
+\mksetr{L2f.buy.bas}{3e-05}
+\mksetr{L2f.buy.central}{0.00096}
+\mksetr{L2f.buy.haut}{0.009}
+\mksetr{L2f.expo.bas}{0.002}
+\mksetr{L2f.expo.central}{0.003}
+\mksetr{L2f.expo.haut}{0.004}
+\mksetr{L2f.kits.bas}{0.00015}
+\mksetr{L2f.kits.central}{0.0096}
+\mksetr{L2f.kits.haut}{0.18}
+\mksetr{L2f.sam.bas}{6e-05}
+\mksetr{L2f.sam.central}{0.00024}
+\mksetr{L2f.sam.haut}{0.0006}
+\mksetr{L3a.N.bas}{0.015}
+\mksetr{L3a.N.central}{0.015836}
+\mksetr{L3a.N.haut}{0.015836}
+\mksetr{L3a.buy.bas}{0.0046875}
+\mksetr{L3a.buy.central}{0.0665112}
+\mksetr{L3a.buy.haut}{0.427572}
+\mksetr{L3a.expo.bas}{0.0075}
+\mksetr{L3a.expo.central}{0.0110852}
+\mksetr{L3a.expo.haut}{0.0142524}
+\mksetr{L3a.kits.bas}{0.00703125}
+\mksetr{L3a.kits.central}{0.133022}
+\mksetr{L3a.kits.haut}{1.28272}
+\mksetr{L3a.sam.bas}{0.000375}
+\mksetr{L3a.sam.central}{0.00166278}
+\mksetr{L3a.sam.haut}{0.00427572}
+\mksetr{L3b.N.bas}{0.002}
+\mksetr{L3b.N.central}{0.002}
+\mksetr{L3b.N.haut}{0.002}
+\mksetr{L3b.buy.bas}{0.000625}
+\mksetr{L3b.buy.central}{0.0096}
+\mksetr{L3b.buy.haut}{0.06}
+\mksetr{L3b.expo.bas}{0.001}
+\mksetr{L3b.expo.central}{0.0016}
+\mksetr{L3b.expo.haut}{0.002}
+\mksetr{L3b.kits.bas}{0.001875}
+\mksetr{L3b.kits.central}{0.048}
+\mksetr{L3b.kits.haut}{0.6}
+\mksetr{L3b.sam.bas}{5e-05}
+\mksetr{L3b.sam.central}{0.00016}
+\mksetr{L3b.sam.haut}{0.0004}
+\mksetr{L3c.N.bas}{2.1819}
+\mksetr{L3c.N.central}{2.24939}
+\mksetr{L3c.N.haut}{3.37408}
+\mksetr{L3c.buy.bas}{0.0261829}
+\mksetr{L3c.buy.central}{0.287921}
+\mksetr{L3c.buy.haut}{2.53056}
+\mksetr{L3c.expo.bas}{1.30914}
+\mksetr{L3c.expo.central}{1.79951}
+\mksetr{L3c.expo.haut}{3.37408}
+\mksetr{L3c.kits.bas}{0.0314194}
+\mksetr{L3c.kits.central}{0.431882}
+\mksetr{L3c.kits.haut}{5.06112}
+\mksetr{L3c.sam.bas}{0.0523657}
+\mksetr{L3c.sam.central}{0.143961}
+\mksetr{L3c.sam.haut}{0.506112}
+\mksetr{L3d.N.bas}{0.217}
+\mksetr{L3d.N.central}{0.217}
+\mksetr{L3d.N.haut}{0.3}
+\mksetr{L3d.buy.bas}{0.0027125}
+\mksetr{L3d.buy.central}{0.09114}
+\mksetr{L3d.buy.haut}{1.215}
+\mksetr{L3d.expo.bas}{0.1085}
+\mksetr{L3d.expo.central}{0.1519}
+\mksetr{L3d.expo.haut}{0.27}
+\mksetr{L3d.kits.bas}{0.00406875}
+\mksetr{L3d.kits.central}{0.18228}
+\mksetr{L3d.kits.haut}{3.645}
+\mksetr{L3d.sam.bas}{0.005425}
+\mksetr{L3d.sam.central}{0.022785}
+\mksetr{L3d.sam.haut}{0.081}
+\mksetr{L3e.N.bas}{0.728}
+\mksetr{L3e.N.central}{0.728}
+\mksetr{L3e.N.haut}{1}
+\mksetr{L3e.buy.bas}{0}
+\mksetr{L3e.buy.central}{0.091728}
+\mksetr{L3e.buy.haut}{1.35}
+\mksetr{L3e.expo.bas}{0.364}
+\mksetr{L3e.expo.central}{0.5096}
+\mksetr{L3e.expo.haut}{0.9}
+\mksetr{L3e.kits.bas}{0}
+\mksetr{L3e.kits.central}{0.183456}
+\mksetr{L3e.kits.haut}{4.05}
+\mksetr{L3e.sam.bas}{0.0182}
+\mksetr{L3e.sam.central}{0.07644}
+\mksetr{L3e.sam.haut}{0.27}
+\mksetr{L4a.N.bas}{19.5735}
+\mksetr{L4a.N.central}{19.5735}
+\mksetr{L4a.N.haut}{19.5735}
+\mksetr{L4a.buy.bas}{0.0587204}
+\mksetr{L4a.buy.central}{0.978674}
+\mksetr{L4a.buy.haut}{5.77418}
+\mksetr{L4a.expo.bas}{5.87204}
+\mksetr{L4a.expo.central}{9.78674}
+\mksetr{L4a.expo.haut}{11.5484}
+\mksetr{L4a.kits.bas}{0.0704645}
+\mksetr{L4a.kits.central}{1.37014}
+\mksetr{L4a.kits.haut}{10.3935}
+\mksetr{L4a.sam.bas}{0.117441}
+\mksetr{L4a.sam.central}{0.489337}
+\mksetr{L4a.sam.haut}{1.15484}
+\mksetr{L4b.N.bas}{245.196}
+\mksetr{L4b.N.central}{245.196}
+\mksetr{L4b.N.haut}{245.196}
+\mksetr{L4b.buy.bas}{0.0367794}
+\mksetr{L4b.buy.central}{0.926841}
+\mksetr{L4b.buy.haut}{8.53282}
+\mksetr{L4b.expo.bas}{73.5588}
+\mksetr{L4b.expo.central}{110.338}
+\mksetr{L4b.expo.haut}{142.214}
+\mksetr{L4b.kits.bas}{0.0441353}
+\mksetr{L4b.kits.central}{1.29758}
+\mksetr{L4b.kits.haut}{15.3591}
+\mksetr{L4b.sam.bas}{0.735588}
+\mksetr{L4b.sam.central}{3.31015}
+\mksetr{L4b.sam.haut}{8.53282}
+\mksetr{L4c.N.bas}{249.513}
+\mksetr{L4c.N.central}{249.513}
+\mksetr{L4c.N.haut}{249.513}
+\mksetr{L4c.buy.bas}{0}
+\mksetr{L4c.buy.central}{0.269474}
+\mksetr{L4c.buy.haut}{4.11697}
+\mksetr{L4c.expo.bas}{74.854}
+\mksetr{L4c.expo.central}{112.281}
+\mksetr{L4c.expo.haut}{137.232}
+\mksetr{L4c.kits.bas}{0}
+\mksetr{L4c.kits.central}{0.377264}
+\mksetr{L4c.kits.haut}{7.41054}
+\mksetr{L4c.sam.bas}{0.74854}
+\mksetr{L4c.sam.central}{3.36843}
+\mksetr{L4c.sam.haut}{8.23394}
+\mksetr{an1.bas}{0.0707408}
+\mksetr{an1.central}{1.31989}
+\mksetr{an1.haut}{16.9775}
+\mksetr{an1.p10}{0.731084}
+\mksetr{an1.p50}{1.42727}
+\mksetr{an1.p90}{2.76069}
+\mksetr{an1.plan}{2}
+\mksetr{an2.bas}{0.282963}
+\mksetr{an2.central}{5.27956}
+\mksetr{an2.haut}{67.9101}
+\mksetr{an2.p10}{2.92434}
+\mksetr{an2.p50}{5.70907}
+\mksetr{an2.p90}{11.0428}
+\mksetr{an2.plan}{8}
+\mksetr{an3.bas}{0.778149}
+\mksetr{an3.central}{14.5188}
+\mksetr{an3.haut}{186.753}
+\mksetr{an3.p10}{8.04193}
+\mksetr{an3.p50}{15.6999}
+\mksetr{an3.p90}{30.3676}
+\mksetr{an3.plan}{22}
+\mksetr{be.cum}{30.9818}
+\mksetr{buy.EU.bas}{0.0834759}
+\mksetr{buy.EU.central}{3.04034}
+\mksetr{buy.EU.haut}{32.6692}
+\mksetr{buy.FR.bas}{0.692305}
+\mksetr{buy.FR.central}{8.36838}
+\mksetr{buy.FR.haut}{80.2974}
+\mksetr{buy.NA.bas}{0}
+\mksetr{buy.NA.central}{0.689247}
+\mksetr{buy.NA.haut}{11.35}
+\mksetr{buy.c1.bas}{0.644099}
+\mksetr{buy.c1.central}{9.34225}
+\mksetr{buy.c1.haut}{100.092}
+\mksetr{buy.c2.bas}{0.00197458}
+\mksetr{buy.c2.central}{0.0338238}
+\mksetr{buy.c2.haut}{0.217689}
+\mksetr{buy.c3.bas}{0.0342079}
+\mksetr{buy.c3.central}{0.546901}
+\mksetr{buy.c3.haut}{5.58313}
+\mksetr{buy.c4.bas}{0.0954998}
+\mksetr{buy.c4.central}{2.17499}
+\mksetr{buy.c4.haut}{18.424}
+\mksetr{buy.total.bas}{0.775781}
+\mksetr{buy.total.central}{12.098}
+\mksetr{buy.total.haut}{124.317}
+\mksetr{c1.share.1a}{59.2318}
+\mksetr{c1.share.EU}{0}
+\mksetr{c1.share.FR}{0}
+\mksetr{capt.EU}{0.0519172}
+\mksetr{capt.FR}{0.77732}
+\mksetr{capt.NA}{0.0135656}
+\mksetr{don.central}{2111.82}
+\mksetr{don.cum}{3200}
+\mksetr{eff.total.bas}{0.624881}
+\mksetr{eff.total.central}{4.80542}
+\mksetr{eff.total.haut}{17.7158}
+\mksetr{exp.EU.bas}{80.6783}
+\mksetr{exp.EU.central}{131.515}
+\mksetr{exp.EU.haut}{188.264}
+\mksetr{exp.FR.bas}{9.36544}
+\mksetr{exp.FR.central}{15.6372}
+\mksetr{exp.FR.haut}{23.2679}
+\mksetr{exp.NA.bas}{81.961}
+\mksetr{exp.NA.central}{126.421}
+\mksetr{exp.NA.haut}{167.512}
+\mksetr{exp.c1.bas}{15.9173}
+\mksetr{exp.c1.central}{38.6741}
+\mksetr{exp.c1.haut}{83.463}
+\mksetr{exp.c2.bas}{0.0124712}
+\mksetr{exp.c2.central}{0.018929}
+\mksetr{exp.c2.haut}{0.0257267}
+\mksetr{exp.c3.bas}{1.79014}
+\mksetr{exp.c3.central}{2.47369}
+\mksetr{exp.c3.haut}{4.56033}
+\mksetr{exp.c4.bas}{154.285}
+\mksetr{exp.c4.central}{232.406}
+\mksetr{exp.c4.haut}{290.994}
+\mksetr{exp.total.bas}{172.005}
+\mksetr{exp.total.central}{273.573}
+\mksetr{exp.total.haut}{379.043}
+\mksetr{fun.c}{40}
+\mksetr{fun.e}{36.8845}
+\mksetr{fun.i}{4.39135}
+\mksetr{fun.r}{0.251757}
+\mksetr{gap.pct}{51.5279}
+\mksetr{inv.eff}{397.209}
+\mksetr{inv.sam}{993.021}
+\mksetr{inv.tam}{61307.8}
+\mksetr{kits.1a}{9.936}
+\mksetr{kits.EU.bas}{0.114876}
+\mksetr{kits.EU.central}{5.15901}
+\mksetr{kits.EU.haut}{70.0785}
+\mksetr{kits.FR.bas}{1.01698}
+\mksetr{kits.FR.central}{14.7996}
+\mksetr{kits.FR.haut}{177.013}
+\mksetr{kits.NA.bas}{0}
+\mksetr{kits.NA.central}{1.15957}
+\mksetr{kits.NA.haut}{24.5491}
+\mksetr{kits.c1.bas}{0.963354}
+\mksetr{kits.c1.central}{16.7748}
+\mksetr{kits.c1.haut}{219.828}
+\mksetr{kits.c1EU}{3.6317}
+\mksetr{kits.c1FR}{12.5544}
+\mksetr{kits.c1NA}{0.588643}
+\mksetr{kits.c2.bas}{0.00950469}
+\mksetr{kits.c2.central}{0.319827}
+\mksetr{kits.c2.haut}{4.01011}
+\mksetr{kits.c2EU}{0.0474498}
+\mksetr{kits.c2FR}{0.262175}
+\mksetr{kits.c2NA}{0.0102023}
+\mksetr{kits.c3.bas}{0.0443944}
+\mksetr{kits.c3.central}{0.978641}
+\mksetr{kits.c3.haut}{14.6388}
+\mksetr{kits.c3EU}{0.18228}
+\mksetr{kits.c3FR}{0.612905}
+\mksetr{kits.c3NA}{0.183456}
+\mksetr{kits.c4.bas}{0.1146}
+\mksetr{kits.c4.central}{3.04498}
+\mksetr{kits.c4.haut}{33.1631}
+\mksetr{kits.c4EU}{1.29758}
+\mksetr{kits.c4FR}{1.37014}
+\mksetr{kits.c4NA}{0.377264}
+\mksetr{kits.total.bas}{1.13185}
+\mksetr{kits.total.central}{21.1182}
+\mksetr{kits.total.haut}{271.64}
+\mksetr{kmoy.bas}{1.45899}
+\mksetr{kmoy.central}{1.7456}
+\mksetr{kmoy.haut}{2.18507}
+\mksetr{marge.kit}{20.1682}
+\mksetr{mc.n}{40000}
+\mksetr{mc.p05}{9.63161}
+\mksetr{mc.p10}{11.6973}
+\mksetr{mc.p25}{16.0821}
+\mksetr{mc.p50}{22.8363}
+\mksetr{mc.p75}{32.5682}
+\mksetr{mc.p90}{44.1711}
+\mksetr{mc.p95}{52.2159}
+\mksetr{mc.pbe}{28.0825}
+\mksetr{mc.phalf}{75.3025}
+\mksetr{mc.pplan}{26.105}
+\mksetr{nlines}{21}
+\mksetr{plan.buyers}{18.3318}
+\mksetr{plan.ca}{2.208}
+\mksetr{plan.cum}{32}
+\mksetr{plan.gap}{10.8818}
+\mksetr{plan.ratio.central}{1.51528}
+\mksetr{plan.share.FRsam}{1.7028}
+\mksetr{plan.share.eff}{0.381482}
+\mksetr{plan.share.exp}{0.00670089}
+\mksetr{plan.share.sam}{0.152593}
+\mksetr{plan.share.tam}{0.00247159}
+\mksetr{planinv.FRsam}{58.7268}
+\mksetr{planinv.eff}{262.136}
+\mksetr{planinv.exp}{14923.4}
+\mksetr{planinv.sam}{655.339}
+\mksetr{planinv.tam}{40459.8}
+\mksetr{pop.z868}{536.14}
+\mksetr{pop.z915}{419.63}
+\mksetr{pop.zones}{955.77}
+\mksetr{ratio.android}{4.0302}
+\mksetr{ratio.meshmap}{2.1536}
+\mksetr{ratio.spot}{9.48989}
+\mksetr{res3.central}{-137.183}
+\mksetr{res3.p10}{-267.809}
+\mksetr{res3.p90}{182.46}
+\mksetr{sam.EU.bas}{1.09169}
+\mksetr{sam.EU.central}{5.85613}
+\mksetr{sam.EU.haut}{17.7702}
+\mksetr{sam.FR.bas}{0.30379}
+\mksetr{sam.FR.central}{1.07657}
+\mksetr{sam.FR.haut}{3.28105}
+\mksetr{sam.NA.bas}{1.10404}
+\mksetr{sam.NA.central}{5.08084}
+\mksetr{sam.NA.haut}{14.3804}
+\mksetr{sam.c1.bas}{0.820731}
+\mksetr{sam.c1.central}{4.59812}
+\mksetr{sam.c1.haut}{16.6429}
+\mksetr{sam.c2.bas}{0.000808889}
+\mksetr{sam.c2.central}{0.00249976}
+\mksetr{sam.c2.haut}{0.00539234}
+\mksetr{sam.c3.bas}{0.0764157}
+\mksetr{sam.c3.central}{0.245008}
+\mksetr{sam.c3.haut}{0.861788}
+\mksetr{sam.c4.bas}{1.60157}
+\mksetr{sam.c4.central}{7.16791}
+\mksetr{sam.c4.haut}{17.9216}
+\mksetr{sam.share.central}{0.100703}
+\mksetr{sam.total.bas}{2.49952}
+\mksetr{sam.total.central}{12.0135}
+\mksetr{sam.total.haut}{35.4317}
+\mksetr{share.1a.total}{47.0494}
+\mksetr{share.EU}{24.4292}
+\mksetr{share.FR}{70.08}
+\mksetr{share.NA}{5.49083}
+\mksetr{share.c1}{79.4327}
+\mksetr{share.c2}{1.51446}
+\mksetr{share.c3}{4.6341}
+\mksetr{share.c4}{14.4188}
+\mksetr{shr.c1EU}{17.197}
+\mksetr{shr.c1FR}{59.4483}
+\mksetr{shr.c1NA}{2.78737}
+\mksetr{shr.c2EU}{0.224687}
+\mksetr{shr.c2FR}{1.24146}
+\mksetr{shr.c2NA}{0.0483104}
+\mksetr{shr.c3EU}{0.863141}
+\mksetr{shr.c3FR}{2.90225}
+\mksetr{shr.c3NA}{0.868709}
+\mksetr{shr.c4EU}{6.14435}
+\mksetr{shr.c4FR}{6.48797}
+\mksetr{shr.c4NA}{1.78644}
+\mksetr{tam.EU.bas}{315.481}
+\mksetr{tam.EU.central}{362.185}
+\mksetr{tam.EU.haut}{408.972}
+\mksetr{tam.FR.bas}{50.4634}
+\mksetr{tam.FR.central}{53.568}
+\mksetr{tam.FR.haut}{58.2575}
+\mksetr{tam.NA.bas}{317.647}
+\mksetr{tam.NA.central}{325.947}
+\mksetr{tam.NA.haut}{355.427}
+\mksetr{tam.c1.bas}{166.134}
+\mksetr{tam.c1.central}{224.174}
+\mksetr{tam.c1.haut}{303.649}
+\mksetr{tam.c2.bas}{0.0308887}
+\mksetr{tam.c2.central}{0.0312887}
+\mksetr{tam.c2.haut}{0.0318887}
+\mksetr{tam.c3.bas}{3.1439}
+\mksetr{tam.c3.central}{3.21222}
+\mksetr{tam.c3.haut}{4.69192}
+\mksetr{tam.c4.bas}{514.283}
+\mksetr{tam.c4.central}{514.283}
+\mksetr{tam.c4.haut}{514.283}
+\mksetr{tam.total.bas}{683.592}
+\mksetr{tam.total.central}{741.7}
+\mksetr{tam.total.haut}{822.656}
+\mksetr{tor.c.bas}{13.1989}
+\mksetr{tor.c.haut}{26.3978}
+\mksetr{tor.e.bas}{13.2391}
+\mksetr{tor.e.haut}{30.6674}
+\mksetr{tor.i.bas}{10.033}
+\mksetr{tor.i.haut}{36.0373}
+\mksetr{tor.k.bas}{17.4922}
+\mksetr{tor.k.haut}{26.4725}
+\mksetr{tor.r.bas}{7.53159}
+\mksetr{tor.r.haut}{48.5695}
+\mksetr{val.sam.FR}{129.669}
+\mksetr{val.sam.total}{1.44699}
+
+%===========================================================================
+% 1. MÉTHODE ET VUE D'ENSEMBLE
+%===========================================================================
+\begin{frame}{Méthode~: de la population au kit vendu}
+  \centering
+  \begin{tikzpicture}[font=\scriptsize]
+    \tikzset{etp/.style={pastille,minimum width=2.3cm,minimum height=0.92cm,inner xsep=3pt,font=\scriptsize\bfseries},
+             dtl/.style={anchor=north,text width=2.45cm,align=center,font=\scriptsize}}
+    \node[etp,draw=insagris,fill=insagris!12,text=black]  (m1) at (1.2,0)  {MARCHÉ TOTAL\\[-1pt]{\normalsize $N$}};
+    \node[etp,draw=insaorange,fill=insapeche,text=black]  (m2) at (3.9,0)  {EXPOSÉS\\[-1pt]{\normalsize $\times\,e$}};
+    \node[etp,draw=insarouge,fill=insarose,text=black]    (m3) at (6.6,0)  {MARCHÉ ACCESSIBLE\\[-1pt]{\normalsize $\times\,i$}};
+    \node[etp,draw=black,fill=insarouge,text=white,line width=1.2pt] (m4) at (9.3,0)  {ACHETEURS\\[-1pt]{\normalsize $\times\,c\,\times\,r$}};
+    \node[etp,draw=insarouge,fill=white,text=insarouge]   (m5) at (12.0,0) {KITS VENDUS\\[-1pt]{\normalsize $\times\,k$}};
+    \foreach \a/\b in {m1/m2,m2/m3,m3/m4,m4/m5} {\draw[fluxr] (\a) -- (\b);}
+    \node[dtl] at ([yshift=-0.12cm]m1.south) {Personnes ou organisations concernées\\{\color{insagris}INSEE, fédérations, ONU}};
+    \node[dtl] at ([yshift=-0.12cm]m2.south) {Part réellement sans réseau\\{\color{insagris}bornée par l'Arcep}};
+    \node[dtl] at ([yshift=-0.12cm]m3.south) {Part qui dit oui à 69\,€ sans abonnement\\{\color{insagris}question 20, seuil 20\,\%}};
+    \node[dtl] at ([yshift=-0.12cm]m4.south) {$c$~: l'intention devient un achat\\$r$~: la cible connaît le kit};
+    \node[dtl] at ([yshift=-0.12cm]m5.south) {Kits par commande~: Solo, Duo, Groupe, soit ≈ 1,8};
+    \node[anchor=south east,inner sep=0pt] at ([xshift=-0.12cm,yshift=0.03cm]m1.north east) {\mkplein};
+    \node[anchor=south east,inner sep=0pt] at ([xshift=-0.12cm,yshift=0.03cm]m2.north east) {\mkdemi};
+    \node[anchor=south east,inner sep=0pt] at ([xshift=-0.12cm,yshift=0.03cm]m3.north east) {\mkvide};
+    \node[anchor=south east,inner sep=0pt,font=\tiny] at ([xshift=-0.12cm,yshift=0.03cm]m4.north east) {$c$\,\mkdemi\ \ $r$\,\mkvide};
+    \node[anchor=south east,inner sep=0pt] at ([xshift=-0.12cm,yshift=0.03cm]m5.north east) {\mkdemi};
+  \end{tikzpicture}
+
+  \vspace{0.05cm}
   \begin{columns}[T]
     \begin{column}{0.325\textwidth}
-      \begin{carte}[height=3.85cm,valign=top]
-        \raggedright
-        \begin{minipage}[c]{0.9cm}\tikz{\path (0,-0.4) rectangle (0.9,0.4);\pic[scale=0.75] at (0.45,0) {icone mont};}\end{minipage}%
-        \begin{minipage}[c]{2.85cm}\raggedright{\sffamily\bfseries\small\color{insarouge}1 · Plein air et sport outdoor}\end{minipage}\\[4pt]
-        \footnotesize Randonneurs, trailers, vététistes, chasseurs.\\[3pt]
-        {\scriptsize 27 M de pratiquants, 240\,000 licenciés (3\,300 clubs), 963\,571 chasseurs.}\\[4pt]
-        {\scriptsize\bfseries\color{insarouge}Départ~: usage réel en zone blanche, achat simple.}
+      \begin{carte}[height=1.35cm,valign=top]
+        \raggedright\gros{Ascendante}\\[1pt]{\footnotesize la chaîne ci-dessus, cible par cible.}
       \end{carte}
     \end{column}
     \begin{column}{0.325\textwidth}
-      \begin{carte}[height=3.85cm,valign=top]
-        \raggedright
-        \begin{minipage}[c]{0.9cm}\tikz{\path (0,-0.4) rectangle (0.9,0.4);\pic[scale=0.75] at (0.45,0) {icone tente};}\end{minipage}%
-        \begin{minipage}[c]{2.85cm}\raggedright{\sffamily\bfseries\small\color{insarouge}2 · Camping, voyage, famille}\end{minipage}\\[4pt]
-        \footnotesize Campeurs, camping-caristes, voyageurs, familles qui sortent en zone isolée.\\[3pt]
-        {\scriptsize Taille inconnue~: c'est l'étude quantitative qui la mesure.}\\[4pt]
-        {\scriptsize\bfseries\color{insarouge}Extension~: marché de masse, une fois le réseau visible.}
+      \begin{carte}[height=1.35cm,valign=top]
+        \raggedright\gros{Descendante}\\[1pt]{\footnotesize la part d'un marché publié (équipement, balises).}
       \end{carte}
     \end{column}
     \begin{column}{0.325\textwidth}
-      \begin{carte}[height=3.85cm,valign=top]
-        \raggedright
-        \begin{minipage}[c]{0.9cm}\tikz{\path (0,-0.4) rectangle (0.9,0.4);\pic[scale=0.75] at (0.45,0) {icone alerte};}\end{minipage}%
-        \begin{minipage}[c]{2.85cm}\raggedright{\sffamily\bfseries\small\color{insarouge}3 · Secours et gestion de crise}\end{minipage}\\[4pt]
-        \footnotesize Radioamateurs et ADRASEC, communes, ONG, protection civile.\\[3pt]
-        {\scriptsize 15\,836 indicatifs de radioamateurs~; ≈ 10\,800 communes tenues d'avoir un plan communal de sauvegarde.}\\[4pt]
-        {\scriptsize\bfseries\color{insarouge}Départ~: prescripteurs, premiers nœuds, preuves d'usage.}
-      \end{carte}
-    \end{column}
-  \end{columns}
-  \vspace{0.12cm}
-  \begin{pcompact}\centering\footnotesize
-    Départ avec les segments 1 et 3, puis extension vers le segment 2 et le grand public. Les makers du mesh, déjà équipés, restent des relais d'opinion, pas une cible.
-  \end{pcompact}
-  \srcnote{Sources~: \cite{ffrando,ffrando_licencies,chasse_wiki,ref66_radioamateurs,maire_pcs}. Communes~: estimation de l'État en 2022~; plan obligatoire pour toutes visé en 2029 (projet). Mêmes trois segments que l'étude quantitative.}
-\end{frame}
-
-%---------------------------------------------------------------------------
-\begin{frame}{Un marché assez grand pour 22\,000 kits~?}
-  \begin{columns}[T]
-    \begin{column}{0.645\textwidth}
-      \begin{tikzpicture}
-        % repère de l'objectif : log10(22 000) = 4,342, soit x = 2,65 + 1,342
-        \mbarre{0}{7.431}{Pratiquants de la randonnée}{27 millions}{insagris!70}
-        \mbarre{-0.62}{5.984}{Chasseurs}{963\,571}{insagris!70}
-        \mbarre{-1.24}{5.380}{Licenciés FFRandonnée}{240\,000}{insagris!70}
-        \mbarre{-1.86}{4.200}{Radioamateurs}{15\,836}{insagris!30}
-        \mbarre{-2.48}{4.033}{Communes à plan de sauvegarde}{10\,800}{insagris!30}
-        \draw[insarouge,line width=1.4pt,dashed] (3.992,0.42) -- (3.992,-2.9);
-        \node[anchor=south,font=\scriptsize\bfseries,text=insarouge,align=center] at (3.992,0.42) {objectif~: 22\,000 kits};
-        % axe logarithmique
-        \draw[insagris,thin] (2.65,-2.95) -- (7.15,-2.95);
-        \draw[insagris,thin] (2.65,-2.95) -- (2.65,-3.05) (3.65,-2.95) -- (3.65,-3.05) (4.65,-2.95) -- (4.65,-3.05) (5.65,-2.95) -- (5.65,-3.05) (6.65,-2.95) -- (6.65,-3.05);
-        \node[anchor=north,font=\tiny,text=insagris] at (2.65,-3.05) {1\,000};
-        \node[anchor=north,font=\tiny,text=insagris] at (3.65,-3.05) {10\,000};
-        \node[anchor=north,font=\tiny,text=insagris] at (4.65,-3.05) {100\,000};
-        \node[anchor=north,font=\tiny,text=insagris] at (5.65,-3.05) {1 million};
-        \node[anchor=north,font=\tiny,text=insagris] at (6.65,-3.05) {10 millions};
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.325\textwidth}
-      \begin{carte}[height=1.3cm,valign=top]
-        \raggedright\gros{0,08\,\%}\\[1pt]{\footnotesize des 27 millions de pratiquants, à raison d'un kit par personne.}
-      \end{carte}
-      \vspace{0.08cm}
-      \begin{carte}[height=1.3cm,valign=top]
-        \raggedright\gros{≈ 9\,\%}\\[1pt]{\footnotesize des 240\,000 licenciés de la FFRandonnée.}
+      \begin{carte}[height=1.35cm,valign=top]
+        \raggedright\gros{Analogues}\\[1pt]{\footnotesize ce que vendent SPOT, inReach, goTenna, Meshtastic.}
       \end{carte}
     \end{column}
   \end{columns}
   \vspace{0.05cm}
   \begin{pcompact}\centering\footnotesize
-    Radioamateurs et communes amorcent le réseau mais ne portent pas 22\,000 kits~: le volume viendra du plein air, puis du grand public.
+    kits $= N\times e\times i\times c\times r\times k$ · trois scénarios · chaque personne comptée une seule fois
   \end{pcompact}
-  \srcnote{Échelle logarithmique, ordres de grandeur et non prévisions (l'intention d'achat est mesurée aux questions 17 et 18)~; mêmes sources que la diapositive précédente. Objectif de 22\,000 kits~: année 3 du modèle financier. Les populations ne s'additionnent pas~: les licenciés sont inclus dans les 27 millions.}
+  \srcnote{Méthode de l'équipe. Pastilles~: \mkplein\ chiffre publié, \mkdemi\ hypothèse encadrée (fourchette publiée ou littérature), \mkvide\ à mesurer. Seuils et questions~: partie Étude quantitative.}
 \end{frame}
 
 %---------------------------------------------------------------------------
-\begin{frame}{Comment les atteindre~: un message par cible}
+\begin{frame}{Quatre cibles, dans l'ordre où on les vise}
+  \begin{columns}[T]
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=4.55cm,valign=top,title={1 · Départ},colbacktitle=mkA,coltitle=white,fonttitle=\sffamily\bfseries\scriptsize]
+        \raggedright{\sffamily\bfseries\footnotesize Randonneurs, explorateurs, amateurs de nature}\\[3pt]
+        \scriptsize\textbf{France}~: 30 M de randonneurs, dont 4,6 M en itinérance.\\[2pt]
+        \textbf{Monde}~: \mkv{L1e.N.central} en Europe, \mkv{L1f.N.central} en Amérique du Nord et Océanie.\\[3pt]
+        {\bfseries\color{insarouge}Canaux}~: clubs, refuges, boutiques.
+      \end{carte}
+    \end{column}
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=4.55cm,valign=top,title={2 · Preuve d'usage},colbacktitle=mkB,coltitle=black,fonttitle=\sffamily\bfseries\scriptsize]
+        \raggedright{\sffamily\bfseries\footnotesize ONG, secours, humanitaire}\\[3pt]
+        \scriptsize\textbf{France}~: 183 ONG, 600 à 1\,600 structures de secours, 12\,274 communes.\\[2pt]
+        \textbf{Monde}~: ≈ 5\,000 organisations humanitaires.\\[3pt]
+        {\bfseries\color{insarouge}Canaux}~: pilotes, réseaux d'ONG, achats sous 60\,000\,€.
+      \end{carte}
+    \end{column}
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=4.55cm,valign=top,title={3 · Relais d'opinion},colbacktitle=mkC,coltitle=white,fonttitle=\sffamily\bfseries\scriptsize]
+        \raggedright{\sffamily\bfseries\footnotesize Low-tech, autonomistes, makers}\\[3pt]
+        \scriptsize\textbf{France}~: 10 à 11\,\% des Français ont un kit d'urgence~; ≈ 16\,000 radioamateurs.\\[2pt]
+        \textbf{Monde}~: 2,2 à 3 M de radioamateurs.\\[3pt]
+        {\bfseries\color{insarouge}Canaux}~: forums, fablabs, Repair Cafés, vidéos.
+      \end{carte}
+    \end{column}
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=4.55cm,valign=top,title={4 · Extension},colbacktitle=mkD,coltitle=black,fonttitle=\sffamily\bfseries\scriptsize]
+        \raggedright{\sffamily\bfseries\footnotesize Le reste~: grand public}\\[3pt]
+        \scriptsize\textbf{France}~: 69,1 M d'habitants, 91\,\% de smartphones.\\[2pt]
+        \textbf{Monde}~: 8,2 Md d'habitants.\\[3pt]
+        {\bfseries\color{insarouge}Canaux}~: site marchand, presse, bouche-à-oreille.
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    On entre par la cible 1, on prouve l'usage avec la cible 2, la cible 3 relaie, la cible 4 élargit.
+  \end{pcompact}
+  \srcnote{Ordre des cibles~: choix de l'équipe. Chiffres détaillés et sources dans les diapositives de chaque cible.}
+\end{frame}
+
+%===========================================================================
+% EN BREF : LA RÉPONSE EN UNE PAGE
+%===========================================================================
+\begin{frame}{En bref~: le marché permet de viser \mkv{kits.total.central} kits}
+  \begin{columns}[T]
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=1.22cm,valign=top]
+        \raggedright\gros{\mkv{tam.total.central}}\\[1pt]{\footnotesize adultes des deux zones radio}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=1.22cm,valign=top]
+        \raggedright\gros{\mkv{sam.total.central}}\\[1pt]{\footnotesize exposés et prêts à payer 69\,€}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=1.22cm,valign=top]
+        \raggedright\gros{\mkv{buy.total.central}}\\[1pt]{\footnotesize acheteurs atteints en trois ans}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.235\textwidth}
+      \begin{carte}[height=1.22cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{kits.total.central} kits}\\[1pt]{\footnotesize de \mkv{mc.p10} à \mkv{mc.p90} (80\,\% des cas)}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]\mkpas
+    \pgfmathsetmacro{\wA}{12.6*\mkr{share.c1}/100}\pgfmathsetmacro{\wB}{12.6*\mkr{share.c2}/100}
+    \pgfmathsetmacro{\wC}{12.6*\mkr{share.c3}/100}\pgfmathsetmacro{\wD}{12.6*\mkr{share.c4}/100}
+    \node[anchor=west,font=\scriptsize\bfseries] at (0,0.42) {Kits par cible, scénario central};
+    \fill[mkA] (0,0) rectangle ++(\wA,0.34);
+    \fill[mkB] (\wA,0) rectangle ++(\wB,0.34);
+    \fill[mkC] ({\wA+\wB},0) rectangle ++(\wC,0.34);
+    \fill[mkD] ({\wA+\wB+\wC},0) rectangle ++(\wD,0.34);
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (0,-0.28) {\textcolor{mkA}{\rule{0.18cm}{0.18cm}}~1 Randonneurs \mkv{share.c1}};
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (3.4,-0.28) {\textcolor{mkB}{\rule{0.18cm}{0.18cm}}~2 ONG \mkv{kits.c2.central}~kits};
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (6.4,-0.28) {\textcolor{mkC}{\rule{0.18cm}{0.18cm}}~3 Low-tech \mkv{share.c3}};
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (9.4,-0.28) {\textcolor{mkD}{\rule{0.18cm}{0.18cm}}~4 Grand public \mkv{share.c4}};
+    \pgfmathsetmacro{\zA}{12.6*\mkr{share.FR}/100}\pgfmathsetmacro{\zB}{12.6*\mkr{share.EU}/100}\pgfmathsetmacro{\zC}{12.6*\mkr{share.NA}/100}
+    \node[anchor=west,font=\scriptsize\bfseries] at (0,-0.95) {Kits par zone, scénario central};
+    \fill[insarouge] (0,-1.37) rectangle ++(\zA,0.34);
+    \fill[insarouge!60] (\zA,-1.37) rectangle ++(\zB,0.34);
+    \fill[insarouge!30] ({\zA+\zB},-1.37) rectangle ++(\zC,0.34);
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (0,-1.65) {\textcolor{insarouge}{\rule{0.18cm}{0.18cm}}~France \mkv{share.FR}};
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (3.4,-1.65) {\textcolor{insarouge!60}{\rule{0.18cm}{0.18cm}}~Europe 868 MHz \mkv{share.EU}};
+    \node[anchor=west,font=\scriptsize,inner sep=1pt] at (7.2,-1.65) {\textcolor{insarouge!30}{\rule{0.18cm}{0.18cm}}~Amérique du Nord, Océanie \mkv{share.NA}};
+  \end{tikzpicture}
+  \vspace{0.12cm}
+  \begin{pcompact}\centering\footnotesize
+    Le plan (\mkv{plan.cum} kits) est atteint dans \mkv{mc.pplan} des \mkv{mc.n} simulations~: ambitieux, mais pas hors de portée.
+  \end{pcompact}
+  \srcnote{Modèle de la partie (entonnoir population, exposition, intention, calibrage, portée, kits par acheteur)~; scénario central, fourchette de la simulation (10\,\% à 90\,\% des tirages). Détails et sources dans les pages suivantes.}
+\end{frame}
+
+%===========================================================================
+% CIBLE 1 : RANDONNEURS, EXPLORATEURS, AMATEURS DE NATURE -- FRANCE
+%===========================================================================
+\begin{frame}{Cible 1, France~: 30 millions de randonneurs}
+  \centering
+  \begin{tikzpicture}[xshift=1.1cm]\mkpas
+    \mkfun{0}{4.4}{insagris!25}{black}{30 M}{Marchent ou randonnent}{62\,\% des adultes en mai 2025 (56\,\%, soit 27 M, en 2021)}
+    \mkfun{-0.66}{4.1}{insagris!55}{white}{≈ 17 M}{Randonnée pédestre}{35\,\% des adultes en 2025 (calcul sur la base des 30 M)}
+    \mkfun{-1.32}{3.45}{insasafran}{black}{≈ 4,6 M}{Itinérance}{9\,\% des adultes, soit 27\,\% des randonneurs pédestres}
+    \mkfun{-1.98}{1.95}{insarouge}{white}{237 000}{Licenciés FFRandonnée}{236,8 k licences annuelles (INJEP, 2025), 3\,300 clubs}
+    \mkfun{-2.64}{1.5}{insarouge!65}{white}{100 000}{Appli MaRando}{application de la fédération (mars 2023)}
+  \end{tikzpicture}
+
+  \vspace{0.05cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{+ 3 M}\\[1pt]{\footnotesize de randonneurs entre 2021 et 2025}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{8 M ou 4,6 M~?}\\[1pt]{\footnotesize pour l'itinérance, selon la source}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    La fédération écrit «\,8 millions\,» sur son site et «\,9\,\% des Français\,» dans l'enquête~: nous retenons la valeur prudente, 4,6 millions.
+  \end{pcompact}
+  \srcnote{Sondage Union Sport \& Cycle pour la FFRandonnée (2\,000 adultes, mai 2025)~; largeurs des barres en échelle logarithmique. 17 M = 35\,\% de la base des 30 M (calcul)~; 4,6 M = 27\,\% × 35\,\% de cette base (calcul). \cite{mk_ffr_rando_2025,mk_ffr_sondage_pdf_2025,mk_ffr_27m_2021,mk_insee_licences,mk_ffr_numerique}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1, France~: 8\,565 secours en montagne en 2024}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{50}\renewcommand{\mkbw}{3.1}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7.2cm] at (0,0.42) {Causes des secours en montagne, 2024 (\% des interventions)};
+        \mkbh{0}{43}{Glissade ou chute}{43\,\%}{insagris!55}
+        \mkbh{-0.7}{20}{Erreur d'itinéraire ou technique}{20\,\%}{mkA}
+        \mkbh{-1.4}{15}{Blocage technique}{15\,\%}{mkA}
+        \mkbh{-2.1}{9}{Condition physique insuffisante}{9\,\%}{mkA}
+        \draw[insagris,thin] (2.75,0.2) -- (2.75,-2.45);
+        \draw[decorate,decoration={brace,amplitude=3pt},mkA,thick] (6.4,-0.45) -- (6.4,-2.35)
+          node[midway,right=3pt,font=\scriptsize\bfseries,text=mkA,align=left] {44\,\%};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{8\,565}\\[1pt]{\footnotesize interventions en 2024, + 44\,\% depuis 2015}
+      \end{carte}
+      \vspace{0.05cm}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{52\,\%}\\[1pt]{\footnotesize des 9\,835 victimes sont des randonneurs à pied.}
+      \end{carte}
+      \vspace{0.05cm}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{11 à 19\,\%}\\[1pt]{\footnotesize du territoire de montagne sans 4G chez un opérateur.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Sur 44\,\% des secours, une alerte plus tôt pouvait aider (hypothèse de l'équipe).
+  \end{pcompact}
+  \srcnote{Cour des comptes, d'après les données du SNOSM (rapport de février 2026)~; Arcep, rapport annuel 2024, fin 2023 (fourchette selon l'opérateur)~; FFRandonnée juge la balise satellite «\,potentiellement la seule solution restante\,» en Corse et dans les Pyrénées. \cite{mk_cdc_secours_montagne,mk_arcep_montagne,mk_ffr_zone_blanche}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1, France~: 668\,000 licences fédérales}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{250}\renewcommand{\mkbw}{3.1}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7.2cm] at (0,0.42) {Licences annuelles en 2025 (milliers)};
+        \mkbh{0}{236.8}{FFRandonnée}{236,8}{mkA}
+        \mkbh{-0.62}{125.2}{FFME (montagne)}{125,2}{mkA!70}
+        \mkbh{-1.24}{110.6}{FFCAM (clubs alpins)}{110,6}{mkA!70}
+        \mkbh{-1.86}{105.9}{Cyclotourisme}{105,9}{mkA!70}
+        \mkbh{-2.48}{89.6}{Fédération de ski}{89,6}{mkA!70}
+        \draw[insagris,thin] (2.75,0.2) -- (2.75,-2.8);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{3\,300 clubs}\\[1pt]{\footnotesize 254\,000 km de sentiers balisés}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{348\,000 nuitées}\\[1pt]{\footnotesize en refuges FFCAM en 2025 (+ 10\,\%)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{47\,\%}\\[1pt]{\footnotesize des randonneurs ont une appli}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Une licence n'est pas une personne~: les fédérations sont surtout un canal pour atteindre les clubs.
+  \end{pcompact}
+  \srcnote{INJEP-MEDES, données publiées par l'Insee (licences, une double licence compte deux fois)~; FFRandonnée (objectif de 500\,000 licenciés en 2028)~; FFCAM~; sondage Union Sport \& Cycle 2025 (47\,\% contre 33\,\% en 2021). \cite{mk_insee_licences,ffrando_licencies,mk_ffcam_refuges,mk_ffr_sondage_pdf_2025}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1~: sept sous-segments, un seul prioritaire}
+  \centering
+  \renewcommand{\arraystretch}{1.13}\scriptsize
+  \begin{tabular}{@{}p{4.85cm}@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{}}
+\rowcolor{insarose}\textcolor{insarouge}{\bfseries Sous-segment} & \textcolor{insarouge}{\bfseries Population} & \textcolor{insarouge}{\bfseries Accessible} & \textcolor{insarouge}{\bfseries e · i · r (\%)} & \textcolor{insarouge}{\bfseries Kits} & \textcolor{insarouge}{\bfseries Fourchette} \\
+France · itinérants (plusieurs jours) & 4,6~M & 276\,000 & 40 · 15 · 5 & \bfseries 9\,900 & 690 à 134\,k \\
+France · randonneurs à la journée & 12~M & 99\,200 & 10 · 8 · 1 & \bfseries 710 & 46 à 7,4\,k \\
+France · promeneurs occasionnels & 13~M & 15\,600 & 3 · 4 · 0,5 & \bfseries 47 & 1 à 350 \\
+France · montagne technique (FFCAM, FFME) & 236\,000 & 23\,600 & 50 · 20 · 10 & \bfseries 1\,700 & 150 à 14\,k \\
+France · chasseurs et camping-caristes & 1,5~M & 26\,600 & 30 · 6 · 1 & \bfseries 160 & 10 à 1,3\,k \\
+Europe 868 MHz hors France · randonneurs & 117~M & 2,5~M & 18 · 12 · 0,2 & \bfseries 3\,600 & 66 à 50\,k \\
+Amérique du Nord et Océanie 915 MHz · randonneurs & 76~M & 1,6~M & 18 · 12 · 0,05 & \bfseries 590 & 0 à 13\,k \\
+\rowcolor{insabeige}\bfseries Total cible 1 & \bfseries 224~M & \bfseries 4,6~M & & \bfseries 17\,000 & \bfseries 960 à 220\,k \\
+  \end{tabular}
+  \vspace{0.12cm}
+  \begin{pcompact}\centering\footnotesize
+    Les itinérants français font \mkv{c1.share.1a} des kits de la cible 1, la France \mkv{c1.share.FR}, l'Europe \mkv{c1.share.EU}.
+  \end{pcompact}
+  \srcnote{e = part exposée à l'absence de réseau, i = part prête à payer 69\,€, r = part du marché accessible atteinte en trois ans (valeurs centrales, à mesurer). Kits sur trois ans~; fourchette = scénarios bas et haut. Populations~: voir les pages suivantes.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1, monde~: 17 à 86\,\% de randonneurs}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.4}\renewcommand{\mklabw}{2.3cm}\renewcommand{\mkbmax}{100}\renewcommand{\mkbw}{3.4}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7cm] at (0,0.42) {Part de la population qui randonne};
+        \mkbh{0}{85.6}{Norvège}{86\,\%}{mkA!70}
+        \mkbh{-0.5}{62}{France}{62\,\%}{mkA}
+        \mkbh{-1.0}{57}{Allemagne}{57\,\%}{mkA!70}
+        \mkbh{-1.5}{57}{Suisse}{57\,\%}{mkA!70}
+        \mkbh{-2.0}{29}{Canada (ménages)}{29\,\%}{mkA!70}
+        \mkbh{-2.5}{25}{Royaume-Uni}{≈ 25\,\%}{mkA!70}
+        \mkbh{-3.0}{24.9}{Espagne}{24,9\,\%}{mkA!70}
+        \mkbh{-3.5}{20}{États-Unis}{20\,\%}{mkA!70}
+        \mkbh{-4.0}{17.5}{Australie}{17,5\,\%}{mkA!70}
+        \draw[insagris,thin] (2.4,0.2) -- (2.4,-4.2);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.425\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{63 M d'Américains}\\[1pt]{\footnotesize 1 sur 5 des 6 ans et plus (2024)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 4 M de Suisses}\\[1pt]{\footnotesize 57\,\% des 15 ans et plus}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{3,95 M d'Australiens}\\[1pt]{\footnotesize 17,5\,\% des 15 ans et plus}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Définitions et âges de référence différents~: ces taux donnent un ordre de grandeur, pas un classement.
+  \end{pcompact}
+  \srcnote{Norvège~: toute sortie à pied, 16 à 74 ans (2021)~; France~: marche ou randonne (2025)~; Allemagne~: «\,souvent ou de temps en temps\,» (2023)~; Suisse~: 15 ans et plus (2019)~; Canada~: part des ménages (2021)~; Royaume-Uni~: approximation de Statista (2025)~; Espagne~: base à confirmer (2024-25)~; États-Unis~: 6 ans et plus (2024). \cite{mk_ssb_friluftsliv,mk_ffr_rando_2025,mk_dav_wandern,mk_swisshiking,mk_statcan_hiking,mk_statista_hiking,mk_ehd_2024,mk_oia_2025,mk_ausplay_bushwalking}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1, monde~: \mkv{pop.zones} d'habitants, deux zones radio}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.35}\renewcommand{\mklabw}{2.25cm}\renewcommand{\mkbmax}{460}\renewcommand{\mkbw}{2.6}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=6cm] at (0,0.42) {Habitants, en millions};
+        \mkbh{0}{452}{Union européenne}{452}{insarouge}
+        \mkbh{-0.5}{347.3}{États-Unis}{347}{insasafran}
+        \mkbh{-1.0}{69.6}{Royaume-Uni}{70}{insarouge}
+        \mkbh{-1.5}{40.1}{Canada}{40}{insasafran}
+        \mkbh{-2.0}{27.0}{Australie}{27}{insasafran}
+        \mkbh{-2.5}{9.0}{Suisse}{9}{insarouge}
+        \mkbh{-3.0}{5.6}{Norvège}{5,6}{insarouge}
+        \mkbh{-3.5}{5.3}{Nouvelle-Zélande}{5,3}{insasafran}
+        \draw[insagris,thin] (2.35,0.2) -- (2.35,-3.7);
+        \node[anchor=west,font=\scriptsize,inner sep=1pt] at (0,-4.0) {\textcolor{insarouge}{\rule{0.18cm}{0.18cm}}~868 MHz~: \mkv{pop.z868}\quad\textcolor{insasafran}{\rule{0.18cm}{0.18cm}}~915 MHz~: \mkv{pop.z915}};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \renewcommand{\arraystretch}{1.15}\scriptsize
+      \begin{tabular}{@{}l@{\hspace{5pt}}l@{\hspace{5pt}}r@{\hspace{5pt}}r@{}}
+        \rowcolor{insarose}\textcolor{insarouge}{\bfseries Région} & \textcolor{insarouge}{\bfseries Bande (MHz)} & \textcolor{insarouge}{\bfseries Émission} & \textcolor{insarouge}{\bfseries Puiss.} \\
+        Europe (EU\_868) & 869,4 à 869,65 & 10\,\% & 27 dBm \\
+        États-Unis, Canada & 902 à 928 & 100\,\% & 30 dBm \\
+        Australie, N.-Zélande & 915 à 928 & 100\,\% & 30 dBm \\
+        Japon & 920,5 à 923,5 & 100\,\% & 13 dBm \\
+        Corée du Sud & 920 à 923 & 100\,\% & 23 dBm \\
+        Inde & 865 à 867 & --- & 30 dBm \\
+      \end{tabular}
+      \vspace{0.1cm}
+
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{10\,\% d'émission}\\[1pt]{\footnotesize ≈ 6 min par heure en Europe~: les messages doivent rester courts}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Japon (123 M), Corée (52 M), Inde~: autres réglages, hors périmètre à trois ans.
+  \end{pcompact}
+  \srcnote{Populations~: Eurostat (1\up{er} janvier 2026) pour l'Union européenne, ONU (2025) pour les autres pays~; la France (69,1 M) est comprise dans l'Union européenne. Bandes~: documentation Meshtastic. \cite{mk_eurostat_pop,mk_un_pop,meshtastic_lora}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1, monde~: 3,3 M de membres de clubs alpins}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{1700}\renewcommand{\mkbw}{3.1}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7.2cm] at (0,0.42) {Membres ou licenciés (milliers)};
+        \mkbh{0}{1638.7}{DAV (Allemagne)}{1\,639}{mkA}
+        \mkbh{-0.55}{748.0}{ÖAV (Autriche)}{748}{mkA!70}
+        \mkbh{-1.10}{356.1}{CAI (Italie)}{356}{mkA!70}
+        \mkbh{-1.65}{287.5}{FEDME (Espagne)}{288}{mkA!70}
+        \mkbh{-2.20}{174.7}{SAC (Suisse)}{175}{mkA!70}
+        \mkbh{-2.75}{106.1}{Ramblers (Grande-Bretagne)}{106}{mkA!70}
+        \draw[insagris,thin] (2.75,0.2) -- (2.75,-2.95);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{100 M}\\[1pt]{\footnotesize de membres d'AllTrails (2026)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{40 M}\\[1pt]{\footnotesize d'inscrits Komoot (2024)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{180 M}\\[1pt]{\footnotesize d'inscrits Strava (2026)}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Un accord avec un club touche des dizaines de milliers de membres~: c'est le canal le plus direct.
+  \end{pcompact}
+  \srcnote{Membres fin 2025 (DAV, ÖAV, CAI), licences 2025 (FEDME), fin 2023 (SAC), septembre 2025 (Ramblers)~; une même personne peut être membre de deux clubs. Applications~: chiffres publiés par chaque société, non audités. \cite{mk_dav_membres,mk_oeav,mk_cai,mk_fedme,mk_sac,mk_ramblers,mk_alltrails,mk_komoot,mk_strava}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 1~: démarrer là où la densité est possible}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{560}\renewcommand{\mkbw}{3.0}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=6.5cm] at (0,0.42) {Marcheurs par an (milliers)};
+        \mkbh{0}{530.8}{Compostelle, tous chemins}{531}{mkA!70}
+        \mkbh{-0.62}{80}{Tour du Mont-Blanc}{80}{mkA}
+        \mkbh{-1.24}{58}{Saint-Jean-Pied-de-Port}{58}{mkA!70}
+        \draw[insagris,thin] (2.75,0.2) -- (2.75,-1.5);
+      \end{tikzpicture}
+      \vspace{0.05cm}
+
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{≈ 800 kits par an}\\[1pt]{\footnotesize à 1\,\% des 80\,000 marcheurs du Tour du Mont-Blanc}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{20 à 50 nœuds}\\[1pt]{\footnotesize par zone~: le réseau fonctionne bien}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{30 à 40 nœuds}\\[1pt]{\footnotesize début des problèmes d'échelle}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 30 km}\\[1pt]{\footnotesize de rayon pour un relais de montagne}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    À 1\,\% de pénétration, ≈ 60 kits sont présents en même temps sur le Tour du Mont-Blanc.
+  \end{pcompact}
+  \srcnote{Compostelle~: arrivées 2025~; Tour du Mont-Blanc~: 80\,000 randonneurs par an (source du chiffre non nommée)~; Saint-Jean-Pied-de-Port~: visiteurs 2024. Calcul des 60 kits~: 8 jours de marche, saison de 100 jours. Seuils de nœuds~: guide d'un vendeur (20 à 50), FOSDEM 2025 (30 à 40). \cite{mk_compostelle_ofp,mk_tmb_euronews,mk_afcc_note,mk_meshnology_guide,mk_lwn_fosdem,mk_denver_mesh}}
+\end{frame}
+
+%===========================================================================
+% CIBLE 2 : ONG, SECOURS, HUMANITAIRE
+%===========================================================================
+\begin{frame}{Cible 2, France~: 600 structures de secours bénévoles}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.9}\renewcommand{\mklabw}{2.8cm}\renewcommand{\mkbmax}{260}\renewcommand{\mkbw}{3.2}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7cm] at (0,0.42) {Effectifs (milliers de personnes)};
+        \mkbh{0}{254.8}{Sapeurs-pompiers}{254,8}{mkB}
+        \mkbh{-0.5}{82}{Croix-Rouge française}{82}{mkB!75}
+        \mkbh{-1.0}{75}{FFSS (sauvetage)}{75}{mkB!75}
+        \mkbh{-1.5}{32}{Protection civile}{32}{mkB!75}
+        \mkbh{-2.0}{12.5}{Ordre de Malte}{12,5}{mkB!75}
+        \mkbh{-2.5}{10}{SNSM (mer)}{10}{mkB!75}
+        \mkbh{-3.0}{1.5}{Radioamateurs (FNRASEC)}{1,5}{mkB!75}
+        \draw[insagris,thin] (2.9,0.2) -- (2.9,-3.2);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.425\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 600 structures}\\[1pt]{\footnotesize agréées de sécurité civile}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{12\,274 communes}\\[1pt]{\footnotesize doivent avoir un plan (77\,\% l'ont fait)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{< 1\,000}\\[1pt]{\footnotesize réserves communales de sécurité civile}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Un lot de dix kits (575\,€ HT) reste cent fois sous le seuil de mise en concurrence (60\,000\,€ HT).
+  \end{pcompact}
+  \srcnote{Sapeurs-pompiers~: 2022, dont 78\,\% de volontaires~; Croix-Rouge~: mai 2026~; FFSS, Protection civile, Ordre de Malte, FNRASEC~: audition du 29 novembre 2023~; SNSM~: 2025~; structures agréées~: 2024~; plans communaux~: 2019 (77\,\%)~; réserves communales~: octobre 2026~; seuil d'achat public en vigueur depuis le 1\up{er} avril 2026. \cite{mk_sdis_stats,mk_crf_benevoles,mk_audition_2023,mk_snsm_2025,mk_aasc_2024,mk_pcs_gazette,mk_rcsc_sud,mk_seuil_60k}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 2, monde~: 5 000 organisations, peu de moyens}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{239 M de personnes}\\[1pt]{\footnotesize ont besoin d'aide en 2026 (135 M ciblées)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{632\,000 personnes}\\[1pt]{\footnotesize de personnel, plus de 90\,\% recruté sur place}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 5\,000 organisations}\\[1pt]{\footnotesize humanitaires (estimation de 2020)}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{27,8\,\%}\\[1pt]{\footnotesize de l'appel de 2025 financé}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{31\,000 emplois}\\[1pt]{\footnotesize supprimés en 2025 (ONU, ONG, CICR)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 30 nœuds}\\[1pt]{\footnotesize test à La Réunion, plus de 100 inscrits}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{pcompact}\centering\footnotesize
+    Aucun usage de Meshtastic par une grande ONG n'a été trouvé~: la preuve est à construire, pas à citer.
+  \end{pcompact}
+  \srcnote{Aperçu humanitaire mondial 2026 (décembre 2025)~; personnel et organisations~: estimation de 2020 citée par le PAM~; financement et emplois~: bilans 2025~; test du réseau Gaulix à La Réunion, 5 octobre 2025. Cinq recherches sur l'usage de LoRa par la Croix-Rouge, le CICR, MSF et d'autres n'ont donné aucun projet documenté. \cite{mk_gho_2026,mk_wfp_staff,mk_alliance_2025,mk_devaid_2025,mk_reunion_test}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 2~: peu de kits, beaucoup d'effet}
+  \centering
+  \renewcommand{\arraystretch}{1.13}\scriptsize
+  \begin{tabular}{@{}p{4.85cm}@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{}}
+\rowcolor{insarose}\textcolor{insarouge}{\bfseries Sous-segment} & \textcolor{insarouge}{\bfseries Population} & \textcolor{insarouge}{\bfseries Accessible} & \textcolor{insarouge}{\bfseries e · i · r (\%)} & \textcolor{insarouge}{\bfseries Kits} & \textcolor{insarouge}{\bfseries Fourchette} \\
+France · associations et services de secours & 1\,000 & 140 & 70 · 20 · 40 & \bfseries 220 & 8 à 2,6\,k \\
+France · communes avec plan de sauvegarde & 12\,300 & 307 & 50 · 5 · 3 & \bfseries 18 & 1 à 340 \\
+France · ONG humanitaires (Coordination SUD) & 183 & 16 & 60 · 15 · 30 & \bfseries 20 & 0 à 180 \\
+Europe 868 MHz · secours (extrapolé) & 6\,760 & 946 & 70 · 20 · 1 & \bfseries 38 & 1 à 550 \\
+Amérique du Nord, Océanie · secours (extrapolé) & 6\,070 & 850 & 70 · 20 · 0,3 & \bfseries 10 & 0 à 160 \\
+Monde · organisations humanitaires & 5\,000 & 240 & 60 · 8 · 1 & \bfseries 10 & 0 à 180 \\
+\rowcolor{insabeige}\bfseries Total cible 2 & \bfseries 31\,300 & \bfseries 2\,500 & & \bfseries 320 & \bfseries 10 à 4,0\,k \\
+  \end{tabular}
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{kits.c2.central} kits}\\[1pt]{\footnotesize achetés, soit \mkv{share.c2} du total}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{don.central} kits offerts}\\[1pt]{\footnotesize 1 pour 10 vendus, scénario central}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Les ONG sont d'abord destinataires de dons, ensuite clientes~: leur rôle est la preuve d'usage.
+  \end{pcompact}
+  \srcnote{e = part exposée à l'absence de réseau, i = part prête à payer, r = part atteinte en trois ans (valeurs centrales, hypothèses à mesurer). Populations~: voir les deux pages précédentes~; hors France, nombre de structures extrapolé à population égale (hypothèse). Fourchette = scénarios bas et haut.}
+\end{frame}
+
+%===========================================================================
+% CIBLE 3 : LOW-TECH, AUTONOMISTES, MAKERS, RADIOAMATEURS
+%===========================================================================
+\begin{frame}{Cible 3, France~: des milliers de passionnés}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{3.05}\renewcommand{\mkdec}{0.62}\renewcommand{\mkmin}{1}\renewcommand{\mklabw}{2.95cm}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7.2cm] at (0,0.42) {Ordres de grandeur (échelle logarithmique)};
+        \mkbg{0}{5.745}{Installations en autoconsommation}{556\,000}{mkC}
+        \mkbg{-0.5}{5.711}{Camping-cars en circulation}{514\,000}{mkC}
+        \mkbg{-1.0}{4.200}{Radioamateurs}{≈ 15\,800}{mkC}
+        \mkbg{-1.5}{3.606}{Tiers-lieux}{4\,041}{mkC}
+        \mkbg{-2.0}{3.188}{Espaces du faire}{≈ 1\,540}{mkC}
+        \mkbg{-2.5}{2.602}{Repair Cafés (2022)}{> 400}{mkC}
+        \mkbg{-3.0}{1.477}{Groupes Low-tech Lab}{≈ 30}{mkC}
+        \draw[insagris,thin] (3.05,0.2) -- (3.05,-3.2);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{11\,\%}\\[1pt]{\footnotesize ont un sac d'urgence (2024)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{16\,\%}\\[1pt]{\footnotesize ont une radio à piles (2022)}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{44\,\%}\\[1pt]{\footnotesize envisageraient la vanlife (2022)}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Unités différentes (installations, véhicules, personnes, lieux)~: le cœur de cible se compte en milliers.
+  \end{pcompact}
+  \srcnote{Autoconsommation~: installations raccordées, 2\up{e} trimestre 2024 (plus de 80\,\% injectent, donc pas hors réseau)~; camping-cars~: chiffre non retrouvé à la source~; radioamateurs~: compilation secondaire, source primaire non relue. \cite{mk_enedis_autoconso,mk_camping_cars_utilicare,mk_qsl_radioamateurs,mk_tierslieux,mk_ftl_faire,mk_repair_cafes,mk_lowtech_lab,mk_catakit_enquete,mk_reichelt_blackout}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 3, monde~: 2,2 à 3 M de radioamateurs}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{730}\renewcommand{\mkbw}{3.1}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7.2cm] at (0,0.42) {Radioamateurs (milliers)};
+        \mkbh{0}{728}{États-Unis}{728}{mkC}
+        \mkbh{-0.5}{325}{Japon (stations)}{325}{mkC!50}
+        \mkbh{-1.0}{86}{Royaume-Uni}{< 86}{mkC}
+        \mkbh{-1.5}{61.1}{Allemagne}{61}{mkC}
+        \mkbh{-2.0}{40}{Italie}{> 40}{mkC}
+        \mkbh{-2.5}{30}{Espagne}{≈ 30}{mkC}
+        \mkbh{-3.0}{15.8}{France}{≈ 16}{mkC}
+        \draw[insagris,thin] (2.75,0.2) -- (2.75,-3.2);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{7,6 M}\\[1pt]{\footnotesize de cartes Raspberry Pi vendues en 2025}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{33 M}\\[1pt]{\footnotesize d'utilisateurs d'Arduino, estimés}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{37\,000 nœuds}\\[1pt]{\footnotesize réseau citoyen guifi.net (2021)}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Des communautés bâtissent déjà des réseaux de milliers de nœuds, sans opérateur.
+  \end{pcompact}
+  \srcnote{États-Unis~: licences actives au 5 novembre 2026 (FCC)~; Allemagne~: autorisations personnelles (2025)~; autres pays~: compilation secondaire (2025-2026)~; Japon~: stations et non opérateurs, hors zones 868 et 915\,MHz. Guifi.net~: Wi-Fi et fibre, pas LoRa. \cite{mk_arrl_fcc,mk_bnetza_amateurfunk,mk_qsl_radioamateurs,mk_raspberrypi,mk_arduino_mouser,mk_guifi_wiki}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 3~: peu de ventes, des relais utiles à tous}
+  \centering
+  \renewcommand{\arraystretch}{1.13}\scriptsize
+  \begin{tabular}{@{}p{4.85cm}@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{}}
+\rowcolor{insarose}\textcolor{insarouge}{\bfseries Sous-segment} & \textcolor{insarouge}{\bfseries Population} & \textcolor{insarouge}{\bfseries Accessible} & \textcolor{insarouge}{\bfseries e · i · r (\%)} & \textcolor{insarouge}{\bfseries Kits} & \textcolor{insarouge}{\bfseries Fourchette} \\
+France · radioamateurs & 15\,800 & 1\,660 & 70 · 15 · 10 & \bfseries 130 & 7 à 1,3\,k \\
+France · ateliers, Repair Cafés, Low-tech Lab & 2\,000 & 160 & 80 · 10 · 15 & \bfseries 48 & 2 à 600 \\
+France · foyers préparés, hors randonneurs & 2,2~M & 144\,000 & 80 · 8 · 0,5 & \bfseries 430 & 31 à 5,1\,k \\
+Europe 868 MHz · radioamateurs (DE, RU, IT, ES) & 217\,000 & 22\,800 & 70 · 15 · 1 & \bfseries 180 & 4 à 3,6\,k \\
+États-Unis · radioamateurs & 728\,000 & 76\,400 & 70 · 15 · 0,3 & \bfseries 180 & 0 à 4,0\,k \\
+\rowcolor{insabeige}\bfseries Total cible 3 & \bfseries 3,2~M & \bfseries 245\,000 & & \bfseries 980 & \bfseries 44 à 15\,k \\
+  \end{tabular}
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{kits.c3.central} kits}\\[1pt]{\footnotesize achetés, soit \mkv{share.c3} du total}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{≈ 30 km}\\[1pt]{\footnotesize couverts par un seul relais en altitude}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Ils achètent peu mais installent les relais qui rendent le réseau utile aux randonneurs.
+  \end{pcompact}
+  \srcnote{e = part exposée à l'absence de réseau, i = part prête à payer, r = part atteinte en trois ans (valeurs centrales, hypothèses à mesurer)~; foyers préparés comptés une seule fois (hors randonneurs)~; hors France, seuls les radioamateurs sont chiffrés (les foyers préparés restent en cible 4). Relais~: Denver Mesh, 2026. \cite{mk_denver_mesh}}
+\end{frame}
+
+%===========================================================================
+% CIBLE 4 : LE RESTE (GRAND PUBLIC) -- FRANCE
+%===========================================================================
+\begin{frame}{Cible 4, France~: couverte, mais exposée aux pannes}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{100}\renewcommand{\mkbw}{3.1}\mkpas
+        \mkbh{0}{91}{Smartphone, 12 ans et plus}{91\,\%}{insagris!55}
+        \mkbh{-0.7}{99.4}{Population couverte en 4G}{99,2 à 99,6\,\%}{insagris!55}
+        \mkbh{-1.4}{88}{Territoire couvert en 4G par les 4 opérateurs}{88\,\%}{insagris!55}
+        \mkbh{-2.1}{85}{Montagne~: territoire couvert en 4G}{81 à 89\,\%}{mkA}
+        \mkbh{-2.8}{1.9}{Zone blanche 4G (aucun opérateur)}{1,9\,\%}{insagris!55}
+        \draw[insagris,thin] (2.75,0.3) -- (2.75,-3.15);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{≈ 10 h}\\[1pt]{\footnotesize sans appels ni SMS chez Orange et Sosh, le 21 octobre 2026.}
+      \end{carte}
+      \vspace{0.05cm}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{≈ 7 h 30}\\[1pt]{\footnotesize sans numéros d'urgence chez Orange, le 2 juin 2021.}
+      \end{carte}
+      \vspace{0.05cm}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{51 sur 54}\\[1pt]{\footnotesize antennes Orange hors service à Mayotte, 4 jours après Chido.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Sans réseau, pas de 112~: le besoin du grand public est celui d'un événement, pas du quotidien.
+  \end{pcompact}
+  \srcnote{Arcep (fin 2023 à fin 2025)~; zone blanche et 4 opérateurs~: 3\textsuperscript{e} trimestre 2023~; montagne~: par opérateur, fin 2023. Durées d'après la presse spécialisée~; 7 h 30 déduite des repères horaires de l'article. \cite{mk_barometre_num,arcep_mobile,mk_arcep_newdeal,mk_arcep_montagne,mk_selectra_orange,mk_lmi_urgences,mk_next_mayotte}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 4, France~: des inquiets, très peu d'équipés}
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.75}\renewcommand{\mklabw}{2.65cm}\renewcommand{\mkbmax}{100}\renewcommand{\mkbw}{3.1}\mkpas
+        \mkbh{0}{59}{Jugent le risque de coupures élevé (déc. 2022)}{59\,\%}{insagris!55}
+        \mkbh{-0.7}{50}{Inquiets des coupures d'électricité (déc. 2022)}{50\,\%}{insagris!55}
+        \mkbh{-1.4}{30}{Se disent bien préparés aux catastrophes (2024)}{30\,\%}{insagris!55}
+        \mkbh{-2.1}{16}{Possèdent une radio à piles (2022)}{16\,\%}{mkC}
+        \mkbh{-2.8}{11}{Ont un kit d'urgence (2024)}{11\,\%}{mkC}
+        \draw[insagris,thin] (2.75,0.3) -- (2.75,-3.15);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.405\textwidth}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{≈ 27 M}\\[1pt]{\footnotesize d'adultes inquiets, soit 50\,\% des 53,6 M de plus de 20 ans.}
+      \end{carte}
+      \vspace{0.05cm}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{65\,\%}\\[1pt]{\footnotesize des Européens veulent plus d'information pour se préparer (2024).}
+      \end{carte}
+      \vspace{0.05cm}
+      \begin{carte}[height=1.16cm,valign=top]
+        \raggedright\gros{79,90 à 149,90\,€}\\[1pt]{\footnotesize le Catakit de la Croix-Rouge, un sac d'urgence prêt à l'emploi.}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Inquiétude forte, équipement faible~: 69\,€ reste sous le prix d'un sac d'urgence.
+  \end{pcompact}
+  \srcnote{Enquêtes d'opinion de 2022 (hiver des coupures)~; le 71\,\% «\,s'attend à des coupures\,» vient d'un sondage commandé par un vendeur d'électronique. Plus de 20 ans~: 69,1 M d'habitants moins 22,5\,\% de moins de 20 ans (calcul). \cite{mk_elabe_coupures,mk_reichelt_blackout,mk_euronews_prep,mk_catakit_enquete,mk_eurobaro_info,mk_catakit_prix}}
+\end{frame}
+
+%===========================================================================
+% CIBLE 4 : LE RESTE (GRAND PUBLIC)
+%===========================================================================
+\begin{frame}{Cible 4, monde~: 2,2 Md de personnes hors ligne}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{2.8}\renewcommand{\mklabw}{2.7cm}\renewcommand{\mkbmax}{8.2}\renewcommand{\mkbw}{3.1}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7cm] at (0,0.42) {Personnes, en milliards};
+        \mkbh{0}{8.2}{Population mondiale}{8,2}{mkD}
+        \mkbh{-0.55}{6.0}{Utilisateurs d'Internet}{6,0}{mkD}
+        \mkbh{-1.10}{4.7}{Internet mobile personnel}{4,7}{mkD}
+        \mkbh{-1.65}{2.2}{Hors ligne}{2,2}{mkA}
+        \mkbh{-2.20}{0.312}{Hors couverture mobile}{0,31}{mkA}
+        \draw[insagris,thin] (2.8,0.2) -- (2.8,-2.4);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.425\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{313 coupures}\\[1pt]{\footnotesize d'Internet dans 52 pays en 2025}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 47 M}\\[1pt]{\footnotesize d'Espagnols sans courant le 28 avril 2025}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{93\,\%}\\[1pt]{\footnotesize de la population couverte en 4G}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Un besoin réel, mais loin de nos zones radio~: nous ne le chiffrons que pour 868 et 915\,MHz.
+  \end{pcompact}
+  \srcnote{Population mi-2024 (ONU)~; internautes et hors ligne 2025 (UIT)~; Internet mobile fin 2024 (GSMA)~; écart de couverture 2025 (UIT)~; coupures d'Internet 2025 (Access Now)~; panne ibérique du 28 avril 2025. \cite{mk_un_desa_pop,mk_itu_2025,mk_gsma_2024,mk_itu_coverage,mk_accessnow_2025,mk_brussels_iberique}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 4~: l'équipement d'urgence reste rare}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tikzpicture}
+        \renewcommand{\mkox}{3.6}\renewcommand{\mklabw}{3.5cm}\renewcommand{\mkbmax}{100}\renewcommand{\mkbw}{2.4}\mkpas
+        \node[font=\scriptsize\bfseries,anchor=west,text width=7cm] at (0,0.42) {Part de la population (\%)};
+        \mkbh{0}{48}{États-Unis · réserves faites}{48}{mkD}
+        \mkbh{-0.5}{45}{Allemagne · bien équipés}{45}{mkD}
+        \mkbh{-1.0}{44}{Pays-Bas · kit constitué}{44}{mkD}
+        \mkbh{-1.5}{43}{Suède · prêts pour une semaine}{43}{mkD}
+        \mkbh{-2.0}{37}{Union européenne · bien préparés}{37}{mkD}
+        \mkbh{-2.5}{30}{France · bien préparés}{30}{mkA!60}
+        \mkbh{-3.0}{11}{France · sac d'urgence}{11}{mkA}
+        \mkbh{-3.5}{4}{Flandre · kit complet}{4}{mkD}
+        \draw[insagris,thin] (3.6,0.2) -- (3.6,-3.7);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.425\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{58\,\%}\\[1pt]{\footnotesize des Européens se sentent mal préparés}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{≈ 65\,\%}\\[1pt]{\footnotesize veulent plus d'information}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{20\,\%}\\[1pt]{\footnotesize gardent une radio à piles (UE)}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Définitions différentes d'un pays à l'autre~: l'écart France-Europe est réel, mais l'ordre de grandeur seul compte.
+  \end{pcompact}
+  \srcnote{États-Unis~: réserves constituées ou mises à jour dans l'année (FEMA, 2023)~; Allemagne~: tenir dix jours (2024)~; Pays-Bas~: ministère (2026)~; Suède~: au moins une semaine (2025)~; UE et France~: Eurobaromètre 547 (2024)~; sac d'urgence~: Croix-Rouge (2024). \cite{mk_fema_2023,mk_prep_allensbach,mk_nl_times,mk_msb_2025,mk_veriangroup,mk_eurobaro_info,mk_eurobaro_radio,mk_euronews_prep,mk_catakit_enquete,mk_flandre_kit}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Cible 4~: le plus grand marché, le plus faible taux}
+  \centering
+  \renewcommand{\arraystretch}{1.13}\scriptsize
+  \begin{tabular}{@{}p{4.85cm}@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{}}
+\rowcolor{insarose}\textcolor{insarouge}{\bfseries Sous-segment} & \textcolor{insarouge}{\bfseries Population} & \textcolor{insarouge}{\bfseries Accessible} & \textcolor{insarouge}{\bfseries e · i · r (\%)} & \textcolor{insarouge}{\bfseries Kits} & \textcolor{insarouge}{\bfseries Fourchette} \\
+France · grand public & 20~M & 489\,000 & 50 · 5 · 0,5 & \bfseries 1\,400 & 70 à 10\,k \\
+Europe 868 MHz hors France · grand public & 245~M & 3,3~M & 45 · 3 · 0,07 & \bfseries 1\,300 & 44 à 15\,k \\
+Amérique du Nord et Océanie · grand public & 250~M & 3,4~M & 45 · 3 · 0,02 & \bfseries 380 & 0 à 7,4\,k \\
+\rowcolor{insabeige}\bfseries Total cible 4 & \bfseries 514~M & \bfseries 7,2~M & & \bfseries 3\,000 & \bfseries 110 à 33\,k \\
+  \end{tabular}
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{tam.c4.central}}\\[1pt]{\footnotesize d'adultes, soit \mkv{kits.c4.central} kits}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{share.c4} des kits}\\[1pt]{\footnotesize pour \mkv{sam.c4.central} de personnes accessibles}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    On ne l'attaque qu'après la preuve d'usage des cibles 1 à 3, quand le réseau est dense.
+  \end{pcompact}
+  \srcnote{e = part exposée à l'absence de réseau (inquiets des coupures, enquête Elabe~: 50\,\%), i = part prête à payer, r = part atteinte en trois ans (valeurs centrales, hypothèses à mesurer)~; adultes déjà comptés dans les cibles 1 à 3 retirés. Fourchette = scénarios bas et haut.}
+\end{frame}
+
+%===========================================================================
+% SYNTHÈSE : DU MARCHÉ TOTAL AUX KITS, PUIS FOURCHETTE, SENSIBILITÉ, PLAN, PART VISÉE
+%===========================================================================
+\begin{frame}{Du marché total aux kits~: l'entonnoir central}
+  \centering
+  \begin{tikzpicture}[xshift=1.1cm]\mkpas
+    % largeur de barre = échelle logarithmique : 1,05 cm pour 10 000, puis 0,62 cm par facteur 10
+    \pgfmathsetmacro{\mkwa}{1.05+0.62*(log10(\mkr{tam.total.central})+2)}
+    \pgfmathsetmacro{\mkwb}{1.05+0.62*(log10(\mkr{exp.total.central})+2)}
+    \pgfmathsetmacro{\mkwc}{1.05+0.62*(log10(\mkr{sam.total.central})+2)}
+    \pgfmathsetmacro{\mkwd}{1.05+0.62*(log10(\mkr{eff.total.central})+2)}
+    \pgfmathsetmacro{\mkwe}{1.05+0.62*(log10(\mkr{buy.total.central})-1)}
+    \pgfmathsetmacro{\mkwf}{1.05+0.62*(log10(\mkr{kits.total.central})-1)}
+    \mkfun{0}{\mkwa}{insagris!25}{black}{\mkv{tam.total.central}}{Marché total (TAM)}{adultes~: France \mkv{tam.FR.central}, Europe 868\,MHz \mkv{tam.EU.central}, Amérique du Nord et Océanie \mkv{tam.NA.central}}
+    \mkfun{-0.6}{\mkwb}{insagris!45}{black}{\mkv{exp.total.central}}{Exposés}{e = \mkv{fun.e}~: pratiquent ou vivent là où le réseau manque}
+    \mkfun{-1.2}{\mkwc}{insagris!70}{white}{\mkv{sam.total.central}}{Accessible (SAM)}{i = \mkv{fun.i} des exposés se disent prêts à payer 69\,€}
+    \mkfun{-1.8}{\mkwd}{insasafran}{black}{\mkv{eff.total.central}}{Demande efficace}{c = \mkv{fun.c} de l'intention devient un achat (calibrage)}
+    \mkfun{-2.4}{\mkwe}{insarouge!70}{white}{\mkv{buy.total.central}}{Acheteurs}{r = \mkv{fun.r} de la demande atteinte en trois ans}
+    \mkfun{-3.0}{\mkwf}{insarouge}{white}{\mkv{kits.total.central}}{Kits vendus}{k = \mkv{kmoy.central} kit par acheteur (un réseau demande des voisins)}
+  \end{tikzpicture}
+
+  \vspace{0.05cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{1 sur \mkv{inv.sam}}\\[1pt]{\footnotesize des prêts à payer devient acheteur en trois ans}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{1 sur \mkv{inv.tam}}\\[1pt]{\footnotesize des adultes du marché total devient acheteur}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Le résultat dépend moins de la taille du marché que de la part atteinte (r) et de l'intention (i).
+  \end{pcompact}
+  \srcnote{Scénario central du modèle (\mkv{nlines} lignes~: quatre cibles, trois zones)~; largeurs des barres en échelle logarithmique~; rapports e, i, c, r calculés sur l'ensemble. Populations~: Eurostat, ONU. \cite{mk_eurostat_pop,mk_un_pop}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Les quatre cibles en un tableau}
+  \centering
+  \renewcommand{\arraystretch}{1.5}\scriptsize
+  \begin{tabular}{@{}p{3.3cm}@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{\hspace{6.5pt}}r@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Cible} & \textcolor{insarouge}{\bfseries Marché total} & \textcolor{insarouge}{\bfseries Exposés} & \textcolor{insarouge}{\bfseries Accessible} & \textcolor{insarouge}{\bfseries Acheteurs} & \textcolor{insarouge}{\bfseries Kits} & \textcolor{insarouge}{\bfseries Fourchette} & \textcolor{insarouge}{\bfseries Part} \\
+    1 · Randonneurs, nature & \mkv{tam.c1.central} & \mkv{exp.c1.central} & \mkv{sam.c1.central} & \mkv{buy.c1.central} & \bfseries \mkv{kits.c1.central} & \mkv{kits.c1.bas} à \mkv{kits.c1.haut} & \bfseries \mkv{share.c1} \\
+    2 · ONG, humanitaire, secours & \mkv{tam.c2.central}* & \mkv{exp.c2.central}* & \mkv{sam.c2.central}* & \mkv{buy.c2.central} & \bfseries \mkv{kits.c2.central} & \mkv{kits.c2.bas} à \mkv{kits.c2.haut} & \bfseries \mkv{share.c2} \\
+    3 · Low-tech, makers & \mkv{tam.c3.central} & \mkv{exp.c3.central} & \mkv{sam.c3.central} & \mkv{buy.c3.central} & \bfseries \mkv{kits.c3.central} & \mkv{kits.c3.bas} à \mkv{kits.c3.haut} & \bfseries \mkv{share.c3} \\
+    4 · Grand public & \mkv{tam.c4.central} & \mkv{exp.c4.central} & \mkv{sam.c4.central} & \mkv{buy.c4.central} & \bfseries \mkv{kits.c4.central} & \mkv{kits.c4.bas} à \mkv{kits.c4.haut} & \bfseries \mkv{share.c4} \\
+    \rowcolor{insabeige}\bfseries Total & \bfseries \mkv{tam.total.central} & \bfseries \mkv{exp.total.central} & \bfseries \mkv{sam.total.central} & \bfseries \mkv{buy.total.central} & \bfseries \mkv{kits.total.central} & \bfseries \mkv{kits.total.bas} à \mkv{kits.total.haut} & \bfseries 100\,\% \\
+  \end{tabular}
+  \vspace{0.12cm}
+  \begin{columns}[T]
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{share.c1}}\\[1pt]{\footnotesize des kits~: la cible 1}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{share.FR}}\\[1pt]{\footnotesize des kits sont vendus en France}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{share.1a.total}}\\[1pt]{\footnotesize pour les seuls itinérants}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    La cible 1 porte le volume~; les cibles 2 et 3 donnent preuve et relais, la 4 est une option.
+  \end{pcompact}
+  \srcnote{Scénario central, kits sur trois ans arrondis à deux chiffres~; fourchette = scénarios bas et haut. * Cible 2~: nombre d'organisations, et non de personnes. Itinérants~: randonneurs français de plusieurs jours (segment 1a).}
+\end{frame}
+
+% case de la matrice cible x zone : \mkcell{x}{y}{kits en milliers}{texte}  (teinte proportionnelle à la part des kits)
+\newcommand{\mkcell}[4]{%
+  \pgfmathtruncatemacro{\mksh}{min(100,round(6+2.4*100*(#3)/\mkr{kits.total.central}))}%
+  \fill[insarouge!\mksh] (#1,#2) rectangle ++(2.3,0.5);%
+  \node[font=\footnotesize\bfseries,inner sep=0pt] at ({#1+1.15},{#2+0.25}) {\ifnum\mksh>52 \color{white}\fi #4};}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Où se trouvent les kits~: cible par zone}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]\mkpas
+    \node[font=\scriptsize\bfseries,text=insarouge,anchor=west] at (0,0.25) {Kits sur trois ans, scénario central};
+    \node[font=\scriptsize\bfseries,align=center,anchor=south] at (4.7,-0.05) {France};
+    \node[font=\scriptsize\bfseries,align=center,anchor=south] at (7.08,-0.05) {Europe 868\,MHz\\[-1pt]hors France};
+    \node[font=\scriptsize\bfseries,align=center,anchor=south] at (9.46,-0.05) {Amérique du Nord\\[-1pt]et Océanie};
+    \node[font=\scriptsize\bfseries,align=center,anchor=south] at (11.55,-0.05) {Total};
+    \foreach \mky/\mkn in {-0.6/{1 · Randonneurs, nature}, -1.18/{2 · ONG, humanitaire}, -1.76/{3 · Low-tech, makers}, -2.34/{4 · Grand public}} {%
+      \node[anchor=east,font=\scriptsize\bfseries,text width=3.3cm,align=right,inner sep=1pt] at (3.45,\mky+0.25) {\mkn};}
+    \mkcell{3.55}{-0.6}{\mkr{kits.c1FR}}{\mkv{kits.c1FR}}
+    \mkcell{5.93}{-0.6}{\mkr{kits.c1EU}}{\mkv{kits.c1EU}}
+    \mkcell{8.31}{-0.6}{\mkr{kits.c1NA}}{\mkv{kits.c1NA}}
+    \mkcell{3.55}{-1.18}{\mkr{kits.c2FR}}{\mkv{kits.c2FR}}
+    \mkcell{5.93}{-1.18}{\mkr{kits.c2EU}}{\mkv{kits.c2EU}}
+    \mkcell{8.31}{-1.18}{\mkr{kits.c2NA}}{\mkv{kits.c2NA}}
+    \mkcell{3.55}{-1.76}{\mkr{kits.c3FR}}{\mkv{kits.c3FR}}
+    \mkcell{5.93}{-1.76}{\mkr{kits.c3EU}}{\mkv{kits.c3EU}}
+    \mkcell{8.31}{-1.76}{\mkr{kits.c3NA}}{\mkv{kits.c3NA}}
+    \mkcell{3.55}{-2.34}{\mkr{kits.c4FR}}{\mkv{kits.c4FR}}
+    \mkcell{5.93}{-2.34}{\mkr{kits.c4EU}}{\mkv{kits.c4EU}}
+    \mkcell{8.31}{-2.34}{\mkr{kits.c4NA}}{\mkv{kits.c4NA}}
+    % totaux par cible (colonne de droite)
+    \foreach \mky/\mkt in {-0.6/{\mkv{kits.c1.central}}, -1.18/{\mkv{kits.c2.central}}, -1.76/{\mkv{kits.c3.central}}, -2.34/{\mkv{kits.c4.central}}} {%
+      \fill[insabeige] (10.69,\mky) rectangle ++(1.72,0.5);
+      \node[font=\footnotesize\bfseries,inner sep=0pt] at (11.55,\mky+0.25) {\mkt};}
+    % totaux par zone (ligne du bas)
+    \node[anchor=east,font=\scriptsize\bfseries,text width=3.3cm,align=right,inner sep=1pt] at (3.45,-2.92+0.25) {Total};
+    \foreach \mkx/\mkt in {3.55/{\mkv{kits.FR.central}~(\mkv{share.FR})}, 5.93/{\mkv{kits.EU.central}~(\mkv{share.EU})}, 8.31/{\mkv{kits.NA.central}~(\mkv{share.NA})}} {%
+      \fill[insabeige] (\mkx,-2.92) rectangle ++(2.3,0.5);
+      \node[font=\scriptsize\bfseries,inner sep=0pt] at ({\mkx+1.15},-2.92+0.25) {\mkt};}
+    \fill[insarose] (10.69,-2.92) rectangle ++(1.72,0.5);
+    \node[font=\footnotesize\bfseries,text=insarouge,inner sep=0pt] at (11.55,-2.92+0.25) {\mkv{kits.total.central}};
+  \end{tikzpicture}
+  \vspace{0.04cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{kits.c1FR} kits}\\[1pt]{\footnotesize randonneurs en France (\mkv{shr.c1FR} du total)}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{share.NA}}\\[1pt]{\footnotesize seulement en Amérique du Nord et Océanie}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.03cm}
+  \begin{pcompact}\centering\footnotesize
+    Le centre de gravité est la France~; le grand public pèse autant en France qu'en Europe.
+  \end{pcompact}
+  \srcnote{Scénario central, kits sur trois ans (arrondis à deux chiffres)~; teinte proportionnelle à la part du total. Europe~: zone 868\,MHz hors France~; Amérique du Nord et Océanie~: zone 915\,MHz.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Quelle fourchette de kits sur trois ans~?}
+  \centering
+  \begin{tikzpicture}\mkpas
+    \renewcommand{\mkox}{3.1}\renewcommand{\mkdec}{1.25}\renewcommand{\mkmin}{1}\renewcommand{\mklabw}{3.0cm}
+    \pgfmathsetmacro{\mklAb}{log10(\mkr{kits.c1.bas})+3}\pgfmathsetmacro{\mklAc}{log10(\mkr{kits.c1.central})+3}\pgfmathsetmacro{\mklAh}{log10(\mkr{kits.c1.haut})+3}
+    \pgfmathsetmacro{\mklBb}{log10(\mkr{kits.c2.bas})+3}\pgfmathsetmacro{\mklBc}{log10(\mkr{kits.c2.central})+3}\pgfmathsetmacro{\mklBh}{log10(\mkr{kits.c2.haut})+3}
+    \pgfmathsetmacro{\mklCb}{log10(\mkr{kits.c3.bas})+3}\pgfmathsetmacro{\mklCc}{log10(\mkr{kits.c3.central})+3}\pgfmathsetmacro{\mklCh}{log10(\mkr{kits.c3.haut})+3}
+    \pgfmathsetmacro{\mklDb}{log10(\mkr{kits.c4.bas})+3}\pgfmathsetmacro{\mklDc}{log10(\mkr{kits.c4.central})+3}\pgfmathsetmacro{\mklDh}{log10(\mkr{kits.c4.haut})+3}
+    \pgfmathsetmacro{\mklTb}{log10(\mkr{kits.total.bas})+3}\pgfmathsetmacro{\mklTc}{log10(\mkr{kits.total.central})+3}\pgfmathsetmacro{\mklTh}{log10(\mkr{kits.total.haut})+3}
+    \pgfmathsetmacro{\mklPb}{log10(\mkr{mc.p10})+3}\pgfmathsetmacro{\mklPc}{log10(\mkr{mc.p50})+3}\pgfmathsetmacro{\mklPh}{log10(\mkr{mc.p90})+3}
+    \pgfmathsetmacro{\mklplan}{\mkox+\mkdec*(log10(\mkr{plan.cum})+3-\mkmin)}
+    \node[font=\scriptsize\bfseries,anchor=west] at (0,0.5) {Kits sur trois ans~: scénarios bas, central (trait) et haut};
+    \mkrng{0}{\mklAb}{\mklAc}{\mklAh}{mkA}{1 · Randonneurs, nature}{\mkv{kits.c1.central}~(\mkv{kits.c1.bas} à \mkv{kits.c1.haut})}
+    \mkrng{-0.43}{\mklBb}{\mklBc}{\mklBh}{mkB}{2 · ONG, humanitaire}{\mkv{kits.c2.central}~(\mkv{kits.c2.bas} à \mkv{kits.c2.haut})}
+    \mkrng{-0.86}{\mklCb}{\mklCc}{\mklCh}{mkC}{3 · Low-tech, makers}{\mkv{kits.c3.central}~(\mkv{kits.c3.bas} à \mkv{kits.c3.haut})}
+    \mkrng{-1.29}{\mklDb}{\mklDc}{\mklDh}{mkD}{4 · Grand public}{\mkv{kits.c4.central}~(\mkv{kits.c4.bas} à \mkv{kits.c4.haut})}
+    \mkrng{-1.8}{\mklTb}{\mklTc}{\mklTh}{insarouge}{Total, extrêmes}{\mkv{kits.total.central}~(\mkv{kits.total.bas} à \mkv{kits.total.haut})}
+    \mkrng{-2.22}{\mklPb}{\mklPc}{\mklPh}{insarouge}{Total, 80\,\% des simulations}{médiane \mkv{mc.p50}~(\mkv{mc.p10} à \mkv{mc.p90})}
+    \draw[insarouge,dashed,line width=0.9pt] (\mklplan,0.28) -- (\mklplan,-2.45);
+    \node[anchor=south west,font=\scriptsize\bfseries,text=insarouge,inner sep=1pt] at (\mklplan,0.26) {plan~: \mkv{plan.cum}};
+    \mkaxe{-2.5}{1}{5}
+  \end{tikzpicture}
+  \vspace{0.04cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{mc.p10} à \mkv{mc.p90} kits}\\[1pt]{\footnotesize dans 80\,\% des simulations}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{kits.total.bas} à \mkv{kits.total.haut} kits}\\[1pt]{\footnotesize tous les paramètres au pire, au mieux}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.03cm}
+  \begin{pcompact}\centering\footnotesize
+    Les extrêmes sont improbables~: tous les paramètres ne vont pas dans le même sens.
+  \end{pcompact}
+  \srcnote{Extrêmes~: chaque paramètre à sa valeur basse ou haute sur toutes les lignes~; simulation de \mkv{mc.n} tirages (lois triangulaires, un tirage par type de paramètre). Échelle logarithmique~; trait pointillé~: objectif du plan financier.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Ce qui fait varier le résultat}
+  \centering
+  \begin{tikzpicture}\mkpas
+    \pgfmathsetmacro{\mktrb}{\mkr{kits.total.central}-\mkr{tor.r.bas}}\pgfmathsetmacro{\mktrh}{\mkr{tor.r.haut}-\mkr{kits.total.central}}
+    \pgfmathsetmacro{\mktib}{\mkr{kits.total.central}-\mkr{tor.i.bas}}\pgfmathsetmacro{\mktih}{\mkr{tor.i.haut}-\mkr{kits.total.central}}
+    \pgfmathsetmacro{\mkteb}{\mkr{kits.total.central}-\mkr{tor.e.bas}}\pgfmathsetmacro{\mkteh}{\mkr{tor.e.haut}-\mkr{kits.total.central}}
+    \pgfmathsetmacro{\mktcb}{\mkr{kits.total.central}-\mkr{tor.c.bas}}\pgfmathsetmacro{\mktch}{\mkr{tor.c.haut}-\mkr{kits.total.central}}
+    \pgfmathsetmacro{\mktkb}{\mkr{kits.total.central}-\mkr{tor.k.bas}}\pgfmathsetmacro{\mktkh}{\mkr{tor.k.haut}-\mkr{kits.total.central}}
+    \node[font=\scriptsize\bfseries,anchor=west] at (-6.7,0.8) {Kits sur trois ans quand un seul paramètre varie};
+    \draw[insagris,thin] (0,0.4) -- (0,-2.35);
+    \node[font=\scriptsize\bfseries,anchor=south,inner sep=1pt] at (0,0.37) {central~: \mkv{kits.total.central}};
+    \mktor{0}{Portée r~: part de la demande atteinte}{\mktrb}{\mktrh}{\mkv{tor.r.bas}}{\mkv{tor.r.haut}}
+    \mktor{-0.5}{Intention i~: prêt à payer 69\,€}{\mktib}{\mktih}{\mkv{tor.i.bas}}{\mkv{tor.i.haut}}
+    \mktor{-1.0}{Exposition e~: hors réseau}{\mkteb}{\mkteh}{\mkv{tor.e.bas}}{\mkv{tor.e.haut}}
+    \mktor{-1.5}{Calibrage c~: intention devenue achat}{\mktcb}{\mktch}{\mkv{tor.c.bas}}{\mkv{tor.c.haut}}
+    \mktor{-2.0}{Kits par acheteur k}{\mktkb}{\mktkh}{\mkv{tor.k.bas}}{\mkv{tor.k.haut}}
+  \end{tikzpicture}
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{r et i d'abord}\\[1pt]{\footnotesize ce sont eux qui déplacent le plus le résultat}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{tor.r.bas} à \mkv{tor.r.haut} kits}\\[1pt]{\footnotesize selon la seule portée commerciale}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    On mesure d'abord r (précommandes) et i (questionnaire)~: ce sont les deux hypothèses qui comptent.
+  \end{pcompact}
+  \srcnote{Chaque paramètre est porté à sa valeur basse (barre grise) ou haute (barre rouge) sur toutes les lignes du modèle, les cinq autres restant au scénario central.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Le plan de \mkv{plan.cum} kits face au marché}
+  \begin{columns}[T]
+    \begin{column}{0.655\textwidth}
+      \begin{tikzpicture}\mkpas
+        \def\mkxs{2.0}\def\mkys{0.078}
+        % kits cumulés (en milliers) à la fin de chaque année
+        \pgfmathsetmacro{\mkqpa}{\mkr{an1.plan}}\pgfmathsetmacro{\mkqpb}{\mkqpa+\mkr{an2.plan}}\pgfmathsetmacro{\mkqpc}{\mkqpb+\mkr{an3.plan}}
+        \pgfmathsetmacro{\mkqca}{\mkr{an1.central}}\pgfmathsetmacro{\mkqcb}{\mkqca+\mkr{an2.central}}\pgfmathsetmacro{\mkqcc}{\mkqcb+\mkr{an3.central}}
+        \pgfmathsetmacro{\mkqla}{\mkr{an1.p10}}\pgfmathsetmacro{\mkqlb}{\mkqla+\mkr{an2.p10}}\pgfmathsetmacro{\mkqlc}{\mkqlb+\mkr{an3.p10}}
+        \pgfmathsetmacro{\mkqha}{\mkr{an1.p90}}\pgfmathsetmacro{\mkqhb}{\mkqha+\mkr{an2.p90}}\pgfmathsetmacro{\mkqhc}{\mkqhb+\mkr{an3.p90}}
+        \pgfmathsetmacro{\mkqbe}{\mkr{be.cum}}
+        \node[font=\scriptsize\bfseries,anchor=west] at (-0.2,4.3) {Kits cumulés depuis le lancement (milliers)};
+        \foreach \mky in {10,20,30,40} {%
+          \draw[insagris!30,thin] (0,\mky*\mkys) -- (3*\mkxs+0.1,\mky*\mkys);
+          \node[anchor=east,font=\tiny,text=insagris,inner sep=1pt] at (-0.05,\mky*\mkys) {\mky\,000};}
+        \draw[insagris,thin] (0,0) -- (3*\mkxs+0.1,0);
+        \foreach \mkj in {1,2,3} {%
+          \node[anchor=north,font=\tiny,text=insagris,inner sep=1pt] at (\mkj*\mkxs,-0.02) {année \mkj};}
+        % fourchette à 80 % des simulations
+        \fill[mkA!18] (0,0) -- (\mkxs,\mkqla*\mkys) -- (2*\mkxs,\mkqlb*\mkys) -- (3*\mkxs,\mkqlc*\mkys) -- (3*\mkxs,\mkqhc*\mkys) -- (2*\mkxs,\mkqhb*\mkys) -- (\mkxs,\mkqha*\mkys) -- cycle;
+        % seuil de rentabilité (cumul équivalent)
+        \draw[insasafran,dashed,line width=1pt] (0,\mkqbe*\mkys) -- (3*\mkxs+0.1,\mkqbe*\mkys);
+        \node[anchor=south west,font=\tiny\bfseries,text=black,inner sep=1pt] at (0.05,\mkqbe*\mkys) {seuil de rentabilité~: \mkv{be.cum}};
+        % courbes
+        \draw[insagris,line width=1.6pt] (0,0) -- (\mkxs,\mkqca*\mkys) -- (2*\mkxs,\mkqcb*\mkys) -- (3*\mkxs,\mkqcc*\mkys);
+        \draw[insarouge,line width=1.6pt] (0,0) -- (\mkxs,\mkqpa*\mkys) -- (2*\mkxs,\mkqpb*\mkys) -- (3*\mkxs,\mkqpc*\mkys);
+        \foreach \mkj/\mkp/\mkc in {1/\mkqpa/\mkqca, 2/\mkqpb/\mkqcb, 3/\mkqpc/\mkqcc} {%
+          \fill[insarouge] (\mkj*\mkxs,\mkp*\mkys) circle (0.07);
+          \fill[insagris] (\mkj*\mkxs,\mkc*\mkys) circle (0.07);}
+        % étiquettes à droite
+        \node[anchor=west,font=\scriptsize\bfseries,text=insarouge,inner sep=1pt] at (3*\mkxs+0.15,\mkqpc*\mkys+0.02) {plan \mkv{plan.cum}};
+        \node[anchor=west,font=\scriptsize\bfseries,text=insagris,inner sep=1pt] at (3*\mkxs+0.15,\mkqcc*\mkys-0.04) {central \mkv{kits.total.central}};
+        \node[anchor=west,font=\scriptsize,text=mkA,inner sep=1pt] at (3*\mkxs+0.15,\mkqhc*\mkys) {P90 \mkv{mc.p90}};
+        \node[anchor=west,font=\scriptsize,text=mkA,inner sep=1pt] at (3*\mkxs+0.15,\mkqlc*\mkys) {P10 \mkv{mc.p10}};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=0.95cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{mc.pplan}}\\[1pt]{\footnotesize des tirages atteignent le plan}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{mc.pbe}}\\[1pt]{\footnotesize rentables en année 3}
+      \end{carte}
+      \vspace{0.06cm}
+      \begin{carte}[height=0.95cm,valign=top]
+        \raggedright\gros{\mkv{res3.central}}\\[1pt]{\footnotesize résultat de l'année 3, au central}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Le plan vaut \mkv{plan.ratio.central} fois le central~; résultat de l'année 3~: \mkv{res3.p10} à \mkv{res3.p90} dans 80\,\% des tirages.
+  \end{pcompact}
+  \srcnote{Années 1 à 3 = 6\,\%, 25\,\% et 69\,\% des kits (forme du plan)~; bande = 10\,\% à 90\,\% des \mkv{mc.n} simulations. Seuil~: charges fixes de 430\,k€ divisées par la marge de \mkv{marge.kit} par kit (partie Finances), soit ≈ 21\,300 kits en année 3.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Quelle part de marché viser~?}
+  \begin{columns}[T]
+    \begin{column}{0.655\textwidth}
+      \begin{tikzpicture}\mkpas
+        \renewcommand{\mkox}{3.25}\renewcommand{\mkdec}{0.95}\renewcommand{\mkmin}{0}\renewcommand{\mklabw}{3.15cm}\renewcommand{\mkbmax}{1}
+        \node[font=\scriptsize\bfseries,anchor=west] at (0,0.5) {Part qu'exige le plan (\mkv{plan.buyers} acheteurs)};
+        \mkbg{0}{log10(\mkr{plan.share.tam})+3.2}{Adultes, deux zones (\mkv{tam.total.central})}{\mkv{plan.share.tam}~; 1 sur \mkv{planinv.tam}}{insagris!40}
+        \mkbg{-0.58}{log10(\mkr{plan.share.exp})+3.2}{Exposés (\mkv{exp.total.central})}{\mkv{plan.share.exp}~; 1 sur \mkv{planinv.exp}}{insagris!55}
+        \mkbg{-1.16}{log10(\mkr{plan.share.sam})+3.2}{Accessibles, SAM (\mkv{sam.total.central})}{\mkv{plan.share.sam}~; 1 sur \mkv{planinv.sam}}{insagris!75}
+        \mkbg{-1.74}{log10(\mkr{plan.share.eff})+3.2}{Demande efficace (\mkv{eff.total.central})}{\mkv{plan.share.eff}~; 1 sur \mkv{planinv.eff}}{insasafran}
+        \mkbg{-2.32}{log10(\mkr{plan.share.FRsam})+3.2}{SAM de la France (\mkv{sam.FR.central})}{\mkv{plan.share.FRsam}~; 1 sur \mkv{planinv.FRsam}}{insarouge}
+        \draw[insagris,thin] (3.25,0.25) -- (3.25,-2.6);
+        \node[anchor=north,font=\tiny,text=insagris,inner sep=1pt] at (3.25,-2.65) {échelle logarithmique de la part};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.325\textwidth}
+      \begin{carte}[height=1.2cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{plan.buyers} acheteurs}\\[1pt]{\scriptsize à convaincre pour \mkv{plan.cum} kits}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.2cm,valign=top]
+        \raggedright\gros{2,5\,\%}\\[1pt]{\scriptsize d'innovateurs (Rogers)~; le plan en vise \mkv{plan.share.sam}}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.2cm,valign=top]
+        \raggedright\gros{\mkv{capt.FR}}\\[1pt]{\scriptsize du SAM français acheté, au central}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{pcompact}\centering\footnotesize
+    Viser \mkv{plan.share.sam} du SAM, c'est convaincre 1 prêt à payer sur \mkv{planinv.sam}~: tout dépend de la portée r.
+  \end{pcompact}
+  \srcnote{Acheteurs à convaincre = kits du plan ÷ kits par acheteur du modèle~; l'échelle est logarithmique. Rogers (1962)~: 2,5\,\% d'innovateurs, 13,5\,\% d'adoptants précoces (repères théoriques, non mesures). \cite{mk_rogers_cfi,mk_rogers_dseb}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Vérification~1~: la communauté mesh existante}
+  \begin{columns}[T]
+    \begin{column}{0.63\textwidth}
+      \begin{tikzpicture}\mkpas
+        \renewcommand{\mkox}{4.25}\renewcommand{\mkdec}{1.3}\renewcommand{\mkmin}{3.5}\renewcommand{\mklabw}{4.1cm}
+        \node[font=\scriptsize\bfseries,anchor=west] at (0,0.5) {Ordres de grandeur (nœuds, utilisateurs, abonnés, kits)};
+        \mkbl{0}{\mkr{kits.total.central}}{3}{Notre scénario central, 3 ans}{\mkv{kits.total.central}}{mkA}
+        \mkbl{-0.5}{\mkr{plan.cum}}{3}{Objectif du plan, 3 ans}{\mkv{plan.cum}}{mkA!60}
+        \mkbl{-1.1}{9.806}{3}{Nœuds meshmap.net (oct. 2026)}{9\,806}{insagris!70}
+        \mkbl{-1.6}{3}{4}{Nœuds MeshCore (avril 2026)}{30\,000}{insagris!70}
+        \mkbl{-2.1}{3.4}{4}{Actifs mensuels, appli Android}{34\,000}{insagris!70}
+        \mkbl{-2.7}{2.22534}{5}{Abonnés SPOT, monde (2025)}{222\,534}{insagris!40}
+        \mkbl{-3.2}{5.24}{5}{Installations appli Android}{524\,000}{insagris!40}
+        \mkaxe{-3.5}{4}{5}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.335\textwidth}
+      \begin{carte}[height=1.2cm,valign=top,colback=insarose]
+        \raggedright\gros{× \mkv{ratio.meshmap}}\\[1pt]{\scriptsize vs nœuds Meshtastic visibles}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.2cm,valign=top]
+        \raggedright\gros{\mkv{ratio.spot}}\\[1pt]{\scriptsize des abonnés SPOT dans le monde}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.2cm,valign=top]
+        \raggedright\gros{i = 15\,\% ≈ 16\,\%}\\[1pt]{\scriptsize innovateurs et précoces (Rogers)}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.03cm}
+  \begin{pcompact}\centering\footnotesize
+    Le central n'est pas hors d'échelle, mais il vaut plus de deux fois le réseau Meshtastic visible aujourd'hui.
+  \end{pcompact}
+  \srcnote{meshmap.net~: nœuds partageant leur position via internet (minimum)~; installations, actifs~: estimations d'un site tiers~; SPOT~: abonnés moyens de 2025, hors inReach. Rogers~: 2,5 + 13,5\,\%. \cite{mk_meshmap_rt,mk_meshcore_30k,mk_appgoblin_android,mk_spot_globalstar,mk_rogers_cfi,mk_rogers_dseb}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Vérification~2~: les marchés voisins, en valeur}
+  \begin{columns}[T]
+    \begin{column}{0.63\textwidth}
+      \begin{tikzpicture}\mkpas
+        \renewcommand{\mkox}{3.95}\renewcommand{\mkdec}{1.05}\renewcommand{\mkmin}{0}\renewcommand{\mklabw}{3.85cm}
+        \node[font=\scriptsize\bfseries,anchor=west] at (0,0.5) {Millions d'euros ou de dollars (selon la source)};
+        \mkbl{0}{\mkr{plan.ca}}{0}{Chiffre d'affaires du plan, 3 ans}{\mkv{plan.ca}}{mkA}
+        \mkbl{-0.5}{\mkr{val.sam.FR}}{0}{SAM français valorisé, une fois}{\mkv{val.sam.FR}}{mkA!60}
+        \mkbl{-1.0}{3}{2}{Balises PLB (2025), par an}{300~M\$}{insagris!70}
+        \mkbl{-1.5}{\mkr{val.sam.total}}{3}{SAM total valorisé, une fois}{\mkv{val.sam.total}}{mkA!60}
+        \mkbl{-2.0}{1.36}{3}{Kits de survie (2024), par an}{1,36~Md\$}{insagris!70}
+        \mkbl{-2.5}{2.05}{3}{Garmin Outdoor (2025), par an}{2,05~Md\$}{insagris!70}
+        \mkaxe{-2.8}{0}{4}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.335\textwidth}
+      \begin{carte}[height=1.2cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{plan.ca}}\\[1pt]{\scriptsize CA TTC du plan sur trois ans}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.2cm,valign=top]
+        \raggedright\gros{≈ 1,4 Md€}\\[1pt]{\scriptsize SAM valorisé, achat unique}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.2cm,valign=top]
+        \raggedright\gros{465 à 896 Md\$}\\[1pt]{\scriptsize tourisme d'aventure, 3 études}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.03cm}
+  \begin{pcompact}\centering\footnotesize
+    Le plan pèse très peu face aux marchés voisins~: le risque est la conversion, pas la taille.
+  \end{pcompact}
+  \srcnote{Échelle logarithmique, sans conversion de devise~; SAM valorisé = accessibles × \mkv{kmoy.central} kit × 69\,€. Études payantes, méthodes non publiées~; plein air américain~: 697\,Md\$ de valeur ajoutée (hébergement et voyage compris). \cite{mk_plb_vmr,mk_survival_blueweave,mk_garmin_outdoor,mk_bea_outdoor,mk_adventure_gvr,mk_adventure_straits,mk_adventure_fortune}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Les hypothèses à vérifier avant de s'engager}
+  \centering
+  \renewcommand{\arraystretch}{1.7}\scriptsize
+  \begin{tabular}{@{}p{2.55cm}@{\hspace{6.5pt}}p{2.45cm}@{\hspace{6.5pt}}c@{\hspace{6.5pt}}p{7.2cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Hypothèse} & \textcolor{insarouge}{\bfseries Bas · central · haut} & \textcolor{insarouge}{\bfseries Statut} & \textcolor{insarouge}{\bfseries Comment la vérifier, avec quel seuil} \\
+    Population N & 4,6 · 4,6 · 8,1 M & \mkdemi & deux chiffres publiés par la FFRandonnée~: 9\,\% ou 8 M \\
+    Exposition e & 25 · 40 · 60\,\% & \mkdemi & question 7~: «\,souvent\,» sans réseau, au moins 40\,\% \\
+    Intention i & 8 · 15 · 25\,\% & \mkvide & question 20~: «\,oui\,» à 69\,€, au moins 20\,\%~; sous 10\,\%, revoir \\
+    Calibrage c & 25 · 40 · 50\,\% & \mkdemi & écart entre les questions 17 et 20, puis précommandes \\
+    Portée r & 2 · 5 · 10\,\% & \mkvide & précommandes et clubs~; repère~: 5\,\% des licenciés \\
+    Kits par acheteur k & 1,5 · 1,8 · 2,2 & \mkvide & question 18~: médiane d'au moins 2 appareils \\
+    Prix & 69\,€ TTC & \mkvide & question 19~: médiane d'au moins 60\,€, courbe à 59, 69, 79\,€ \\
+  \end{tabular}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    \mkplein~chiffre publié\quad\mkdemi~hypothèse encadrée\quad\mkvide~à mesurer (questionnaire, précommandes)
+  \end{pcompact}
+  \srcnote{Valeurs du segment 1a, itinérants français (47\,\% des kits)~; les autres lignes du modèle suivent les mêmes six paramètres (voir les bilans par cible). Seuils du questionnaire~: un segment est prioritaire à six seuils sur huit. Calibrage~: l'intention surestime les achats sauf conditions précises. \cite{mk_ffr_rando_2025,ffrando,mk_morwitz_2007}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Risques propres au marché et réponses}
+  \centering
+  \renewcommand{\arraystretch}{1.35}\scriptsize
+  \begin{tabular}{@{}p{2.55cm}@{\hspace{6.5pt}}p{5.6cm}@{\hspace{6.5pt}}p{4.6cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Risque} & \textcolor{insarouge}{\bfseries Ce que montrent les données} & \textcolor{insarouge}{\bfseries Réponse} \\
+    Démarrage à froid & test de La Réunion~: plus de 100 inscrits, une trentaine de nœuds activés~; des débutants ne voient aucun voisin & vendre par grappes (clubs, grands itinéraires), au moins deux kits par acheteur \\
+    Saturation des zones denses & 20 à 50 nœuds par zone fonctionnent, des problèmes d'échelle apparaissent à 30 à 40 & viser l'itinérance en faible densité, pas la ville \\
+    SOS des smartphones & le SOS par satellite d'iPhone est gratuit deux ans à l'achat & vendre la messagerie entre proches, pas l'appel de secours \\
+    Preuve d'usage des ONG & aucun usage de Meshtastic par une ONG ou une Croix-Rouge n'a été trouvé & pilotes gratuits~; cible 2 limitée à 2\,\% des kits \\
+    Échec d'une campagne & 21,5\,\% des projets «\,Technology\,» de Kickstarter atteignent leur objectif & constituer une liste de précommandes avant le lancement \\
+    Grand public mesh & goTenna a arrêté ses produits grand public en 2024, puis a été racheté en 2025 & cible 4 après la preuve, 14\,\% des kits \\
+    Intention surestimée & l'intention d'achat prédit mal les ventes, sauf conditions précises & calibrage c de 25 à 50\,\%, vérifié par les précommandes \\
+  \end{tabular}
+  \vspace{0.1cm}
+  \begin{pcompact}\centering\footnotesize
+    Aucun de ces risques n'annule le marché~: ils pèsent sur r et i, les deux paramètres à mesurer.
+  \end{pcompact}
+  \srcnote{Test de La Réunion~: billet promotionnel d'un fabricant~; l'absence d'usage par les ONG est un constat de nos recherches, non une preuve d'inexistence. \cite{mk_reunion_test,mk_rasterweb,mk_lwn_fosdem,mk_meshnology_guide,apple_sat,mk_kickstarter_tech,mk_gotenna_rtlsdr,mk_gotenna_forterra,mk_morwitz_2007}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Comment atteindre chaque cible}
   \renewcommand{\arraystretch}{1.3}
   \footnotesize\hyphenpenalty=10000 \exhyphenpenalty=10000
-  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \noindent\begin{tabularx}{\textwidth}{@{}>{\bfseries\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
     \rowcolor{insarose}
     \textcolor{insarouge}{Cible} & \textcolor{insarouge}{Message} & \textcolor{insarouge}{Canaux} \\
-    1 Plein air & «\,Écrire à ses proches là où le réseau s'arrête\,» &
-      clubs et fédérations, refuges, boutiques de sport, salons outdoor \\
+    1 Randonneurs, nature & «\,Écrire à ses proches là où le réseau s'arrête\,» &
+      3\,300 clubs de la FFRandonnée, refuges, boutiques de sport, départs de grands itinéraires \\
     \arrayrulecolor{insagris!30}\hline
-    2 Camping, voyage, famille & «\,Un filet de sécurité à 69\,€, sans abonnement\,» &
-      site marchand, distributeurs spécialisés, campings, bouche-à-oreille \\
+    2 ONG, humanitaire, secours & «\,Une messagerie qui survit aux infrastructures\,» &
+      kits de démonstration, pilotes gratuits, bénévoles de secours, mairies, appels d'offres \\
     \hline
-    3 Secours et crise & «\,Une messagerie qui survit aux infrastructures\,» &
-      kits de démonstration, pilotes gratuits, réseaux de bénévoles, mairies, appels d'offres \\
+    3 Low-tech, makers & «\,Ton réseau t'appartient\,» &
+      forums du libre, tiers-lieux et ateliers, Repair Cafés, clubs de radioamateurs \\
     \hline
-    Makers et libre & «\,Ton réseau t'appartient\,» &
-      forums du libre et des makers, financement participatif, ateliers (fablabs), vidéos \\
+    4 Grand public & «\,Un filet de sécurité à 69\,€, sans abonnement\,» &
+      site marchand, distributeurs spécialisés, campings, après la preuve d'usage \\
   \end{tabularx}
 
   \vspace{0.15cm}
   \begin{columns}[T]
     \begin{column}{0.485\textwidth}
-      \begin{carte}[height=1.9cm,valign=top]
+      \begin{carte}[height=1.5cm,valign=top]
         \gros{1 kit offert pour 10 vendus}\\[2pt]
-        {\footnotesize Programme solidaire pour les ONG~: un argument de marque et un moyen d'équiper des pilotes (coût déjà inclus dans les finances).}
+        {\footnotesize Programme solidaire pour les ONG~: \mkv{don.central} kits offerts, coût inclus dans les finances.}
       \end{carte}
     \end{column}
     \begin{column}{0.485\textwidth}
-      \begin{carte}[height=1.9cm,valign=top]
+      \begin{carte}[height=1.5cm,valign=top]
         \gros{Précommandes d'abord}\\[2pt]
-        {\footnotesize Un financement participatif valide la demande et finance le premier stock avant toute production en série.}
+        {\footnotesize Un financement participatif valide la demande et finance le premier stock avant la série.}
       \end{carte}
     \end{column}
   \end{columns}
-  \srcnote{Messages et canaux~: choix de l'équipe, à tester dans l'étude quantitative (question 22, lieu d'achat).}
+  \srcnote{Messages et canaux~: choix de l'équipe, à tester (question 22, lieu d'achat). Clubs~: rentrée 2026. Tiers-lieux~: 4\,041 en France~; Repair Cafés~: plus de 400. \cite{ffrando_licencies,mk_tierslieux,mk_repair_cafes}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+\begin{frame}{Recommandation~: quelle part du marché viser}
+  \begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+      \begin{carte}[height=1.18cm,valign=top,colback=insarose]
+        \raggedright\gros{\mkv{kits.total.central} kits}\\[1pt]{\footnotesize sur trois ans (\mkv{mc.p10} à \mkv{mc.p90})}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.18cm,valign=top]
+        \raggedright\gros{1 sur \mkv{inv.sam}}\\[1pt]{\footnotesize prêts à payer, soit \mkv{sam.share.central} du SAM}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=1.18cm,valign=top]
+        \raggedright\gros{\mkv{share.FR} en France}\\[1pt]{\footnotesize Europe \mkv{share.EU}, Amérique du Nord \mkv{share.NA}}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \renewcommand{\arraystretch}{1.18}\footnotesize
+      \begin{tabular}{@{}>{\bfseries\color{insarouge}}c@{\hspace{6pt}}p{7.3cm}@{}}
+        1 & Mesurer r et i (précommandes, questionnaire) avant de lancer le moule. \\
+        2 & Itinérants français d'abord~: \mkv{kits.1a} kits, par les clubs et les grands itinéraires. \\
+        3 & Europe en ligne ensuite~: \mkv{kits.c1EU} kits de randonneurs, sans effort actif en Amérique du Nord. \\
+        4 & ONG et low-tech~: donner et prouver (\mkv{don.central} kits offerts), \mkv{kits.c3.central} kits de relais. \\
+        5 & Grand public après la preuve d'usage~: \mkv{kits.c4.central} kits. \\
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  \vspace{0.04cm}
+  \begin{pcompact}\centering\footnotesize
+    Le plan de \mkv{plan.cum} kits vaut \mkv{plan.ratio.central} fois le central~: atteint dans \mkv{mc.pplan} des simulations.
+  \end{pcompact}
+  \srcnote{Scénario central du modèle de la partie (kits sur trois ans, \mkv{nlines} lignes)~; fourchette = 10\,\% à 90\,\% de \mkv{mc.n} simulations. Les kits offerts (1 pour 10 vendus) s'ajoutent aux ventes. SAM~: exposés et prêts à payer 69\,€.}
 \end{frame}
