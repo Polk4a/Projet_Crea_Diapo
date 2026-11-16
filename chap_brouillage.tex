@@ -1,0 +1,449 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie « Résister au brouillage » (12 diapositives) -- à importer avec \include{chap_brouillage}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%  Reprise en LaTeX du document « FreeWave — Résister au brouillage » (Groupe 4), sans ajout :
+%  le problème, quatre menaces, brouillage (survivre, détecter), saturation du maillage,
+%  usurpation et lecture, pistage et vie privée, le kit et la conformité, synthèse et risques,
+%  feuille de route. Les références du document d'origine sont dans sources.bib (clés br_...)
+%  et apparaissent avec les autres sources, en fin de présentation.
+%  Les renvois « diapositive n° » du document d'origine sont remplacés par le nom de la partie.
+%  Deux valeurs restent à compléter, comme dans le document d'origine : le seuil de paquets
+%  par minute (saturation) et le coût par relais (synthèse) -- chercher « À COMPLÉTER ».
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Résister au brouillage}
+
+% pastille numérotée dans le texte : \brnum{1} (rouge), \brnumn{A} (noire)
+\newcommand{\brnum}[1]{\tikz[baseline=(n.base)]\node[num](n){#1};}
+\newcommand{\brnumn}[1]{\tikz[baseline=(n.base)]\node[num,fill=black](n){#1};}
+% point numéroté : \brpoint{pastille}{titre}{texte}
+\newcommand{\brpoint}[3]{%
+  \noindent\begin{tabular}{@{}p{0.55cm}@{}p{\dimexpr\linewidth-0.55cm\relax}@{}}
+    #1 & \raggedright\arraybackslash{\footnotesize\sffamily\bfseries #2}\par\vspace{-1pt}{\footnotesize #3}
+  \end{tabular}\par}
+% ligne d'une liste numérotée dans une carte : \brlig{pastille}{texte}
+\newcommand{\brlig}[2]{%
+  \noindent\begin{tabular}{@{}p{0.6cm}@{}p{\dimexpr\linewidth-0.6cm\relax}@{}}
+    #1 & \raggedright\arraybackslash\footnotesize #2
+  \end{tabular}\par\vspace{2pt}}
+% intitulé de carte (plus petit que \gros, réservé aux chiffres clés)
+\newcommand{\brtitre}[1]{{\sffamily\bfseries\normalsize\color{insarouge}#1}}
+% valeur à compléter
+\newcommand{\bravide}{[\,\rule{0.45cm}{0.4pt}\,]}
+
+%---------------------------------------------------------------------------
+% 1. Le problème
+%---------------------------------------------------------------------------
+\begin{frame}{Une bande libre, donc ouverte à tous}
+  \etiquette{Le problème}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=1.75cm,valign=top,colback=insarose!45]
+        \raggedright\gros{868 MHz}\\[1pt]
+        {\footnotesize Bande partagée, sans licence~: n'importe qui peut y émettre, y compris un brouilleur.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=1.75cm,valign=top,colback=insarose!45]
+        \raggedright\gros{500 mW}\\[1pt]
+        {\footnotesize Puissance maximale autorisée~: un émetteur plus fort couvre nos signaux, au moins localement.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=1.75cm,valign=top,colback=insarose!45]
+        \raggedright\gros{10\,\%}\\[1pt]
+        {\footnotesize Temps d'émission par appareil~: une ressource rare qu'un intrus peut épuiser pour tout le réseau.\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.12cm}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.3cm,valign=top,colback=white,colframe=insarouge,boxrule=0.7pt]
+        \raggedright\brtitre{Ce que le chiffrement protège}\\[1pt]
+        {\footnotesize Le contenu des messages~: un tiers sans la clé ne peut pas les lire.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=1.3cm,valign=top,colback=white,colframe=insarouge,boxrule=0.7pt]
+        \raggedright\brtitre{Ce qu'il ne protège pas}\\[1pt]
+        {\footnotesize L'acheminement~: un message illisible peut quand même être bloqué, noyé ou retardé.\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.12cm}
+  \begin{pcompact}\centering\footnotesize
+    Il faut défendre les deux~: le contenu \textbf{et} la capacité du réseau à transmettre.
+  \end{pcompact}
+  \srcnote{Règles radio~: bande 869,4 à 869,65\,MHz, 500\,mW, 10\,\% du temps d'émission (partie Risques et suite). \cite{ttn_eu868,red_2014_53}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 2. Quatre menaces
+%---------------------------------------------------------------------------
+\newcommand{\brmenace}[4]{%
+  \begin{carte}[height=3.3cm,valign=top,colback=insarose!45]
+    \raggedright\brnum{#1}\\[2pt]
+    \brtitre{#2}\\[1pt]
+    {\footnotesize #3\par}\vspace{2pt}
+    {\scriptsize\color{insagris}\textbf{Effet~:} #4\par}
+  \end{carte}}
+\begin{frame}{Quatre façons de perturber \nomproduit}
+  \etiquette{Le problème}
+  \begin{columns}[T]
+    \begin{column}{0.238\textwidth}
+      \brmenace{1}{Brouillage}{Un émetteur noie la bande sous le bruit.}{plus aucun message dans la zone.}
+    \end{column}
+    \begin{column}{0.238\textwidth}
+      \brmenace{2}{Saturation}{Un nœud malveillant inonde le maillage de paquets que tous relaient.}{le temps d'émission de chacun est épuisé.}
+    \end{column}
+    \begin{column}{0.238\textwidth}
+      \brmenace{3}{Usurpation}{Se faire passer pour un membre, ou lire les messages si une clé fuit.}{fausses alertes, fuite d'informations.}
+    \end{column}
+    \begin{column}{0.238\textwidth}
+      \brmenace{4}{Pistage}{Observer qui parle à qui, et d'où, sans rien déchiffrer.}{vie privée exposée.}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    La saturation est la menace la plus propre à notre produit~: elle retourne la règle des 10\,\% contre nous.
+  \end{pcompact}
+  \srcnote{Analyse de l'équipe, à partir du fonctionnement de Meshtastic décrit dans la partie Fonctionnement.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 3. Diapositive de transition (fond rouge)
+%---------------------------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[insarouge] (current page.south west) rectangle (current page.north east);
+    \foreach \i in {0,...,6} {\draw[insasafran,line width=0.6pt] ([xshift={-1.5cm+0.2cm*\i}]current page.north east) -- ([xshift={-1.5cm+0.2cm*\i}]current page.south east);}
+    \node[anchor=west,inner sep=0pt,text=white!85!insarouge,font=\sffamily\bfseries\scriptsize]
+      at ([xshift=1.15cm,yshift=1.95cm]current page.west) {Brouillage};
+    \node[anchor=west,inner sep=0pt,text=white,font=\sffamily\bfseries\huge,text width=11.5cm,align=left]
+      at ([xshift=1.15cm,yshift=0.65cm]current page.west) {On ne peut pas empêcher le brouillage.};
+    \node[anchor=north west,inner sep=0pt,text=white,font=\large,text width=11.2cm,align=left]
+      at ([xshift=1.15cm,yshift=-0.55cm]current page.west) {On peut le contourner, le détecter et en limiter les effets~: c'est ce que propose \nomproduit.};
+  \end{tikzpicture}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 4. Brouillage : survivre
+%---------------------------------------------------------------------------
+\begin{frame}{Survivre~: la modulation et le maillage}
+  \etiquette{Brouillage}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \vspace{0.15cm}
+      \begin{carte}[height=2.2cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{La modulation LoRa aide déjà}\\[1pt]
+        {\footnotesize L'étalement en «\,chirps\,» permet de décoder un signal sous le niveau du bruit. Un facteur d'étalement plus élevé résiste mieux, mais consomme plus de temps d'émission~: un compromis à tester.\par}
+      \end{carte}
+      \vspace{0.12cm}
+      \begin{carte}[height=1.6cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Le maillage contourne la zone}\\[1pt]
+        {\footnotesize Un brouilleur ne couvre qu'une zone limitée. Plus il y a de kits, plus il existe de chemins qui l'évitent.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \centering
+      \begin{tikzpicture}[font=\scriptsize,
+          nd/.style={circle,draw=insarouge,fill=white,line width=1pt,minimum size=3.4mm,inner sep=0pt},
+          ng/.style={circle,draw=insagris,fill=white,line width=0.8pt,minimum size=3.4mm,inner sep=0pt},
+          ne/.style={circle,draw=insarouge,fill=insarouge,minimum size=3.8mm,inner sep=0pt}]
+        \coordinate (z) at (2.55,1.35);
+        \coordinate (a) at (0,1.5); \coordinate (b) at (1.05,2.75); \coordinate (c) at (2.55,3.25);
+        \coordinate (d) at (4.05,2.7); \coordinate (e) at (5.1,1.5);
+        \coordinate (f) at (1.05,0.25); \coordinate (g) at (4.05,0.25);
+        \fill[insarose!60] (z) circle (1.1);
+        \draw[insarouge,dashed,line width=0.7pt] (z) circle (1.1);
+        \foreach \u/\v in {a/f,f/g,g/e,b/z,z/g,f/z,z/d,z/e} {\draw[insagris!55,dashed,line width=0.6pt] (\u) -- (\v);}
+        \draw[insarouge,line width=1.6pt] (a) -- (b) -- (c) -- (d) -- (e);
+        \node[ne] at (a) {}; \node[ne] at (e) {};
+        \node[nd] at (b) {}; \node[nd] at (c) {}; \node[nd] at (d) {};
+        \node[ng] at (f) {}; \node[ng] at (g) {};
+        % éclair
+        \filldraw[fill=insasafran,draw=black,line width=0.4pt,line join=round,shift={(z)}]
+          (0.05,0.48) -- (-0.17,0.02) -- (0.0,0.02) -- (-0.1,-0.34) -- (0.2,0.14) -- (0.03,0.14) -- (0.19,0.48) -- cycle;
+        \node[anchor=north] at ([yshift=-0.22cm]a) {Toi};
+        \node[anchor=north] at ([yshift=-0.22cm]e) {Ton contact};
+        \node[font=\scriptsize\sffamily\bfseries,text=insarouge] at ([yshift=-0.66cm]z) {zone brouillée};
+        \node[text=insagris,font=\scriptsize\sffamily] at (2.55,-0.55) {le message contourne la zone brouillée};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \srcnote{Principe du maillage~: chaque nœud retransmet les paquets qu'il reçoit (partie Fonctionnement). \cite{br_semtech_sx1262,meshtastic_algo}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 5. Brouillage : détecter
+%---------------------------------------------------------------------------
+\begin{frame}{Détecter et réagir, plutôt qu'échouer en silence}
+  \etiquette{Brouillage}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \brpoint{\brnum{1}}{Relais fixes en hauteur}{Refuges, clubs, mairies~: une bonne antenne en hauteur est bien plus difficile à couvrir qu'un kit dans une poche.}
+      \vspace{0.3cm}
+      \brpoint{\brnum{3}}{Stockage et renvoi}{Les messages attendent et repartent dès que le canal se libère ou que l'utilisateur se déplace.}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \brpoint{\brnum{2}}{Détection d'interférence}{La puce SX1262 mesure le bruit ambiant. L'application affiche «\,interférence détectée, message en attente\,».}
+      \vspace{0.3cm}
+      \brpoint{\brnum{4}}{Recours légal}{Le brouillage est interdit~; l'ANFR enquête sur les brouillages signalés. À inscrire dans le guide utilisateur.}
+    \end{column}
+  \end{columns}
+  \vspace{0.35cm}
+  \begin{pcompact}\centering\footnotesize
+    \textbf{Option~:} un repli sur 433\,MHz apporte une diversité de fréquence, au prix d'une puissance plus faible et d'un surcoût matériel.
+  \end{pcompact}
+  \srcnote{Segment secours~: savoir qu'un message n'est pas parti compte autant que l'envoyer. \cite{br_semtech_sx1262,br_anfr_brouillage}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 6. Saturation du maillage
+%---------------------------------------------------------------------------
+\begin{frame}{Limiter ce que chaque nœud peut envoyer}
+  \etiquette{Saturation du maillage}
+  \centering
+  \begin{tikzpicture}[font=\footnotesize\sffamily\bfseries,
+      bx/.style={minimum height=0.6cm,inner xsep=9pt,line width=0.8pt}]
+    \node[bx,draw=black,fill=insagris!12] (m) at (0,0) {Nœud malveillant};
+    \node[bx,draw=insarouge,fill=white] (r) at (4.3,0) {Relais \nomproduit~: filtre};
+    \node[bx,draw=insarouge,fill=insarouge,text=white] (p) at (8.5,0) {Réseau préservé};
+    \draw[-{Stealth[length=2.5mm]},insagris,line width=2pt] ([xshift=0.2cm]m.east) -- ([xshift=-0.2cm]r.west);
+    \draw[-{Stealth[length=2.5mm]},insagris,line width=2pt] ([xshift=0.2cm]r.east) -- ([xshift=-0.2cm]p.west);
+  \end{tikzpicture}
+
+  \vspace{0.18cm}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=2.45cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{3 sauts maximum}\\[1pt]
+        {\footnotesize Un paquet ne traverse pas tout le réseau. Réglage déjà prévu par défaut.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=2.45cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Canaux connus seulement}\\[1pt]
+        {\footnotesize Les relais ignorent les paquets des inconnus (mode de retransmission «\,KNOWN\_ONLY\,» de Meshtastic).\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=2.45cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Débit limité par nœud}\\[1pt]
+        % À COMPLÉTER : seuil de paquets par minute, à fixer par les tests
+        {\footnotesize Au-delà de \bravide{} paquets par minute, un nœud n'est plus relayé. Code reversé au projet libre.\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    Chaque paquet relayé coûte du temps d'émission à tous~: ne relayer que ce qui sert.
+  \end{pcompact}
+  \srcnote{Limite de sauts~: 3 par défaut (partie Fonctionnement). Seuil de débit à fixer par les tests. \cite{meshtastic_lora,br_meshtastic_device}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 7. Usurpation et lecture
+%---------------------------------------------------------------------------
+\begin{frame}{Des clés bien choisies et bien gérées}
+  \etiquette{Usurpation et lecture}
+  \centering
+  \renewcommand{\arraystretch}{1.55}\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.5cm}@{\hspace{8pt}}>{\raggedright\arraybackslash}p{4.7cm}@{\hspace{8pt}}>{\raggedright\arraybackslash}p{2.75cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Mesure} & \textcolor{insarouge}{\bfseries Contre quoi} & \textcolor{insarouge}{\bfseries Statut} \\
+    Clé de canal aléatoire, jamais la clé publique par défaut & Lecture par des inconnus & Déjà prévu \\
+    \arrayrulecolor{insagris!30}\hline
+    Messages directs chiffrés par clé publique & Un membre qui se fait passer pour un autre & À activer \\\hline
+    Invitation par QR code, en personne uniquement & Fuite de clé dans une conversation & Déjà prévu, à encadrer \\\hline
+    Changement de clé si un kit est perdu & Kit volé ou égaré & À ajouter \\\hline
+    Administration à distance désactivée & Prise de contrôle d'un kit & À ajouter \\\hline
+    Code PIN Bluetooth aléatoire, jamais 123456 & Appairage par un inconnu & À vérifier \\
+  \end{tabular}
+  \srcnote{Avec une clé de canal partagée, tout membre peut se faire passer pour un autre~: d'où les messages directs à clé publique (Meshtastic 2.5 et suivantes). \cite{meshtastic_crypto}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 8. Pistage et vie privée
+%---------------------------------------------------------------------------
+\begin{frame}{Le contenu est chiffré, l'enveloppe ne l'est pas}
+  \etiquette{Pistage et vie privée}
+  \begin{tikzpicture}[font=\footnotesize]
+    \filldraw[fill=insagris!12,draw=insagris,line width=0.8pt] (0,0) rectangle (6.75,0.95);
+    \fill[insarouge] (6.75,0) rectangle (13.6,0.95);
+    \node[anchor=west,align=left,inner sep=0pt] at (0.25,0.475) {{\sffamily\bfseries En-tête, en clair}\\[-1pt]{\scriptsize émetteur · destinataire · identifiant · nombre de sauts}};
+    \node[anchor=west,align=left,inner sep=0pt,text=white] at (7.0,0.475) {{\sffamily\bfseries Message, chiffré}\\[-1pt]{\scriptsize texte illisible sans la clé}};
+    \node[anchor=north west,inner sep=0pt,text=insagris,font=\scriptsize] at (0,-0.1) {Un paquet \nomproduit{} vu par un tiers qui écoute la bande};
+  \end{tikzpicture}
+
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=2.05cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Position désactivée}\\[1pt]
+        {\footnotesize Pas de partage de position par défaut, ou une position volontairement approximative.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=2.05cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Identifiants neutres}\\[1pt]
+        {\footnotesize Les noms de nœuds ne reprennent ni le nom réel ni le numéro de téléphone.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=2.05cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Promesse honnête}\\[1pt]
+        {\footnotesize Le guide le dit clairement~: le texte est chiffré, le fait d'envoyer ne l'est pas.\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    Même sans rien déchiffrer, un tiers peut voir qui parle à qui, quand, et dans quelle zone.
+  \end{pcompact}
+  \srcnote{Rejoint le risque 6 «\,Promesses et limites\,»~: ne pas promettre plus que ce que le produit garantit.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 9. Le kit et la conformité
+%---------------------------------------------------------------------------
+\begin{frame}{Protéger le kit lui-même, et le marquage CE}
+  \etiquette{Le kit et la conformité}
+  \begin{columns}[T]
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=3.2cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Le kit}\par\vspace{3pt}
+        \brlig{\brnum{1}}{Démarrage sécurisé et chiffrement de la mémoire flash de l'ESP32-S3.}
+        \brlig{\brnum{2}}{Mises à jour signées~: personne ne peut diffuser un faux «\,\nomproduit\,».}
+        \brlig{\brnum{3}}{Clés propres à chaque kit, générées au premier démarrage.}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.485\textwidth}
+      \begin{carte}[height=3.2cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{La conformité}\par\vspace{3pt}
+        \brlig{\brnumn{A}}{Directive RED, acte délégué sur la cybersécurité~: norme EN 18031.}
+        \brlig{\brnumn{B}}{Cyber Resilience Act~: obligations de sécurité et de notification.}
+        \brlig{\brnumn{C}}{Le kit a le Wi-Fi et le Bluetooth~: ces textes le concernent probablement. À faire confirmer (risque 1).}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    Le travail de sécurité compte aussi pour la certification CE~: ce n'est pas un bonus.
+  \end{pcompact}
+  \srcnote{Application exacte des textes à valider par un avis juridique. \cite{br_espressif_secu,red_2014_53,anfr_red,nemko_18031,innovel_red,cra_reporting}}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 10. Synthèse : une réponse par menace
+%---------------------------------------------------------------------------
+\begin{frame}{Une réponse par menace}
+  \etiquette{Synthèse et risques}
+  \centering
+  \renewcommand{\arraystretch}{1.45}\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.9cm}@{\hspace{8pt}}>{\raggedright\arraybackslash}p{6.25cm}@{\hspace{8pt}}>{\raggedright\arraybackslash}p{2.9cm}@{\hspace{8pt}}>{\raggedright\arraybackslash}p{1.7cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Menace} & \textcolor{insarouge}{\bfseries Réponses} & \textcolor{insarouge}{\bfseries Coût} & \textcolor{insarouge}{\bfseries Échéance} \\
+    % À COMPLÉTER : coût par relais
+    Brouillage & Maillage dense, relais en hauteur, détection, stockage et renvoi & Logiciel + [\,€\,\rule{0.35cm}{0.4pt}\,] par relais & 3 à 12 mois \\
+    \arrayrulecolor{insagris!30}\hline
+    Saturation & 3 sauts, canaux connus seulement, débit limité par nœud & Logiciel & 0 à 3 mois \\\hline
+    Usurpation & Clé aléatoire, clé publique, changement de clé, PIN aléatoire & Réglages & 0 à 3 mois \\\hline
+    Pistage & Position désactivée, identifiants neutres, guide honnête & Réglages & 0 à 3 mois \\\hline
+    Kit & Démarrage sécurisé, mises à jour signées, dossier EN 18031 & Temps d'ingénierie & 6 à 12 mois \\
+  \end{tabular}
+
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    L'essentiel tient dans des réglages par défaut~: aucun surcoût sur le kit à 69\,€.
+  \end{pcompact}
+  \srcnote{Coûts et échéances~: estimation de l'équipe, à confirmer pendant le prototype.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 11. Un huitième risque dans la matrice
+%---------------------------------------------------------------------------
+\begin{frame}{Un huitième risque dans la matrice}
+  \etiquette{Synthèse et risques}
+  \begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+      \centering
+      \begin{tikzpicture}[font=\scriptsize]
+        % même matrice que dans la partie « Risques et suite », avec le risque 8 en noir
+        \foreach \i/\j/\c in {1/1/insabeige,2/1/insabeige,3/1/insapeche2,1/2/insabeige,2/2/insapeche2,3/2/insarose,1/3/insapeche2,2/3/insarose,3/3/insarouge!35} {
+          \filldraw[fill=\c,draw=white,line width=1pt] ({(\i-1)*1.3},{(\j-1)*1.2}) rectangle ({\i*1.3},{\j*1.2});}
+        \node[num] at (0.65,3.0) {4};
+        \node[num] at (1.73,3.0) {1};\node[num,fill=black] at (2.18,3.0) {8};
+        \node[num] at (3.05,3.0) {3};\node[num] at (3.5,3.0) {7};
+        \node[num] at (0.65,1.8) {2};
+        \node[num] at (1.95,1.8) {6};
+        \node[num] at (3.25,1.8) {5};
+        \node[anchor=north] at (0.65,-0.05) {faible};
+        \node[anchor=north] at (1.95,-0.05) {moyenne};
+        \node[anchor=north] at (3.25,-0.05) {élevée};
+        \node[anchor=north,font=\scriptsize\bfseries,text=insagris] at (1.95,-0.4) {Probabilité};
+        \node[rotate=90,anchor=south,font=\scriptsize\bfseries,text=insagris] at (-0.05,1.8) {Gravité};
+        \node[rotate=90,anchor=south] at (-0.45,0.6) {faible};
+        \node[rotate=90,anchor=south] at (-0.45,3.0) {élevée};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.57\textwidth}
+      \begin{tcolorbox}[enhanced,colback=insarose!45,colframe=insarose!45,boxrule=0pt,arc=0pt,
+          borderline west={2.5pt}{0pt}{black},left=8pt,right=6pt,top=5pt,bottom=5pt]
+        \brpoint{\brnumn{8}}{Brouillage et abus du maillage}{%
+          \textbf{Gravité élevée~:} plus aucun message dans la zone, parfois au pire moment.\par\vspace{3pt}
+          \textbf{Probabilité moyenne~:} matériel bon marché, mais il faut une intention de nuire.\par\vspace{3pt}
+          \textbf{Réponses~:} maillage dense, détection d'interférence, débit limité, clés privées.}
+      \end{tcolorbox}
+      \vspace{0.05cm}
+      {\scriptsize\color{insagris}Risques 1 à 7~: inchangés (partie Risques et suite).\par}
+    \end{column}
+  \end{columns}
+  \srcnote{Placement des risques~: estimation à discuter en équipe, aucune mesure.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% 12. Feuille de route
+%---------------------------------------------------------------------------
+\begin{frame}{Brouillage~: l'essentiel et la suite}
+  \etiquette{Feuille de route}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+      \begin{carte}[height=1.25cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Une menace réelle}\\[1pt]
+        {\scriptsize Bande ouverte~: brouiller ou saturer coûte peu.\par}
+      \end{carte}
+      \vspace{0.08cm}
+      \begin{carte}[height=1.25cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Des réponses simples}\\[1pt]
+        {\scriptsize Surtout des réglages et du logiciel libre, dans l'esprit du projet.\par}
+      \end{carte}
+      \vspace{0.08cm}
+      \begin{carte}[height=1.25cm,valign=top,colback=insarose!45]
+        \raggedright\brtitre{Des limites assumées}\\[1pt]
+        {\scriptsize Un brouilleur puissant gagne localement~: on le dit, on le détecte.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.57\textwidth}
+      \begin{tikzpicture}[font=\footnotesize]
+        \draw[insarouge!40,thick] (0.2,0.25) -- (0.2,-3.45);
+        \node[num] at (0.2,0)     {1};
+        \node[num] at (0.2,-1.15)  {2};
+        \node[num] at (0.2,-2.3)  {3};
+        \node[num] at (0.2,-3.4)  {4};
+        \node[anchor=west,text width=7.0cm,align=left] at (0.5,0)
+          {{\bfseries 0 à 3 mois}\\Réglages sûrs par défaut~: clés, clé publique, canaux connus, PIN.};
+        \node[anchor=west,text width=7.0cm,align=left] at (0.5,-1.15)
+          {{\bfseries 3 à 6 mois}\\Détection d'interférence dans l'application~; tests de brouillage en cage blindée uniquement.};
+        \node[anchor=west,text width=7.0cm,align=left] at (0.5,-2.3)
+          {{\bfseries 6 à 12 mois}\\Démarrage sécurisé, mises à jour signées, dossier EN 18031.};
+        \node[anchor=west,text width=7.0cm,align=left] at (0.5,-3.4)
+          {{\bfseries Année 2}\\Relais fixes en hauteur avec refuges et communes partenaires.};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{0.05cm}
+  \begin{tcolorbox}[colback=insarose,colframe=insarouge,boxrule=0.7pt,arc=2pt,top=2pt,bottom=2pt]\centering
+    {\sffamily\bfseries\color{insarouge}Là où le réseau s'arrête, le tien résiste.}%
+    \srcnote{Émettre un brouillage à l'air libre est illégal, même pour un test~: uniquement en environnement blindé.}
+  \end{tcolorbox}
+\end{frame}
