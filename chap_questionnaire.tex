@@ -1,0 +1,240 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Partie « Questionnaire en ligne » (5 diapositives) -- à importer avec \include{chap_questionnaire}
+%  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
+%  Questionnaire court diffusé en ligne (13 questions, blocs A, B, C) : https://forms.gle/zrqzzzeoZvyLnJAn7
+%
+%  POUR AJOUTER LES RÉSULTATS : modifier uniquement le bloc « DONNÉES » ci-dessous.
+%  Chaque ligne \fqdata{numéro de question}{effectifs} donne le nombre de réponses par option,
+%  dans l'ordre des options du formulaire. Les barres, les pourcentages et les quatre
+%  indicateurs de la dernière diapositive se calculent seuls. Tant que tout est à 0, les
+%  diapositives affichent les questions avec des barres vides et « à venir ».
+%  (Nécessite \usepackage{qrcode} dans main.tex pour le QR code ; sans lui, seul le lien s'affiche.)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Questionnaire en ligne}
+
+\newcommand{\fqdata}[2]{\expandafter\gdef\csname fqd#1\endcsname{#2}}
+
+%============================== DONNÉES ======================================
+\newcommand{\fqn}{0}                       % nombre total de réponses reçues
+\newcommand{\fqdate}{16 novembre 2026}     % date du relevé
+\newcommand{\fqmin}{100}                   % nombre de réponses à partir duquel on lit les résultats
+% --- A. Profil
+\fqdata{1}{0,0,0,0,0,0}    % moins de 18 | 18-24 | 25-34 | 35-49 | 50-64 | 65 et plus
+\fqdata{2}{0,0,0,0,0,0}    % étudiant | salarié/fonctionnaire | indépendant | recherche d'emploi | retraité | autre
+\fqdata{3}{0,0,0,0}        % grande ville | ville moyenne ou petite | campagne | montagne ou zone isolée
+% --- B. Usages
+\fqdata{4}{0,0,0,0}        % jamais | quelques fois par an | au moins une fois par mois | chaque semaine
+\fqdata{5}{0,0,0,0}        % jamais | rarement | souvent | habite ou travaille en zone sans réseau
+\fqdata{6}{0,0,0,0,0}      % rien | talkie-walkie | balise ou messagerie satellite | SOS satellite du téléphone | autre
+\fqdata{7}{0,0,0,0}        % non | occasionnellement | régulièrement, bénévole | métier
+\fqdata{8}{0,0,0,0}        % pas du tout | un peu | pratique régulièrement | métier
+% --- C. Intérêt
+\fqdata{9}{0,0,0,0,0,0}    % nature | réseau indépendant | associatif | urgence | autre | aucun
+\fqdata{10}{0,0,0,0,0,0}   % moins de 25 € | 25-49 | 50-74 | 75-99 | 100 ou plus | n'achèterait pas
+\fqdata{11}{0,0,0,0}       % oui certainement | oui probablement | probablement pas | certainement pas
+\fqdata{12}{0,0,0,0}       % aucun | 1 | 2 | 3 ou plus
+\fqdata{13}{0,0,0,0,0,0}   % prix | proches équipés | portée | complexité | pas d'utilité | autre
+% --- Croisement à faire dans le tableur des réponses : question 11 pour les seuls répondants
+%     « exposés » (question 5 = « souvent » ou « zone sans réseau »)
+\fqdata{11e}{0,0,0,0}      % oui certainement | oui probablement | probablement pas | certainement pas
+%=============================================================================
+
+% ---- outils (ne pas modifier) ----
+\newcommand{\fqw}{4.25}      % largeur d'un bloc de question, en cm
+\newcommand{\fqpas}{0.355}   % pas vertical entre deux options
+\newcommand{\fqsomme}[1]{% somme des effectifs de la question #1 -> \fqtot
+  \gdef\fqtot{0}\edef\fqtmp{\csname fqd#1\endcsname}%
+  \foreach \v in \fqtmp {\pgfmathtruncatemacro{\fqacc}{\fqtot+\v}\xdef\fqtot{\fqacc}}}
+\newcommand{\fqval}[3]{% #1 macro, #2 question, #3 rang (à partir de 0)
+  \edef\fqtmp{\csname fqd#2\endcsname}\pgfmathtruncatemacro{#1}{{\fqtmp}[#3]}}
+% \fqbloc[base]{n°}{clé de données}{intitulé}{option 1,option 2,...}
+% base vide : pourcentages sur la somme des réponses ; base = \fqn pour les questions à choix multiples
+\newcommand{\fqbloc}[5][]{%
+  \fqsomme{#3}\edef\fqbase{\fqtot}%
+  \if\relax\detokenize{#1}\relax\else\edef\fqbase{#1}\fi
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[anchor=south west,inner sep=0pt]
+      at (0,0.07) {\parbox[b]{\fqw cm}{\scriptsize\bfseries\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000 \textcolor{insarouge}{#2}\hspace{0.35em}#4\strut}};
+    \foreach \lab [count=\i from 0] in {#5} {
+      \fqval{\fqc}{#3}{\i}
+      \pgfmathsetmacro{\fqy}{-\i*\fqpas-0.29}
+      \ifnum\fqbase>0 \pgfmathtruncatemacro{\fqp}{round(100*\fqc/\fqbase)}\else\def\fqp{0}\fi
+      \pgfmathsetmacro{\fqlen}{min(\fqp,100)/100*\fqw}
+      \fill[insagris!11,rounded corners=1.2pt] (0,\fqy) rectangle (\fqw,\fqy+0.29);
+      \ifnum\fqp>0 \fill[insarouge!30,rounded corners=1.2pt] (0,\fqy) rectangle (\fqlen,\fqy+0.29);\fi
+      \node[anchor=west,inner sep=0pt,font=\scriptsize] at (0.07,\fqy+0.145) {\lab\vphantom{Ég}};
+      \node[anchor=east,inner sep=0pt,font=\scriptsize\bfseries,text=insarouge] at (\fqw-0.07,\fqy+0.145)
+        {\ifnum\fqbase>0 \fqp\,\%\else\textcolor{insagris!60}{–}\fi};
+    }
+  \end{tikzpicture}\par}
+% état de la collecte, pour les notes de bas de diapositive
+\newcommand{\fqetat}{\ifnum\fqn>0 \fqn~réponses au \fqdate\else aucune réponse saisie au \fqdate, résultats à venir\fi}
+% indicateur en pourcentage : \fqpct{macro}{clé}{rangs à additionner}
+\newcommand{\fqpct}[3]{%
+  \fqsomme{#2}\gdef\fqnum{0}%
+  \foreach \r in {#3} {\fqval{\fqc}{#2}{\r}\pgfmathtruncatemacro{\fqacc}{\fqnum+\fqc}\xdef\fqnum{\fqacc}}%
+  \ifnum\fqtot>0 \pgfmathtruncatemacro{\fqres}{round(100*\fqnum/\fqtot)}\xdef#1{\fqres}\else\gdef#1{-1}\fi}
+% affichage d'un résultat et verdict par rapport à un seuil (valeurs entières ; -1 = pas de donnée)
+\newcommand{\fqaff}[2]{\leavevmode\ifnum#1<0 \textcolor{insagris}{à venir}\else\textcolor{insarouge}{\bfseries#2}\fi}
+\newcommand{\fqverdict}[2]{\leavevmode\ifnum#1<0 \textcolor{insagris}{–}\else\ifnum#1<#2 \textcolor{insagris}{sous le seuil}\else\textcolor{insarouge}{\bfseries atteint}\fi\fi}
+
+%---------------------------------------------------------------------------
+% Diapositive 1 : présentation du questionnaire
+%---------------------------------------------------------------------------
+\begin{frame}{Questionnaire en ligne~: 13 questions, 3 minutes}
+  \begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+      \begin{carte}[height=0.9cm,valign=top,colback=insarose]
+        \raggedright\gros{A · Votre profil}\\[1pt]
+        {\scriptsize Questions 1 à 3~: âge, situation, lieu de vie.\par}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=0.9cm,valign=top]
+        \raggedright\gros{B · Vos usages}\\[1pt]
+        {\scriptsize Questions 4 à 8~: plein air, réseau, équipement, engagement, low-tech.\par}
+      \end{carte}
+      \vspace{0.03cm}
+      \begin{carte}[height=0.9cm,valign=top]
+        \raggedright\gros{C · Votre intérêt pour \nomproduit}\\[1pt]
+        {\scriptsize Questions 9 à 13~: usages, prix maximum, achat à 69\,€, kits, freins.\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \centering
+      \ifdefined\qrcode
+        \qrcode[height=1.75cm]{https://forms.gle/zrqzzzeoZvyLnJAn7}\\[3pt]
+      \fi
+      {\scriptsize\url{https://forms.gle/zrqzzzeoZvyLnJAn7}}\\[3pt]
+      \begin{carte}[height=1.0cm,valign=top]
+        \centering\gros{\ifnum\fqn>0 \fqn~réponses\else Collecte en cours\fi}\\[1pt]
+        {\scriptsize relevé du \fqdate\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.02cm}
+  \begin{pcompact}\footnotesize
+    \textbf{Texte d'accueil.} «\,\nomproduit{} est un petit boitier radio de poche, relié à votre téléphone ou ordinateur en Bluetooth. Il permet d’échanger des messages texte avec d’autres boitiers jusqu'à plusieurs kilomètres, sans réseau mobile, sans internet et sans abonnement. Il ne fonctionne qu’entre personnes équipées, et chaque utilisateur étend le réseau pour permettre d'atteindre, par répétition et maillage, des portées plus grandes. Il est ainsi notamment possible de se contacter dans des zones dans service, de façon entièrement libre, chiffrée, sécurisée et en indépendance totale des opérateurs traditionnels.\,»
+  \end{pcompact}
+  \srcnote{Version courte, pour les particuliers, du questionnaire de la partie précédente (23 questions). Réponses anonymes, lues à partir de \fqmin~réponses. Le prix maximum (question 10) est demandé avant le prix de 69\,€ (question 11) pour ne pas l'influencer.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 2 : bloc A
+%---------------------------------------------------------------------------
+\begin{frame}{A · Votre profil~: questions 1 à 3}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \fqbloc{Q1}{1}{Quel âge avez-vous~?}{Moins de 18 ans,18-24 ans,25-34 ans,35-49 ans,50-64 ans,65 ans et plus}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \fqbloc{Q2}{2}{Quelle est votre situation~?}{Étudiant(e),Salarié(e) ou fonctionnaire,Indépendant(e),En recherche d'emploi,Retraité(e),Autre}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \fqbloc{Q3}{3}{Où habitez-vous~?}{Grande ville,Ville moyenne ou petite ville,Campagne,Montagne ou zone isolée}
+      \vspace{0.12cm}
+      \begin{carte}[height=1.18cm,valign=top]
+        \raggedright{\scriptsize\textbf{\color{insarouge}À quoi sert ce bloc.} Savoir qui a répondu, et lire les blocs B et C profil par profil.\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{pcompact}\centering\footnotesize
+    L'échantillon décrit ceux qui répondent, pas la population française~: on compare des profils.
+  \end{pcompact}
+  \srcnote{Une seule réponse par question. Barres~: part des réponses à chaque option~; \fqetat.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 3 : bloc B
+%---------------------------------------------------------------------------
+\begin{frame}{B · Vos usages~: questions 4 à 8}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \fqbloc{Q4}{4}{Pratiquez-vous des activités de plein air (randonnée, bivouac, urbex…)~?}{Jamais,Quelques fois par an,Au moins une fois par mois,Chaque semaine}
+      \vspace{0.1cm}
+      \fqbloc{Q5}{5}{Vous arrive-t-il de vous retrouver sans réseau mobile~?}{Jamais,Rarement,Souvent,Zone sans réseau au quotidien}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \fqbloc[\fqn]{Q6}{6}{Que faites-vous alors pour rester joignable~?\,*}{{Rien, j'attends le réseau},Talkie-walkie,Balise ou messagerie satellite,SOS satellite du téléphone,Autre}
+      \vspace{0.1cm}
+      \fqbloc{Q7}{7}{Êtes-vous engagé(e) dans une association, l'humanitaire, le secours~?}{Non,Occasionnellement,Régulièrement (bénévole),C'est mon métier}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \fqbloc{Q8}{8}{Vous intéressez-vous au low-tech, à l'autonomie, à l'électronique~?}{Pas du tout,{Un peu, par curiosité},Je pratique régulièrement,C'est mon métier}
+      \vspace{0.12cm}
+      \begin{carte}[height=2.05cm,valign=top]
+        \raggedright{\scriptsize\textbf{\color{insarouge}À quoi sert ce bloc.} Classer chaque répondant dans une cible~: plein air (Q4), secours et associations (Q7), low-tech (Q8). La question 5 mesure l'exposition au «\,hors réseau\,».\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{* Plusieurs réponses possibles~: pourcentages sur le nombre de répondants. Libellés abrégés. Barres~: \fqetat.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 4 : bloc C
+%---------------------------------------------------------------------------
+\begin{frame}{C · Votre intérêt pour \nomproduit~: questions 9 à 13}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \fqbloc[\fqn]{Q9}{9}{Pour quel(s) usage(s) \nomproduit{} vous intéresserait-il~?\,*}{{Randonnée, nature},Réseau indépendant,Associatif ou militant,{Urgence, coupure de réseau},Autre,Aucun usage}
+      \vspace{0.1cm}
+      \fqbloc{Q11}{11}{À 69\,€, sans abonnement, l'achèteriez-vous~?}{{Oui, certainement},{Oui, probablement},Probablement pas,Certainement pas}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \fqbloc{Q10}{10}{Quel prix maximum seriez-vous prêt(e) à payer pour un kit~?}{Moins de 25\,€,25 à 49\,€,50 à 74\,€,75 à 99\,€,100\,€ ou plus,Je ne l'achèterais pas}
+      \vspace{0.1cm}
+      \fqbloc{Q12}{12}{Combien de kits achèteriez-vous (vous et vos proches)~?}{Aucun,1,2,3 ou plus}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \fqbloc[\fqn]{Q13}{13}{Qu'est-ce qui vous ferait hésiter~?\,*}{Le prix,Proches à équiper aussi,La portée,La complexité d'utilisation,Je n'en vois pas l'utilité,Autre}
+      \vspace{0.12cm}
+      \begin{carte}[height=1.55cm,valign=top]
+        \raggedright{\scriptsize\textbf{\color{insarouge}À quoi sert ce bloc.} Mesurer l'intention d'achat à 69\,€, le prix accepté, le nombre de kits par acheteur et les freins.\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{* Plusieurs réponses possibles~: pourcentages sur le nombre de répondants. Libellés abrégés. Barres~: \fqetat.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 5 : lecture des résultats (calculée à partir du bloc DONNÉES)
+%---------------------------------------------------------------------------
+\begin{frame}{Lire les résultats~: quatre indicateurs, quatre seuils}
+  % calcul des indicateurs
+  \fqpct{\fqRe}{5}{2,3}%            exposition : « souvent » ou « zone sans réseau »
+  \fqpct{\fqRi}{11e}{0,1}%          intention à 69 € parmi les exposés
+  \fqpct{\fqRp}{10}{2,3,4}%         prêts à payer 50 € ou plus
+  \fqval{\fqka}{12}{1}\fqval{\fqkb}{12}{2}\fqval{\fqkc}{12}{3}%
+  \pgfmathtruncatemacro{\fqkn}{\fqka+\fqkb+\fqkc}%
+  \ifnum\fqkn>0 \pgfmathtruncatemacro{\fqRk}{round(10*(\fqka+2*\fqkb+3*\fqkc)/\fqkn)}%
+    \pgfmathtruncatemacro{\fqRkd}{mod(\fqRk,10)}\pgfmathtruncatemacro{\fqRku}{(\fqRk-\fqRkd)/10}\else\def\fqRk{-1}\def\fqRkd{0}\def\fqRku{0}\fi
+  \centering
+  \renewcommand{\arraystretch}{1.6}\scriptsize
+  \begin{tabular}{@{}p{2.05cm}@{\hspace{6.5pt}}p{4.7cm}@{\hspace{6.5pt}}p{1.45cm}@{\hspace{6.5pt}}p{1.3cm}@{\hspace{6.5pt}}p{1.25cm}@{\hspace{6.5pt}}p{1.75cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{\bfseries Indicateur} & \textcolor{insarouge}{\bfseries Calcul} & \textcolor{insarouge}{\bfseries Modèle} & \textcolor{insarouge}{\bfseries Seuil} & \textcolor{insarouge}{\bfseries Résultat} & \textcolor{insarouge}{\bfseries Verdict} \\
+    Exposition & question 5~: «\,souvent\,» ou zone sans réseau & 40\,\% & 40\,\% & \fqaff{\fqRe}{\fqRe\,\%} & \fqverdict{\fqRe}{40} \\
+    Intention à 69\,€ & question 11~: «\,oui\,», parmi les exposés & 15\,\% & 20\,\% & \fqaff{\fqRi}{\fqRi\,\%} & \fqverdict{\fqRi}{20} \\
+    Kits par acheteur & question 12~: moyenne des acheteurs & 1,8 & 1,8 & \fqaff{\fqRk}{\fqRku,\fqRkd} & \fqverdict{\fqRk}{18} \\
+    Prix accepté & question 10~: 50\,€ ou plus & 69\,€ & 50\,\% & \fqaff{\fqRp}{\fqRp\,\%} & \fqverdict{\fqRp}{50} \\
+  \end{tabular}
+
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=1.0cm,valign=top,colback=insarose]
+        \raggedright\gros{\ifnum\fqn>0 \fqn~réponses\else Résultats à venir\fi}\\[1pt]{\scriptsize lecture à partir de \fqmin~réponses\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=1.0cm,valign=top]
+        \raggedright\gros{Alerte sous 10\,\%}\\[1pt]{\scriptsize de «\,oui\,» à 69\,€~: revoir le prix\par}
+      \end{carte}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{carte}[height=1.0cm,valign=top]
+        \raggedright\gros{Comparer}\\[1pt]{\scriptsize l'intention surestime les achats\par}
+      \end{carte}
+    \end{column}
+  \end{columns}
+  \srcnote{Modèle~: valeurs centrales des itinérants français (partie Marché cible). Seuils proposés par l'équipe, fixés avant la collecte. «\,3 ou plus\,» compté pour 3 kits. Le prix accepté majore l'accord à 69\,€ (tranche 50 à 74\,€)~: la question 11 fait foi. \cite{mk_morwitz_2007}}
+\end{frame}

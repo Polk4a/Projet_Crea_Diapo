@@ -37,8 +37,9 @@
 %  - Mise en page prévue pour aspectratio=169. Texte de 10 pt : les plus petits textes
 %    des schémas restent à \footnotesize (8 pt) ou plus.
 %  - Sources : seul le nom de domaine est imprimé dans la liste (package xstring, voir « Bibliographie »),
-%    le lien complet reste cliquable dans le PDF. La liste est répartie sur trois diapositives d'après
-%    le numéro de citation (bornes dans les filtres srcA, srcB, srcC de la section « Bibliographie »).
+%    le lien complet reste cliquable dans le PDF. La liste est répartie sur plusieurs diapositives d'après
+%    le numéro de citation : une ligne \diaposources{premier}{dernier}{titre} par diapositive, en fin de fichier.
+%    Si des sources sont ajoutées, ajouter une ligne ou décaler les bornes.
 %  - Compilation : pdflatex main, biber main, pdflatex main, pdflatex main.
 %    (deux passes de pdflatex au minimum : sommaire, décor TikZ de chaque page)
 %  - Fichiers du projet : main.tex (gabarit et ordre des parties), un fichier par partie
@@ -63,6 +64,7 @@
 %%%%% Langue, encodage, polices %%%%%
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{qrcode}               % QR code du questionnaire en ligne (partie « Questionnaire en ligne »)
 \usepackage{lmodern}          % police machine à écrire (Latin Modern)
 \usepackage{tgpagella}        % texte courant : serif proche de celui de la présentation Trove
 \usepackage{tgheros}          % titres : sans serif (équivalent d'Arial / Liberation Sans)
@@ -439,15 +441,14 @@
   \IfBeginWith{\bibhosttmpb}{www.}{\StrGobbleLeft{\bibhosttmpb}{4}}{\bibhosttmpb}}
 \DeclareFieldFormat{url}{\href{#1}{\bibhost{#1}}}
 \usepackage{multicol}
-% La liste des sources est coupée en trois diapositives d'après le numéro de citation (ordre de première citation).
-% \srcrange{n1}{n2} garde les sources numérotées de n1 à n2 ; ajuster les bornes si le nombre de sources change.
-\newcommand{\srcrange}[2]{%
+% La liste des sources est coupée en plusieurs diapositives d'après le numéro de citation (ordre de première citation).
+% Le filtre « srcrange » garde les sources numérotées de \srclo à \srchi ; \diaposources règle ces deux bornes avant
+% d'imprimer la liste (voir la fin du fichier).
+\newcommand{\srclo}{1}\newcommand{\srchi}{999}
+\defbibcheck{srcrange}{%
   \iffieldint{labelnumber}%
-    {\ifboolexpe{test{\ifnumless{\thefield{labelnumber}}{#1}} or test{\ifnumgreater{\thefield{labelnumber}}{#2}}}{\skipentry}{}}%
+    {\ifboolexpe{test{\ifnumless{\thefield{labelnumber}}{\srclo}} or test{\ifnumgreater{\thefield{labelnumber}}{\srchi}}}{\skipentry}{}}%
     {\skipentry}}
-\defbibcheck{srcA}{\srcrange{1}{25}}
-\defbibcheck{srcB}{\srcrange{26}{50}}
-\defbibcheck{srcC}{\srcrange{51}{999}}
 
 \title{\doctitre}
 \author{\docauteur}
@@ -461,7 +462,7 @@
 %%%%% Page de titre : diapositive 1 %%%%%
 \insatitleframe
 
-%%%%% Sommaire (deux colonnes : parties 1 à 6, puis 7 à 11 ; ajuster si le nombre de parties change) %%%%%
+%%%%% Sommaire (deux colonnes : parties 1 à 6, puis 7 à 12 ; ajuster si le nombre de parties change) %%%%%
 \begin{frame}{Sommaire}
   \etiquette{Plan}
   \begin{columns}[T]
@@ -471,7 +472,7 @@
     \end{column}
     \begin{column}{0.37\textwidth}
       \vspace{0.2cm}
-      \tableofcontents[sections={7-11},hideallsubsections]
+      \tableofcontents[sections={7-12},hideallsubsections]
     \end{column}
     \begin{column}{0.22\textwidth}
       \centering
@@ -497,23 +498,32 @@
 \include{etude}                  % 8.  Étude documentaire : coûts, freins F1 à F7, opportunités
 \include{chap_swot}              % 9.  SWOT et enjeux
 \include{chap_quanti}            % 10. Étude quantitative : cibles, questionnaire, seuils de décision
-\include{conclusion}             % 11. Risques, prochaines étapes, conclusion
+\include{chap_questionnaire}     % 11. Questionnaire en ligne : 13 questions (blocs A, B, C), résultats à compléter
+\include{conclusion}             % 12. Risques, prochaines étapes, conclusion
 
 
 %%%%% Sources (sources.bib : appel \cite{cle} dans les diapositives) %%%%%
-% Liste sur 3 colonnes, un peu plus large que le texte courant, coupée en trois diapositives (filtres srcA, srcB, srcC).
-\newcommand{\diaposources}[2]{%
-  \begin{frame}{#2}
+% Liste sur 3 colonnes, un peu plus large que le texte courant, coupée en plusieurs diapositives d'une vingtaine de sources (filtre srcrange).
+% \diaposources{premier numéro}{dernier numéro}{titre de la diapositive}
+\newcommand{\diaposources}[3]{%
+  \renewcommand{\srclo}{#1}\renewcommand{\srchi}{#2}%
+  \begin{frame}{#3}
     \etiquette{Sources}
     \makebox[\textwidth][c]{\begin{minipage}{13.6cm}
       \setlength{\columnsep}{0.3cm}
       \begin{multicols}{3}
-        \printbibliography[heading=none,check=#1]
+        \printbibliography[heading=none,check=srcrange]
       \end{multicols}
     \end{minipage}}
   \end{frame}}
-\diaposources{srcA}{Sources 1/3~: pages consultées du 5 au 8 octobre 2026}
-\diaposources{srcB}{Sources 2/3}
-\diaposources{srcC}{Sources 3/3}
+\diaposources{1}{20}{Sources 1/9~: consultées du 5 oct. au 7 nov. 2026}
+\diaposources{21}{40}{Sources 2/9}
+\diaposources{41}{59}{Sources 3/9}
+\diaposources{60}{79}{Sources 4/9}
+\diaposources{80}{99}{Sources 5/9}
+\diaposources{100}{118}{Sources 6/9}
+\diaposources{119}{137}{Sources 7/9}
+\diaposources{138}{156}{Sources 8/9}
+\diaposources{157}{999}{Sources 9/9}
 
 \end{document}
