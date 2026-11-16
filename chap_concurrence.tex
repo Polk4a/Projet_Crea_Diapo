@@ -1,9 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Partie « Concurrence » (4 diapositives) -- à importer avec \include{chap_concurrence}
+%  Partie « Concurrence » (5 diapositives) -- à importer avec \include{chap_concurrence}
 %  Fichier de contenu : ni préambule ni \begin{document}, commence par \section.
 %
-%  Contenu : (1) carte de positionnement, (2) comparatif détaillé, (3) coût sur trois ans,
-%  (4) atouts et limites face à chaque famille de concurrents.
+%  Contenu : (1) carte de positionnement, (2) comparatif détaillé, (3) messageries par satellite
+%  (Garmin inReach, ZOLEO, SPOT X : grille du classeur « Analyse concurrentielle simplifiée » de
+%  l'équipe, complétée d'une colonne FreeWave et d'un coût sur trois ans calculé), (4) coût sur
+%  trois ans, (5) atouts et limites face à chaque famille de concurrents.
+%  Dans la grille (3), les notes « à noter » de la colonne FreeWave restent à attribuer par l'équipe.
 %  Cette partie REGROUPE les comparaisons de prix qui étaient dispersées (ancienne diapositive
 %  « Contre l'abonnement » de la partie Marketing, tableau et cartes de l'étude documentaire).
 %  Les prix sont des prix publics relevés du 5 au 8 octobre 2026 (voir sources.bib) : ils varient
@@ -97,7 +100,42 @@
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 3 : coût cumulé sur trois ans (ancienne diapositive « Contre l'abonnement »)
+% Diapositive 3 : les trois messageries par satellite (classeur « Analyse concurrentielle simplifiée »)
+% Notes +++ / ++ / + / - : celles du classeur. Colonne FreeWave et ligne « coût sur trois ans » ajoutées.
+% Coût sur trois ans = achat + 36 mois d'abonnement, avec les fourchettes du classeur :
+%   inReach 300 + 36 x 10 = 660 € à 400 + 36 x 35 = 1 660 € ; ZOLEO 171 + 36 x 25 = 1 071 € ;
+%   SPOT X 150 + 36 x 15 = 690 € à 300 + 36 x 35 = 1 560 €.
+%---------------------------------------------------------------------------
+\newcommand{\ccnote}[1]{\leavevmode\textcolor{insarouge}{\bfseries#1}}
+\newcommand{\ccvide}{\leavevmode\textcolor{insagris}{\itshape à noter}}
+\begin{frame}{Messageries par satellite~: inReach, ZOLEO, SPOT X}
+  \centering\scriptsize\renewcommand{\arraystretch}{1.12}\setlength{\tabcolsep}{3.5pt}
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \noindent\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{2.25cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.6cm}>{\columncolor{insabeige}\raggedright\arraybackslash}p{2.6cm}@{}}
+    \rowcolor{insarose}\textcolor{insarouge}{Critère} & \textcolor{insarouge}{\bfseries Garmin inReach} & \textcolor{insarouge}{\bfseries ZOLEO} & \textcolor{insarouge}{\bfseries SPOT X} & \textcolor{insarouge}{\bfseries \nomproduit}\\
+    Offre & Boîtier satellite, messages entre boîtiers & Boîtier mobile ou satellite, avec application & Boîtier satellite à clavier intégré & Boîtier radio relié au téléphone\\
+    \arrayrulecolor{insagris!30}\hline
+    Audience cible & Randonneurs, voyageurs isolés, zones blanches & Randonneurs, voyageurs hors couverture mobile & Aventuriers, sportifs, travailleurs isolés & Randonneurs, ONG, low-tech, grand public\\
+    \hline
+    Facilité d'utilisation & \ccnote{+++} & \ccnote{+++} & \ccnote{+++} & \ccvide\\
+    Accessibilité & \ccnote{+++} & \ccnote{–} & \ccnote{++} & \ccvide\\
+    Autonomie & \ccnote{+++} & \ccnote{+} & \ccnote{++} & \ccvide\\
+    \hline
+    Prix & 300 à 400\,€, abonnement 10 à 35\,€ & 171\,€, abonnement 25\,€ & 150 à 300\,€, abonnement 15 à 35\,€ & 69\,€, sans abonnement\\
+    Coût sur trois ans & 660 à 1\,660\,€ & 1\,071\,€ & 690 à 1\,560\,€ & \textbf{69\,€}\\
+    \hline
+    Couverture & Mondiale & Mondiale & Mondiale & Entre kits à portée\\
+    Portée & Illimitée (satellite), pas en milieu fermé & Illimitée~; en intérieur par Wi-Fi ou mobile & Illimitée (satellite), pas en milieu fermé & Radio entre kits, relais par les voisins\\
+  \end{tabular}
+  \vspace{0.08cm}
+  \begin{pcompact}\centering\footnotesize
+    Couverture mondiale, mais 10 à 24 fois le prix du kit sur trois ans~: \nomproduit{} vise le groupe à portée.
+  \end{pcompact}
+  \srcnote{Grille et notes (+++ à –) de l'équipe, prix relevés par l'équipe, à dater et sourcer~; abonnement supposé mensuel. Coût sur trois ans~: achat + 36 mois d'abonnement, hors frais d'activation. Colonne \nomproduit{}~: notes à attribuer.}
+\end{frame}
+
+%---------------------------------------------------------------------------
+% Diapositive 4 : coût cumulé sur trois ans (ancienne diapositive « Contre l'abonnement »)
 %---------------------------------------------------------------------------
 \begin{frame}{Contre l'abonnement~: le coût sur trois ans}
   \begin{columns}[T]
@@ -147,7 +185,7 @@
 \end{frame}
 
 %---------------------------------------------------------------------------
-% Diapositive 4 : notre avantage face à chaque famille, et ce qu'il faut leur reconnaître
+% Diapositive 5 : notre avantage face à chaque famille, et ce qu'il faut leur reconnaître
 %---------------------------------------------------------------------------
 \begin{frame}{Face à chaque concurrent~: atouts et limites}
   \footnotesize\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{4pt}
@@ -160,7 +198,7 @@
     \hline
     les talkies PMR446 (65 à 80\,€ la paire) & Messages et positions sur carte, relais par les voisins, chiffrement. & Voix immédiate, sans smartphone ni réglage, usage libre.\\
     \hline
-    le satellite (inReach, PLB, SOS iPhone) & Aucun abonnement~; marche sous les arbres et en ville, sans ciel dégagé. & SOS relié aux secours 24\,h/24, couverture mondiale, joignent tout le monde.\\
+    le satellite (inReach, ZOLEO, SPOT X, PLB, SOS iPhone) & Aucun abonnement~; marche sous les arbres et en ville, sans ciel dégagé. & SOS relié aux secours 24\,h/24, couverture mondiale, joignent tout le monde.\\
   \end{tabularx}
   \vspace{0.15cm}
   \begin{pcompact}\centering\footnotesize
